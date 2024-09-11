@@ -39,6 +39,16 @@
         app:layout_constraintVertical_bias="0.113"
         tools:layout_editor_absoluteX="0dp"></EditText>
 
+    <TextView
+        android:id="@+id/loginScreen_forgotText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password?"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginScreen_passwordInput"
+        app:layout_constraintVertical_bias="0.068"
+        tools:layout_editor_absoluteX="140dp"></TextView>
+
     <Button
         android:id="@+id/loginScreen_loginButton"
         android:layout_width="wrap_content"
@@ -46,10 +56,10 @@
         android:text="Login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.486"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginScreen_passwordInput"
-        app:layout_constraintVertical_bias="0.227"></Button>
+        app:layout_constraintTop_toBottomOf="@+id/loginScreen_forgotText"
+        app:layout_constraintVertical_bias="0.223"></Button>
 
     <TextView
         android:id="@+id/loginScreen_registerText"

@@ -17,7 +17,7 @@ public class Auth_Login extends AppCompatActivity {
 
     EditText email, password;
     Button login;
-    TextView register;
+    TextView register, forgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +36,16 @@ public class Auth_Login extends AppCompatActivity {
         login = findViewById(R.id.loginScreen_loginButton);
 
         register = findViewById(R.id.loginScreen_registerText);
+        forgotPassword = findViewById(R.id.loginScreen_forgotText);
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Auth_ForgotPassword.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
