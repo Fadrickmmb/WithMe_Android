@@ -2,10 +2,12 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,11 +15,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class Auth_Login extends AppCompatActivity {
 
     EditText email, password;
     Button login;
     TextView register, forgotPassword;
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +44,8 @@ public class Auth_Login extends AppCompatActivity {
 
         register = findViewById(R.id.loginScreen_registerText);
         forgotPassword = findViewById(R.id.loginScreen_forgotText);
+
+        mAuth = FirebaseAuth.getInstance();
 
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,5 +72,43 @@ public class Auth_Login extends AppCompatActivity {
             }
         });
 
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginUser();
+            }
+        });
+
+    }
+
+    private void loginUser() {
+        String emailInput = email.getText().toString().trim();
+        String passwordInput = password.getText().toString().trim();
+
+        if (TextUtils.isEmpty(emailInput)) {
+            email.setError("Email is required.");
+            return;
+        }
+
+        if (TextUtils.isEmpty(passwordInput)) {
+            password.setError("Password is required.");
+            return;
+        }
+
+        mAuth.signInWithEmailAndPassword(emailInput, passwordInput)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Toast.makeText(Auth_Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+
+                        Intent intent = new Intent(Auth_Login.this, User_HomePage.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(Auth_Login.this, "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }
