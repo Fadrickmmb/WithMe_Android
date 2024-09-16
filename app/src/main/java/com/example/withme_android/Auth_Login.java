@@ -17,6 +17,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class Auth_Login extends AppCompatActivity {
 
@@ -25,6 +27,7 @@ public class Auth_Login extends AppCompatActivity {
     TextView register, forgotPassword;
 
     private FirebaseAuth mAuth;
+    DatabaseReference userDatabase, adminDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,9 @@ public class Auth_Login extends AppCompatActivity {
         forgotPassword = findViewById(R.id.loginScreen_forgotText);
 
         mAuth = FirebaseAuth.getInstance();
+
+        userDatabase = FirebaseDatabase.getInstance().getReference("users");
+        adminDatabase = FirebaseDatabase.getInstance().getReference("admin");
 
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +107,6 @@ public class Auth_Login extends AppCompatActivity {
 
                         FirebaseUser user = mAuth.getCurrentUser();
                         Toast.makeText(Auth_Login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-
 
                         Intent intent = new Intent(Auth_Login.this, User_HomePage.class);
                         startActivity(intent);
