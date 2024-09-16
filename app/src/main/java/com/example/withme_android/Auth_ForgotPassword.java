@@ -54,6 +54,7 @@ public class Auth_ForgotPassword extends AppCompatActivity {
 
         resetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
+
             public void onClick(View view) {
                 String email = emailInput.getText().toString().trim();
 
@@ -65,6 +66,9 @@ public class Auth_ForgotPassword extends AppCompatActivity {
                 mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(Auth_ForgotPassword.this, "Password reset email sent", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), Auth_Login.class);
+                        startActivity(intent);
+                        finish();
                     } else {
                         Toast.makeText(Auth_ForgotPassword.this, "Failed to send reset email", Toast.LENGTH_SHORT).show();
                     }
