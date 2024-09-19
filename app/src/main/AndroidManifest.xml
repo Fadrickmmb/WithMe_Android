@@ -13,6 +13,54 @@
         android:theme="@style/Theme.WithMe_Android"
         tools:targetApi="31">
         <activity
+            android:name=".Mod_ReportedPosts"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_ReportedPosts"
+            android:exported="false" />
+        <activity
+            android:name=".Mod_PostView"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_PostView"
+            android:exported="false" />
+        <activity
+            android:name=".User_PostView"
+            android:exported="false" />
+        <activity
+            android:name=".User_ViewProfile"
+            android:exported="false" />
+        <activity
+            android:name=".Mod_ViewProfile"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_ViewProfile"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_EditProfile"
+            android:exported="false" />
+        <activity
+            android:name=".Mod_EditProfile"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_AddPostPage"
+            android:exported="false" />
+        <activity
+            android:name=".Mod_AddPostPage"
+            android:exported="false" />
+        <activity
+            android:name=".User_AddPostPage"
+            android:exported="false" />
+        <activity
+            android:name=".Mod_SearchPage"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_SearchPage"
+            android:exported="false" />
+        <activity
+            android:name=".User_SearchPage"
+            android:exported="false" />
+        <activity
             android:name=".User_EditProfile"
             android:exported="false" />
         <activity

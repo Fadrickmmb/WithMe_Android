@@ -23,8 +23,6 @@ public class User_EditProfile extends AppCompatActivity {
     EditText editName, editPassword;
     Button saveChanges;
 
-    FirebaseAuth mAuth;
-    DatabaseReference uDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +41,8 @@ public class User_EditProfile extends AppCompatActivity {
         editPassword = findViewById(R.id.userEditProfile_editPassword);
         saveChanges = findViewById(R.id.userEditProfile_saveButton);
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        fetchUserInfo();
 
 
         saveChanges.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +53,10 @@ public class User_EditProfile extends AppCompatActivity {
         });
 
 
+
+    }
+
+    private void fetchUserInfo(){
 
     }
 }
