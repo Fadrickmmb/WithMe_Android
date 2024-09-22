@@ -7,59 +7,76 @@
     android:layout_height="match_parent"
     tools:context=".Auth_Register">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="REGISTER SCREEN"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="252dp"
+        android:layout_height="92dp"
+        android:src="@drawable/withme_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.126"></TextView>
+        app:layout_constraintVertical_bias="0.169" />
+
 
     <EditText
         android:id="@+id/registerScreen_usernameInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:hint="Username"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.175"
-        tools:layout_editor_absoluteX="-16dp"></EditText>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintVertical_bias="0.113"
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintHeight_percent="0.05"
+        android:background="@drawable/edittext_background"></EditText>
 
     <EditText
         android:id="@+id/registerScreen_emailInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:hint="Email"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerScreen_usernameInput"
-        app:layout_constraintVertical_bias="0.109"
-        tools:layout_editor_absoluteX="0dp"></EditText>
+        app:layout_constraintVertical_bias="0.059"
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintHeight_percent="0.05"
+        android:background="@drawable/edittext_background"></EditText>
+
 
     <EditText
         android:id="@+id/registerScreen_passwordInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:hint="Password"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerScreen_emailInput"
-        app:layout_constraintVertical_bias="0.094"
-        tools:layout_editor_absoluteX="0dp"></EditText>
-
+        app:layout_constraintVertical_bias="0.057"
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintHeight_percent="0.05"
+        android:background="@drawable/edittext_background"></EditText>
 
     <Button
         android:id="@+id/registerScreen_registerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create Account"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerScreen_passwordInput"
-        app:layout_constraintVertical_bias="0.27"></Button>
+        app:layout_constraintVertical_bias="0.27"
+        android:background="@drawable/button_background"></Button>
 
     <TextView
         android:id="@+id/registerScreen_signInText"
