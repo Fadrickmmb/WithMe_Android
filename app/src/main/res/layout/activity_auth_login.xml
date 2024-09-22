@@ -21,7 +21,7 @@
     <EditText
         android:id="@+id/loginScreen_emailInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:backgroundTint="#E0E0E0"
         android:hint="Email"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,12 +29,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.421"
-        app:layout_constraintWidth_percent="0.7"></EditText>
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintHeight_percent="0.05"
+        android:background="@drawable/edittext_background"></EditText>
 
     <EditText
         android:id="@+id/loginScreen_passwordInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:backgroundTint="#E0E0E0"
         android:hint="Password"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -43,7 +45,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginScreen_emailInput"
         app:layout_constraintVertical_bias="0.096"
-        app:layout_constraintWidth_percent="0.7"></EditText>
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintHeight_percent="0.05"
+        android:background="@drawable/edittext_background"></EditText>
 
     <TextView
         android:id="@+id/loginScreen_forgotText"
