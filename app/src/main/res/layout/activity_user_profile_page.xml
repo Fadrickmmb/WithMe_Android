@@ -21,53 +21,63 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="20dp"
-            android:gravity="fill"
+            android:gravity="center"
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
+                android:layout_height="60dp"
+                android:gravity="fill_horizontal"
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="left"
-                    android:orientation="horizontal">
+                    android:id="@+id/withMeLogo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:gravity="left|center"
+                    android:layout_weight="0.8">
 
                     <ImageView
-                        android:id="@+id/nameLogo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_gravity="left"
+                        android:layout_width="121dp"
+                        android:layout_height="59dp"
+                        android:layout_gravity="left|center"
+                        android:layout_marginLeft="5dp"
                         android:src="@drawable/withme_logo" />
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/yummyIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
+                    android:layout_width="74dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.1"
+                    android:gravity="end|center"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_gravity="right" />
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="50dp"
+                        android:src="@drawable/withme_yummy" />
+
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/messageIcon"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
+                    android:id="@+id/commentIcon"
+                    android:layout_width="48dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.1"
+                    android:gravity="right|center"
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_gravity="right" />
+                        android:layout_width="66dp"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="-15dp"
+                        android:src="@drawable/withme_comment" />
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -92,7 +102,9 @@
                 android:id="@+id/userFullName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""/>
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:text="User full name here"/>
 
             <LinearLayout
                 android:orientation="horizontal"
