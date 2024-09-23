@@ -28,7 +28,7 @@ public class Auth_Register extends AppCompatActivity {
 
     EditText username, email, password;
     Button register;
-    TextView signInText;
+    TextView signInText, forgotPassword;
 
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
@@ -53,11 +53,21 @@ public class Auth_Register extends AppCompatActivity {
         password = findViewById(R.id.registerScreen_passwordInput);
         register = findViewById(R.id.registerScreen_registerButton);
         signInText = findViewById(R.id.registerScreen_signInText);
+        forgotPassword = findViewById(R.id.registerScreen_forgotPassword_text);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 registerUser();
+            }
+        });
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Auth_ForgotPassword.class);
+                startActivity(intent);
+                finish();
             }
         });
 
