@@ -86,7 +86,7 @@
                 android:layout_height="140dp"
                 android:layout_gravity="center"
                 app:cardCornerRadius="70dp"
-                android:layout_margin="50dp">
+                android:layout_marginTop="50dp">
 
                 <ImageView
                     android:id="@+id/bigAvatar"
@@ -103,34 +103,125 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textColor="@color/black"
-                android:text="User full name here"/>
+                android:layout_marginTop="20dp"
+                android:textColor="@color/withme"
+                android:text="sarah lee"
+                android:textAllCaps="true"
+                android:textSize="24sp"
+                android:fontFamily="@font/dm_serif_display"/>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/numberOfFollowers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dm_serif_display"
+                        android:gravity="center"
+                        android:text="800K"
+                        android:textAllCaps="true"
+                        android:textColor="@color/withme"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Followers"
+                        android:textColor="@color/withme"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/numberOfPosts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dm_serif_display"
+                        android:gravity="center"
+                        android:text="20"
+                        android:textAllCaps="true"
+                        android:textColor="@color/withme"
+                        android:textSize="22sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Posts"
+                        android:textColor="@color/withme"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:layout_width="match_parent"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:id="@+id/numberOfYummys"
                         android:gravity="center"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
+                        android:textSize="22sp"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:textAllCaps="true"
+                        android:text="20K"
+                        android:fontFamily="@font/dm_serif_display"
+                        android:textColor="@color/withme"/>
 
+                    <TextView
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Yummys"
+                        android:textColor="@color/withme"/>
 
                 </LinearLayout>
 
             </LinearLayout>
-        </LinearLayout>
 
+            <Button
+                android:id="@+id/editProfileBtn"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/withme"
+                android:layout_width="200dp"
+                android:text="Edit profile"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recViewReminder"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/editProfileBtn"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:scrollbars="vertical"/>
+
+        </LinearLayout>
     </ScrollView>
 
     <LinearLayout
