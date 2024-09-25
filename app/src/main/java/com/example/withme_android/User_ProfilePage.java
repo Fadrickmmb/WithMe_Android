@@ -12,9 +12,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,18 +22,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
+import java.util.List;
 
 public class User_ProfilePage extends AppCompatActivity {
 
     private Button editProfileBtn;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference1,reference2;
+    private DatabaseReference postreference,reference2;
     private TextView userName, numberOfFollowers, numberOfPosts, numberOfYummys;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private RecyclerView personalPostRecView;
-    //private List<Post> postList;
-    //private PostAdapter postAdapter;
+    private List<Post> postList;
+    private PostAdapter postAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +43,7 @@ public class User_ProfilePage extends AppCompatActivity {
 
         editProfileBtn= findViewById(R.id.editProfileBtn);
         mAuth = FirebaseAuth.getInstance();
-        reference1 = FirebaseDatabase.getInstance().getReference("users");
-        reference1 = FirebaseDatabase.getInstance().getReference("posts");
+        postreference = FirebaseDatabase.getInstance().getReference("posts");
         userName = findViewById(R.id.userName);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
@@ -112,7 +108,7 @@ public class User_ProfilePage extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         if(user != null) {
-            reference1.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            postreference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user = snapshot.getValue(User.class);
@@ -142,7 +138,7 @@ public class User_ProfilePage extends AppCompatActivity {
                 if(snapshot.exists()){
                    // postList.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                     //   Post post = dataSnapshot.getValue(Post.class);
+                     //   com.example.withme_android.Post post = dataSnapshot.getValue(com.example.withme_android.Post.class);
                        // if (post != null) {
                          //   postList.add(post);
                         //}
