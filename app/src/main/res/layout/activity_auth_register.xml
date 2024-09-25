@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".Auth_Register">
 
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="252dp"
@@ -17,78 +18,129 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.169" />
+        app:layout_constraintVertical_bias="0.081" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintVertical_bias="0.1"></TextView>
 
     <EditText
         android:id="@+id/registerScreen_usernameInput"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:hint="Username"
+        android:background="@drawable/edittext_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        app:layout_constraintVertical_bias="0.113"
-        app:layout_constraintWidth_percent="0.7"
         app:layout_constraintHeight_percent="0.05"
-        android:background="@drawable/edittext_background"></EditText>
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.044"
+        app:layout_constraintWidth_percent="0.7"></EditText>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerScreen_usernameInput"
+        app:layout_constraintVertical_bias="0.023"></TextView>
 
     <EditText
         android:id="@+id/registerScreen_emailInput"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:hint="Email"
+        android:background="@drawable/edittext_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerScreen_usernameInput"
-        app:layout_constraintVertical_bias="0.059"
-        app:layout_constraintWidth_percent="0.7"
         app:layout_constraintHeight_percent="0.05"
-        android:background="@drawable/edittext_background"></EditText>
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintVertical_bias="0.053"
+        app:layout_constraintWidth_percent="0.7"></EditText>
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerScreen_emailInput"
+        app:layout_constraintVertical_bias="0.06"></TextView>
 
     <EditText
         android:id="@+id/registerScreen_passwordInput"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:hint="Password"
+        android:background="@drawable/edittext_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registerScreen_emailInput"
-        app:layout_constraintVertical_bias="0.057"
-        app:layout_constraintWidth_percent="0.7"
         app:layout_constraintHeight_percent="0.05"
-        android:background="@drawable/edittext_background"></EditText>
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintVertical_bias="0.078"
+        app:layout_constraintWidth_percent="0.7"></EditText>
 
     <Button
         android:id="@+id/registerScreen_registerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Account"
         android:backgroundTint="@color/white"
+        android:elevation="5dp"
+        android:text="REGISTER"
         android:textColor="@color/black"
+        android:textStyle="bold"
+        android:translationZ="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerScreen_passwordInput"
-        app:layout_constraintVertical_bias="0.27"
-        android:background="@drawable/button_background"></Button>
+        app:layout_constraintVertical_bias="0.182"></Button>
 
     <TextView
         android:id="@+id/registerScreen_signInText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sign In Here"
+        android:text="Do You Have an Account? \n Sign In Here"
+        android:textAlignment="center"
+        android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerScreen_registerButton"
-        app:layout_constraintVertical_bias="0.382"></TextView>
+        app:layout_constraintVertical_bias="0.148"></TextView>
+
+    <TextView
+        android:id="@+id/registerScreen_forgotPassword_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerScreen_signInText"
+        app:layout_constraintVertical_bias="0.65"></TextView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
