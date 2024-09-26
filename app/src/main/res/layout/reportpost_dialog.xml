@@ -10,7 +10,7 @@
 
     <ImageView
         android:layout_gravity="start"
-        android:id="@+id/closeEditPostDialog"
+        android:id="@+id/closeReportPostDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
@@ -28,50 +28,22 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginLeft="20dp">
+            android:layout_weight="0.5">
 
             <ImageView
-                android:id="@+id/deletePost"
+                android:id="@+id/reportPost"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/baseline_delete_outline_24"/>
+                android:src="@drawable/round_report_problem_24"/>
 
             <TextView
-                android:id="@+id/textDeletePost"
+                android:id="@+id/textReportPost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DELETE"
+                android:text="REPORT"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"/>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginRight="20dp">
-
-            <ImageView
-                android:id="@+id/editPost"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:src="@drawable/sharp_edit_square_24"/>
-
-            <TextView
-                android:id="@+id/textEditPost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="EDIT"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"/>
-
 
         </LinearLayout>
     </LinearLayout>
