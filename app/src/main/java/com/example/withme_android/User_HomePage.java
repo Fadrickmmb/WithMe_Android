@@ -36,32 +36,31 @@ public class User_HomePage extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize Firebase Auth and Database Reference
+
         mAuth = FirebaseAuth.getInstance();
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
-
         toProfile = findViewById(R.id.userHomePage_toProfileButton);
 
-        // Fetch and show the user's name
+
         fetchUserName();
 
         toProfile.setOnClickListener(view -> {
-            // Navigate to the profile screen if needed
+
         });
     }
 
     private void fetchUserName() {
-        // Get current user
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            String userId = currentUser.getUid(); // Get user's UID from FirebaseAuth
+            String userId = currentUser.getUid();
 
-            // Fetch user data from the Firebase Realtime Database using the UID
+
             userDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        // Assuming you have a 'name' field in your database
+
                         String userName = dataSnapshot.child("name").getValue(String.class);
                         if (userName != null) {
                             Toast.makeText(User_HomePage.this, "Welcome, " + userName, Toast.LENGTH_LONG).show();
