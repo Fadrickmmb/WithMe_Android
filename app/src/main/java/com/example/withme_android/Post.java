@@ -5,22 +5,24 @@ import java.util.Date;
 import java.util.List;
 
 public class Post {
-    private String userName;
+    private String name;
     private String userPhotoUrl;
     private String postImageUrl;
     private String location;
     private Date postDate;
     private int yummys;
     private List<Comment> comments;
+    private String userID;
 
-    public Post(String userName, String userPhotoUrl, String postImageUrl, String location, Date postDate) {
-        this.userName = userName;
+    public Post(String userName, String userPhotoUrl, String postImageUrl, String location, Date postDate, String userID) {
+        this.name = userName;
         this.userPhotoUrl = userPhotoUrl;
         this.postImageUrl = postImageUrl;
         this.location = location;
         this.postDate = postDate;
         this.yummys = 0;
         this.comments = new ArrayList<>();
+        this.userID = userID;
     }
 
     public void addYummy() {
@@ -32,11 +34,11 @@ public class Post {
     }
 
     public String getUserName() {
-        return userName;
+        return name;
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.name = userName;
     }
 
     public String getUserPhotoUrl() {
@@ -77,5 +79,21 @@ public class Post {
 
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public void setYummys(int yummys) {
+        this.yummys = yummys;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,17 +22,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User_ProfilePage extends AppCompatActivity {
 
     private Button editProfileBtn;
     private FirebaseAuth mAuth;
-    private DatabaseReference postreference,reference2;
-    private TextView userName, numberOfFollowers, numberOfPosts, numberOfYummys;
+    private DatabaseReference reference;
+    private TextView userName, numberOfFollowers, numberOfPosts, numberFollowing;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private RecyclerView personalPostRecView;
+    private Post post;
     private List<Post> postList;
     private PostAdapter postAdapter;
 
@@ -43,20 +47,23 @@ public class User_ProfilePage extends AppCompatActivity {
 
         editProfileBtn= findViewById(R.id.editProfileBtn);
         mAuth = FirebaseAuth.getInstance();
-        postreference = FirebaseDatabase.getInstance().getReference("posts");
+        reference = FirebaseDatabase.getInstance().getReference("users");
         userName = findViewById(R.id.userName);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
-        numberOfYummys = findViewById(R.id.numberOfYummys);
+        numberFollowing = findViewById(R.id.numberFollowing);
         homeIcon = findViewById(R.id.homeIcon);
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         personalPostRecView = findViewById(R.id.personalPostRecView);
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(postList);
+        personalPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
-        showPosts();
+        //showPosts();
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,16 +115,46 @@ public class User_ProfilePage extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         if(user != null) {
-            postreference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user = snapshot.getValue(User.class);
                     if(user != null){
                         String name = user.getName();
+                        String nFollowers = String.valueOf(user.getNumberFollowers());
+                        //String nPosts = String.valueOf(user.getNumberPosts());
+                        String nFollowing = String.valueOf(user.getNumberFollowing());
+                        String userAvatar = user.getUserPhotoUrl();
+
                         userName.setText(name);
-                        String numberOfFollowers = String.valueOf(0); //find on firebase
-                        String numberOfPosts = String.valueOf(0); //find on firebase
-                        String numberOfYummys = String.valueOf(0); //find on firebase
+                        numberOfFollowers.setText(nFollowers);
+                        //numberOfPosts.setText(nPosts);
+                        numberFollowing.setText(nFollowing);
+
+                        if (userAvatar.startsWith("https")) {
+                            Glide.with(bigAvatar.getContext())
+                                    .load(userAvatar)
+                                    .error(R.drawable.round_report_problem_24)
+                                    .fitCenter()
+                                    .into(bigAvatar);
+                            Glide.with(smallAvatar.getContext())
+                                    .load(userAvatar)
+                                    .error(R.drawable.round_report_problem_24)
+                                    .fitCenter()
+                                    .into(smallAvatar);
+                        } else {
+                            Glide.with(bigAvatar.getContext())
+                                    .load(userAvatar.replace("http","https"))
+                                    .error(R.drawable.round_report_problem_24)
+                                    .fitCenter()
+                                    .into(bigAvatar);
+                            Glide.with(smallAvatar.getContext())
+                                    .load(userAvatar.replace("http","https"))
+                                    .error(R.drawable.round_report_problem_24)
+                                    .fitCenter()
+                                    .into(smallAvatar);
+
+                        }
                         // retrieve user picture for small and big avatars
                         // retrieve user`s posts
                     }
@@ -131,19 +168,19 @@ public class User_ProfilePage extends AppCompatActivity {
         }
     }
 
-    private void showPosts() {
-        reference2.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+   /* private void showPosts() {
+        reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
-                   // postList.clear();
+                    postList.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                     //   com.example.withme_android.Post post = dataSnapshot.getValue(com.example.withme_android.Post.class);
-                       // if (post != null) {
-                         //   postList.add(post);
-                        //}
+                        Post post = dataSnapshot.getValue(Post.class);
+                        if (post != null) {
+                           postList.add(post);
+                        }
                     }
-//                    postAdapter.notifyDataSetChanged();
+                    postAdapter.notifyDataSetChanged();
                 } else {
                     Log.d("Postview on user profile page", "Datasnapshot does not exists or is empty");
                 }
@@ -154,5 +191,5 @@ public class User_ProfilePage extends AppCompatActivity {
                 Toast.makeText(User_ProfilePage.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
             }
         });
-    }
+    } */
 }
