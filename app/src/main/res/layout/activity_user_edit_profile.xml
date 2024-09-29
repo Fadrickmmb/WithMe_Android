@@ -1,123 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Auth_ForgotPassword">
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/bigAvatar"
-        android:layout_width="140dp"
-        android:layout_height="140dp"
-        android:layout_gravity="center"
-        android:background="@color/white"
-        android:src="@drawable/baseline_person_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="191dp"
-        tools:ignore="MissingConstraints" />
+    <!-- Profile Image -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="Profile Picture"
+        android:scaleType="centerCrop"
+        android:src="@drawable/small_logo" />
 
+    <!-- Name TextView -->
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/profile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit Profile Screen"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.486"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="8dp"
+        android:text="User x"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.192"></TextView>
+    <!-- Change Profile Picture Link -->
+    <TextView
+        android:id="@+id/change_profile_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="@string/click_change_profile_picture"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="italic" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="252dp"
-        android:layout_height="92dp"
-        android:src="@drawable/withme_logo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.02" />
-
-    <EditText
-        android:id="@+id/userEditProfile_nameDisplay"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/edittext_background"
-        android:backgroundTint="#E0E0E0"
-        android:hint="Name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.05"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.531"
-        app:layout_constraintWidth_percent="0.7"></EditText>
+    <!-- Name Section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="Name"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
     <EditText
-        android:id="@+id/user_edit_mail"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="256dp"
+        android:id="@+id/et_name_display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/edittext_background"
-        android:backgroundTint="#E0E0E0"
-        android:hint="E-mail"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.05"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.096"
-        app:layout_constraintWidth_percent="0.7"></EditText>
+        android:gravity="center"
+        android:hint="Eg: User X"
+        android:padding="10dp"
+        android:textSize="16sp" />
+
+    <!-- Change Username Link -->
+    <TextView
+        android:id="@+id/change_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:text="Change Bio"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
     <EditText
-        android:id="@+id/edit_age"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="188dp"
+        android:id="@+id/et_bio_display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/edittext_background"
-        android:backgroundTint="#E0E0E0"
-        android:hint="Age"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.05"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.096"
-        app:layout_constraintWidth_percent="0.7"></EditText>
+        android:gravity="center"
+        android:hint="Hello there I'm using WithMe :)"
+        android:padding="10dp"
+        android:text=""
+        android:textSize="16sp" />
 
+    <!-- Change Password Link -->
+    <TextView
+        android:id="@+id/change_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:text="Change Password"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/et_password_display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/edittext_background"
+        android:gravity="center"
+        android:hint="New Password"
+        android:inputType="textPassword"
+        android:padding="10dp"
+        android:textSize="16sp" />
 
     <Button
-        android:id="@+id/loginScreen_loginButton3"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginBottom="112dp"
-        android:backgroundTint="@color/white"
-        android:text="Change"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.3"></Button>
+        android:id="@+id/btn_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:text="Update"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/logoScreen_logoutButton3"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginBottom="40dp"
-        android:backgroundTint="@color/white"
-        android:text="Log Out"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.3"></Button>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

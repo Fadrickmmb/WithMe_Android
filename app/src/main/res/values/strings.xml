@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WithMe_Android</string>
+    <string name="click_change_profile_picture">Click To Change Profile Picture</string>
 </resources>

@@ -44,4 +44,14 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+
+    implementation(libs.firebase.firestore)
+
+    implementation(platform(libs.firebase.bom))
+
+    implementation(libs.glide)
+
+    implementation(libs.circleimageview)
+    implementation(libs.firebase.storage)
+
 }
