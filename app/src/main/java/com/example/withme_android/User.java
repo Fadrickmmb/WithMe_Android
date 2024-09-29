@@ -10,12 +10,12 @@ public class User {
     private String email;
     private String id;
     private Map<String, Post> posts;
-    private int numberPosts;
-    private int numberFollowing;
-    private int numberFollowers;
+    private String numberPosts;
+    private String numberFollowing;
+    private String numberFollowers;
     private String userPhotoUrl;
 
-    public User(String name, String email, String id, int numberPosts, int numberYummys, int numberFollowers, String userPhotoUrl){
+    public User(String name, String email, String id, String numberPosts, String numberYummys, String numberFollowers, String userPhotoUrl){
         this.name = name;
         this.email = email;
         this.id = id;
@@ -75,27 +75,27 @@ public class User {
         this.posts = posts;
     }
 
-    public int getNumberPosts() {
+    public String getNumberPosts() {
         return numberPosts;
     }
 
-    public void setNumberPosts(int numberPosts) {
+    public void setNumberPosts(String numberPosts) {
         this.numberPosts = numberPosts;
     }
 
-    public int getNumberFollowing() {
+    public String getNumberFollowing() {
         return numberFollowing;
     }
 
-    public void setNumberFollowing(int numberComments) {
+    public void setNumberFollowing(String numberComments) {
         this.numberFollowing = numberComments;
     }
 
-    public int getNumberFollowers() {
+    public String getNumberFollowers() {
         return numberFollowers;
     }
 
-    public void setNumberFollowers(int numberFollowers) {
+    public void setNumberFollowers(String numberFollowers) {
         this.numberFollowers = numberFollowers;
     }
 }
