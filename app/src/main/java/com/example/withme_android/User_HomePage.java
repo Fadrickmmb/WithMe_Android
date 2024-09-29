@@ -1,85 +1,49 @@
 package com.example.withme_android;
 
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User_HomePage extends AppCompatActivity {
 
-    Button toProfile;
-    private DatabaseReference userDatabase;
-    private FirebaseAuth mAuth;
+    private RecyclerView rvPost;
+    private List<Post> posts;
+    private PostRvAdapter postAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_home_page);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
-        // Initialize Firebase Auth and Database Reference
-        mAuth = FirebaseAuth.getInstance();
-        userDatabase = FirebaseDatabase.getInstance().getReference("users");
+        rvPost = findViewById(R.id.rv_post_home);
 
-        toProfile = findViewById(R.id.userHomePage_toProfileButton);
+        // create few dummy posts
+        posts = new ArrayList<>();
 
-        // Fetch and show the user's name
-        fetchUserName();
+        posts.add(new Post("", "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/12/ee/ab/bc/paneer-veggie-platter.jpg?w=600&h=400&s=1",
+                100, 50, "Canada", "123",
+                "Join me on a delicious journey as we explore local eateries, hidden gems, and mouthwatering recipes from around the world! Taste the adventure with every bite."));
 
-        toProfile.setOnClickListener(view -> {
-            // Navigate to the profile screen if needed
-        });
-    }
+        posts.add(new Post("", "https://www.expertbakeryconsultant.com/upload/category/1672754722fast-food-restaurants.jpg",
+                50, 100, "Germany", "123",
+                "Savor the flavor with us! From street food to gourmet dining, we’re on a mission to find the tastiest meals and the stories behind them. Come hungry!"));
 
-    private void fetchUserName() {
-        // Get current user
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid(); // Get user's UID from FirebaseAuth
+        posts.add(new Post("", "https://d4t7t8y8xqo0t.cloudfront.net/resized/750X436/eazytrendz%2F2930%2Ftrend20200903104959.jpg",
+                45, 500, "Switzerland", "123",
+                "Get ready to tantalize your taste buds! Join me as I cook, taste, and review a variety of dishes while exploring culinary traditions from every corner of the globe."));
 
-            // Fetch user data from the Firebase Realtime Database using the UID
-            userDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        // Assuming you have a 'name' field in your database
-                        String userName = dataSnapshot.child("name").getValue(String.class);
-                        if (userName != null) {
-                            Toast.makeText(User_HomePage.this, "Welcome, " + userName, Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(User_HomePage.this, "Welcome, user!", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(User_HomePage.this, "User data not found", Toast.LENGTH_LONG).show();
-                    }
-                }
+        // add 10 posts with same contest change only likes and comments count
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(User_HomePage.this, "Failed to retrieve user data", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            Toast.makeText(User_HomePage.this, "No user logged in", Toast.LENGTH_LONG).show();
-        }
+
+        // Set the adapter and layout manager
+        postAdapter = new PostRvAdapter(posts, this);
+        rvPost.setAdapter(postAdapter);
+        rvPost.setLayoutManager(new LinearLayoutManager(this));
+
+
     }
 }
