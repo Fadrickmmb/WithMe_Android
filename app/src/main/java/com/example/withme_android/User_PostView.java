@@ -2,6 +2,7 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,10 +22,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class User_PostView extends AppCompatActivity {
-    private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar;
-    private TextView postOwnerName,locatioName,yummysNumber,commentsNumber,postDate;
+    private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
+    private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
+    private String postID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +39,15 @@ public class User_PostView extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         mAuth = FirebaseAuth.getInstance();
-        reference = FirebaseDatabase.getInstance().getReference("users");
         postOwnerName = findViewById(R.id.postOwnerName);
-        locatioName = findViewById(R.id.locationName);
+        locationName = findViewById(R.id.locationName);
         yummysNumber = findViewById(R.id.yummysNumber);
         commentsNumber = findViewById(R.id.commentsNumber);
         postDate = findViewById(R.id.postDate);
+        postPicture = findViewById(R.id.postPicture);
         userAvatar = findViewById(R.id.userAvatar);
 
-        retrieveInfo();
+        retrieveSinglePostInfo(postID);
 
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,39 +86,48 @@ public class User_PostView extends AppCompatActivity {
         });
     }
 
-    private void retrieveInfo() {
-        FirebaseUser user = mAuth.getCurrentUser();
+    private void retrieveSinglePostInfo(String postId) {
+        DatabaseReference postRef = FirebaseDatabase.getInstance().getReference("posts").child(postId);
 
-        if (user != null) {
-            reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    User userProfile = snapshot.getValue(User.class);
-                    if (userProfile != null) {
-                        String name = userProfile.getName();
-                        String userPicture = userProfile.getUserPhotoUrl();
+        postRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Post post = snapshot.getValue(Post.class);
+                    if (post != null) {
+                        String postImageUrl = post.getPostImageUrl();
+                        String date = post.getPostDate();
+                        String name = post.getName();
+                        String location = post.getLocation();
+                        int yummys = post.getYummys();
+                        String userPhotoUrl = post.getUserPhotoUrl();
 
                         postOwnerName.setText(name);
+                        yummysNumber.setText(String.valueOf(yummys));
+                        locationName.setText(location);
+                        postDate.setText(date);
 
                         Glide.with(userAvatar.getContext())
-                                .load(userPicture)
+                                .load(userPhotoUrl)
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(userAvatar);
-
-                        Glide.with(smallAvatar.getContext())
-                                .load(userPicture)
+                        Glide.with(postPicture.getContext())
+                                .load(postImageUrl)
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
-                                .into(smallAvatar);
+                                .into(postPicture);
                     }
+                } else {
+                    Log.d("RetrieveSinglePostInfo", "Post not found.");
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(User_PostView.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("RetrieveSinglePostInfo", "Failed to retrieve post: " + error.getMessage());
+                Toast.makeText(User_PostView.this, "Failed to load post.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

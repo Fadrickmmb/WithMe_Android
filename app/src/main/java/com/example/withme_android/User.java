@@ -1,8 +1,6 @@
 package com.example.withme_android;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class User {
@@ -11,18 +9,20 @@ public class User {
     private String id;
     private Map<String, Post> posts;
     private String numberPosts;
-    private String numberFollowing;
     private String numberFollowers;
+    private String numberYummys;
     private String userPhotoUrl;
+    private String userBio;
 
-    public User(String name, String email, String id, String numberPosts, String numberYummys, String numberFollowers, String userPhotoUrl){
+    public User(String name, String email, String id, String numberPosts, String numberYummys, String numberFollowers, String userPhotoUrl, String userBio){
         this.name = name;
         this.email = email;
         this.id = id;
         this.numberPosts = numberPosts;
-        this.numberFollowing = numberYummys;
-        this.numberFollowers = numberFollowers;
+        this.numberFollowers = numberYummys;
+        this.numberYummys = numberFollowers;
         this.userPhotoUrl = userPhotoUrl;
+        this.userBio = userBio;
         this.posts = new HashMap<>();
     }
 
@@ -33,6 +33,15 @@ public class User {
     }
 
     public User(){
+
+    }
+
+    public String getUserBio() {
+        return userBio;
+    }
+
+    public void setUserBio(String userBio) {
+        this.userBio = userBio;
     }
 
     public String getUserPhotoUrl() {
@@ -83,20 +92,20 @@ public class User {
         this.numberPosts = numberPosts;
     }
 
-    public String getNumberFollowing() {
-        return numberFollowing;
-    }
-
-    public void setNumberFollowing(String numberComments) {
-        this.numberFollowing = numberComments;
-    }
-
     public String getNumberFollowers() {
         return numberFollowers;
     }
 
-    public void setNumberFollowers(String numberFollowers) {
-        this.numberFollowers = numberFollowers;
+    public void setNumberFollowers(String numberComments) {
+        this.numberFollowers = numberComments;
+    }
+
+    public String getNumberYummys() {
+        return numberYummys;
+    }
+
+    public void setNumberYummys(String numberYummys) {
+        this.numberYummys = numberYummys;
     }
 }
 
