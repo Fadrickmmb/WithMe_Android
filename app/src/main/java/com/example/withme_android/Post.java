@@ -1,7 +1,6 @@
 package com.example.withme_android;
 
 public class Post {
-    private String title;
     private String content;
     private String userId;
     private String postImageUrl;
@@ -15,8 +14,7 @@ public class Post {
 
     }
 
-    public Post(String title, String content, String userId, String postImageUrl, String postDate, String name, String location, int yummys, String userPhotoUrl) {
-        this.title = title;
+    public Post(String content, String userId, String postImageUrl, String postDate, String name, String location, int yummys, String userPhotoUrl) {
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
@@ -44,10 +42,6 @@ public class Post {
         this.yummys = yummys;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getName() {
         return name;
     }
@@ -62,10 +56,6 @@ public class Post {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getContent() {
