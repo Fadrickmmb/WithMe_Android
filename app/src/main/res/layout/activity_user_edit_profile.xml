@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Profile Image -->
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="100dp"
@@ -17,8 +17,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/small_logo" />
 
-    <!-- Name TextView -->
-    <TextView
+        <TextView
         android:id="@+id/profile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +27,7 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- Change Profile Picture Link -->
+
     <TextView
         android:id="@+id/change_profile_picture"
         android:layout_width="wrap_content"
@@ -41,7 +40,6 @@
         android:textSize="16sp"
         android:textStyle="italic" />
 
-    <!-- Name Section -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,7 +60,6 @@
         android:padding="10dp"
         android:textSize="16sp" />
 
-    <!-- Change Username Link -->
     <TextView
         android:id="@+id/change_username"
         android:layout_width="wrap_content"
@@ -83,29 +80,6 @@
         android:hint="Hello there I'm using WithMe :)"
         android:padding="10dp"
         android:text=""
-        android:textSize="16sp" />
-
-    <!-- Change Password Link -->
-    <TextView
-        android:id="@+id/change_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="4dp"
-        android:text="Change Password"
-        android:textColor="@android:color/black"
-        android:textSize="14sp" />
-
-    <EditText
-        android:id="@+id/et_password_display"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/edittext_background"
-        android:gravity="center"
-        android:hint="New Password"
-        android:inputType="textPassword"
-        android:padding="10dp"
         android:textSize="16sp" />
 
     <Button
