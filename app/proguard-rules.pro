@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Mantenha o construtor sem argumentos
+-keepclassmembers class com.example.withme_android.Post {
+    public <init>();
+}
+
+# Mantenha todas as classes que o Firebase pode usar
+-keep class com.google.firebase.** { *; }

@@ -1,42 +1,28 @@
 package com.example.withme_android;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 public class Post {
-    private String userName;
-    private String userPhotoUrl;
+    private String content;
+    private String userId;
     private String postImageUrl;
+    private String postDate;
+    private String name;
     private String location;
-    private Date postDate;
     private int yummys;
-    private List<Comment> comments;
+    private String userPhotoUrl;
 
-    public Post(String userName, String userPhotoUrl, String postImageUrl, String location, Date postDate) {
-        this.userName = userName;
-        this.userPhotoUrl = userPhotoUrl;
+    public Post() {
+
+    }
+
+    public Post(String content, String userId, String postImageUrl, String postDate, String name, String location, int yummys, String userPhotoUrl) {
+        this.content = content;
+        this.userId = userId;
         this.postImageUrl = postImageUrl;
-        this.location = location;
         this.postDate = postDate;
-        this.yummys = 0;
-        this.comments = new ArrayList<>();
-    }
-
-    public void addYummy() {
-        this.yummys++;
-    }
-
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
+        this.name = name;
+        this.location = location;
+        this.yummys = yummys;
+        this.userPhotoUrl = userPhotoUrl;
     }
 
     public String getUserPhotoUrl() {
@@ -47,12 +33,21 @@ public class Post {
         this.userPhotoUrl = userPhotoUrl;
     }
 
-    public String getPostImageUrl() {
-        return postImageUrl;
+
+    public int getYummys() {
+        return yummys;
     }
 
-    public void setPostImageUrl(String postImageUrl) {
-        this.postImageUrl = postImageUrl;
+    public void setYummys(int yummys) {
+        this.yummys = yummys;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getLocation() {
@@ -63,19 +58,35 @@ public class Post {
         this.location = location;
     }
 
-    public Date getPostDate() {
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getPostImageUrl() {
+        return postImageUrl;
+    }
+
+    public void setPostImageUrl(String imageUrl) {
+        this.postImageUrl = imageUrl;
+    }
+
+    public String getPostDate() {
         return postDate;
     }
 
-    public void setPostDate(Date postDate) {
+    public void setPostDate(String postDate) {
         this.postDate = postDate;
-    }
-
-    public int getYummys() {
-        return yummys;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
     }
 }
