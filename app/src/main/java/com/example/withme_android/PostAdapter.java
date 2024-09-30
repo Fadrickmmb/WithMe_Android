@@ -44,7 +44,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        holder.postOwnerName.setText(post.getUserName());
+        holder.postOwnerName.setText(post.getName());
         holder.postLocation.setText(post.getLocation());
         String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(post.getPostDate());
         holder.postDate.setText(formattedDate);

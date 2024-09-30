@@ -114,59 +114,43 @@ public class User_ProfilePage extends AppCompatActivity {
     private void retrieveInfo() {
         FirebaseUser user = mAuth.getCurrentUser();
 
-        if(user != null) {
+        if (user != null) {
             reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    User user = snapshot.getValue(User.class);
-                    if(user != null){
-                        String name = user.getName();
-                        String nFollowers = String.valueOf(user.getNumberFollowers());
-                        //String nPosts = String.valueOf(user.getNumberPosts());
-                        String nFollowing = String.valueOf(user.getNumberFollowing());
-                        String userAvatar = user.getUserPhotoUrl();
+                    User userProfile = snapshot.getValue(User.class);
+                    if (userProfile != null) {
+                        String name = userProfile.getName();
+                        String nFollowers = userProfile.getNumberFollowers();
+                        String nFollowing = userProfile.getNumberFollowing();
+                        String userAvatar = userProfile.getUserPhotoUrl();
 
                         userName.setText(name);
                         numberOfFollowers.setText(nFollowers);
-                        //numberOfPosts.setText(nPosts);
                         numberFollowing.setText(nFollowing);
 
-                        if (userAvatar.startsWith("https")) {
-                            Glide.with(bigAvatar.getContext())
-                                    .load(userAvatar)
-                                    .error(R.drawable.round_report_problem_24)
-                                    .fitCenter()
-                                    .into(bigAvatar);
-                            Glide.with(smallAvatar.getContext())
-                                    .load(userAvatar)
-                                    .error(R.drawable.round_report_problem_24)
-                                    .fitCenter()
-                                    .into(smallAvatar);
-                        } else {
-                            Glide.with(bigAvatar.getContext())
-                                    .load(userAvatar.replace("http","https"))
-                                    .error(R.drawable.round_report_problem_24)
-                                    .fitCenter()
-                                    .into(bigAvatar);
-                            Glide.with(smallAvatar.getContext())
-                                    .load(userAvatar.replace("http","https"))
-                                    .error(R.drawable.round_report_problem_24)
-                                    .fitCenter()
-                                    .into(smallAvatar);
+                        Glide.with(bigAvatar.getContext())
+                                .load(userAvatar)
+                                .error(R.drawable.round_report_problem_24)
+                                .fitCenter()
+                                .into(bigAvatar);
 
-                        }
-                        // retrieve user picture for small and big avatars
-                        // retrieve user`s posts
+                        Glide.with(smallAvatar.getContext())
+                                .load(userAvatar)
+                                .error(R.drawable.round_report_problem_24)
+                                .fitCenter()
+                                .into(smallAvatar);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-
+                    Toast.makeText(User_ProfilePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
                 }
             });
         }
     }
+
 
    /* private void showPosts() {
         reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
