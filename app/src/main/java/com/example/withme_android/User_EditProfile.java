@@ -121,7 +121,7 @@ public class User_EditProfile extends AppCompatActivity {
 
         if (!etBio.getText().toString().isEmpty()) {
             firebaseDatabase.getReference("users").child(user.getUid()).child("bio")
-                    .setValue(etBio.getText());
+                    .setValue(etBio.getText().toString());
         }
 
         if (imageUri != null) {
