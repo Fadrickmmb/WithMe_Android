@@ -1,5 +1,6 @@
 package com.example.withme_android;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -45,7 +46,9 @@ public class User_HomePage extends AppCompatActivity {
         fetchUserName();
 
         toProfile.setOnClickListener(view -> {
-
+            Intent intent =  new Intent(getApplicationContext(), User_ProfilePage.class);
+            startActivity(intent);
+            finish();
         });
     }
 
