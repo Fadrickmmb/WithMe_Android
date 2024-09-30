@@ -10,14 +10,12 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Profile and Follow Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <!-- Circular Profile Image -->
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_profile_image"
                 android:layout_width="50dp"
@@ -26,7 +24,6 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_user" />
 
-            <!-- User Name and Location -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -43,7 +40,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <!-- Location with Icon -->
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -58,7 +55,6 @@
                         android:layout_marginEnd="4dp"
                         android:src="@drawable/ic_location" />
 
-                    <!-- Location Name -->
                     <TextView
                         android:id="@+id/tv_location_name"
                         android:layout_width="wrap_content"
@@ -69,7 +65,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Follow Button -->
+
             <Button
                 android:id="@+id/btn_follow"
                 android:layout_width="wrap_content"
@@ -81,12 +77,9 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- Spacer -->
         <View
             android:layout_width="match_parent"
             android:layout_height="8dp" />
-
-        <!-- Post Image -->
         <ImageView
             android:id="@+id/iv_post_image"
             android:layout_width="match_parent"
@@ -94,8 +87,6 @@
             android:background="@android:color/darker_gray"
             android:scaleType="centerCrop"
             android:src="@drawable/sample" />
-
-        <!-- Spacer -->
         <View
             android:layout_width="match_parent"
             android:layout_height="8dp" />
@@ -114,7 +105,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <!-- Heart Icon -->
+
                 <ImageView
                     android:id="@+id/iv_like_icon"
                     android:layout_width="18dp"
@@ -122,7 +113,6 @@
                     android:layout_marginEnd="4dp"
                     android:src="@drawable/withme_yummy" />
 
-                <!-- Yummys Count -->
                 <TextView
                     android:id="@+id/tv_yummys_count"
                     android:layout_width="wrap_content"
@@ -159,12 +149,10 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Spacer -->
         <View
             android:layout_width="match_parent"
             android:layout_height="8dp" />
 
-        <!-- Post Description with Read More -->
         <TextView
             android:id="@+id/tv_post_description"
             android:layout_width="match_parent"

@@ -34,9 +34,9 @@ public class User_HomePage extends AppCompatActivity {
 
         posts.add(new Post("", "https://d4t7t8y8xqo0t.cloudfront.net/resized/750X436/eazytrendz%2F2930%2Ftrend20200903104959.jpg",
                 45, 500, "Switzerland", "123",
-                "Get ready to tantalize your taste buds! Join me as I cook, taste, and review a variety of dishes while exploring culinary traditions from every corner of the globe."));
+                "Get ready for amazing tantalize your taste buds! Join me as I cook, taste, and review a variety of dishes while exploring culinary traditions from every corner of the globe."));
 
-        // add 10 posts with same contest change only likes and comments count
+
 
 
         // Set the adapter and layout manager

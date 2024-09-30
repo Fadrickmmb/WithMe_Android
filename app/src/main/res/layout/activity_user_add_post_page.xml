@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Profile section -->
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -12,11 +12,19 @@
         android:orientation="horizontal">
 
 
-        <!-- User Name and Add Location -->
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_profile_image"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="12dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_user" />
 
             <TextView
                 android:id="@+id/tv_user_name"
@@ -33,14 +41,12 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <!-- Location Icon -->
+
                 <ImageView
                     android:id="@+id/iv_location_icon"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/baseline_location_on_24" />
-
-                <!-- Add Location -->
                 <TextView
                     android:id="@+id/locationName"
                     android:layout_width="wrap_content"
@@ -90,12 +96,12 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-    <!-- Spacer -->
+
     <View
         android:layout_width="match_parent"
         android:layout_height="16dp" />
 
-    <!-- Add Description -->
+
     <EditText
         android:id="@+id/tag_state_description"
         android:layout_width="match_parent"
@@ -113,5 +119,5 @@
         android:backgroundTint="@color/teal_200"
         android:text="Publish"
         android:layout_marginTop="50dp"
-        android:textColor="@color/white" />
+        android:textColor="@color/black" />
 </LinearLayout>

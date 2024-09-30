@@ -38,7 +38,7 @@ public class PostRvAdapter extends RecyclerView.Adapter<PostRvAdapter.PostViewHo
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
 
-        // Load the image using Glide
+
         Glide.with(context)
                 .load(post.getImgUrl())
                 .into(holder.imgPost);
@@ -54,7 +54,7 @@ public class PostRvAdapter extends RecyclerView.Adapter<PostRvAdapter.PostViewHo
         return postList.size();
     }
 
-    // ViewHolder class
+
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         CircleImageView ivProfileImage;
         ImageView imgPost;
