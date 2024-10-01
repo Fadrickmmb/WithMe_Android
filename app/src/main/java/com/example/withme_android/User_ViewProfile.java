@@ -34,11 +34,11 @@ public class User_ViewProfile extends AppCompatActivity {
     private Button followProfileBtn;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
-    private TextView userName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
+    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private List<Post> postList;
     private PostAdapter postAdapter;
-    private RecyclerView personalPostRecView;
+    private RecyclerView userPostRecView;
     private LinearLayoutManager layoutManager;
 
     @Override
@@ -50,7 +50,7 @@ public class User_ViewProfile extends AppCompatActivity {
         followProfileBtn = findViewById(R.id.followProfileBtn);
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
-        userName = findViewById(R.id.userName);
+        userFullName = findViewById(R.id.userFullName);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
         numberOfFollowing = findViewById(R.id.numberOfFollowing);
@@ -61,12 +61,12 @@ public class User_ViewProfile extends AppCompatActivity {
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
-        personalPostRecView = findViewById(R.id.personalPostRecView);
+        userPostRecView = findViewById(R.id.userPostRecView);
         layoutManager = new LinearLayoutManager(this);
-        personalPostRecView.setLayoutManager(layoutManager);
+        userPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(postList);
-        personalPostRecView.setAdapter(postAdapter);
+        userPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
         showPosts();
@@ -132,7 +132,7 @@ public class User_ViewProfile extends AppCompatActivity {
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
 
-                        userName.setText(name);
+                        userFullName.setText(name);
                         numberOfFollowers.setText(String.valueOf(nFollowers));
                         numberOfFollowing.setText(String.valueOf(nFollowing));
                         userBio.setText(bio);
@@ -191,16 +191,16 @@ public class User_ViewProfile extends AppCompatActivity {
 
                     if (postList.isEmpty()) {
                         noPostsMessage.setVisibility(View.VISIBLE);
-                        personalPostRecView.setVisibility(View.GONE);
+                        userPostRecView.setVisibility(View.GONE);
                         numberOfPosts.setText(String.valueOf(postList.size()));
                     } else {
                         noPostsMessage.setVisibility(View.GONE);
-                        personalPostRecView.setVisibility(View.VISIBLE);
+                        userPostRecView.setVisibility(View.VISIBLE);
                         numberOfPosts.setText(String.valueOf(postList.size()));
                     }
                 } else {
                     noPostsMessage.setVisibility(View.VISIBLE);
-                    personalPostRecView.setVisibility(View.GONE);
+                    userPostRecView.setVisibility(View.GONE);
                 }
             }
 
