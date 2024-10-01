@@ -228,7 +228,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
-                            android:text="Yummys Number"/>
+                            android:text=""/>
 
                     </LinearLayout>
 
@@ -250,7 +250,7 @@
                             android:layout_width="wrap_content"
                             android:textSize="12sp"
                             android:layout_height="wrap_content"
-                            android:text="Comments Number"/>
+                            android:text=""/>
 
                     </LinearLayout>
 
@@ -266,17 +266,48 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="12sp"
-                            android:text="Date"/>
+                            android:text=""/>
 
                     </LinearLayout>
 
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/postContent"
+                    android:gravity="fill_horizontal"
+                    android:textSize="16sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Post content"
+                    android:maxLines="6"
+                    android:lines="6"
+                    android:inputType="textMultiLine"
+                    android:layout_marginTop="30dp"
+                    android:textColor="@color/withme"/>
+
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/noCommentsMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="No posts available."
+                android:layout_marginTop="30dp"
+                android:visibility="gone"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"/>
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/commentsRecView"
+                android:id="@+id/commentPostRecView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="0dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/editProfileBtn"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:scrollbars="vertical" />
         </LinearLayout>
 
     </ScrollView>

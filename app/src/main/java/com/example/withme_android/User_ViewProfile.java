@@ -107,8 +107,8 @@ public class User_ViewProfile extends AppCompatActivity {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
                         String name = userProfile.getName();
-                        String nFollowers = userProfile.getNumberFollowers();
-                        String nYummys = userProfile.getNumberYummys();
+                        int nFollowers = userProfile.getNumberFollowers();
+                        int nYummys = userProfile.getNumberFollowing();
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
 

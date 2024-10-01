@@ -2,6 +2,7 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,6 +12,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,13 +24,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User_ProfilePage extends AppCompatActivity {
 
     private Button editProfileBtn;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
-    private TextView userName, numberOfFollowers, numberOfPosts, numberOfYummys,userBio;
+    private TextView userName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
+    private List<Post> postList;
+    private PostAdapter postAdapter;
+    private RecyclerView personalPostRecView;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +51,22 @@ public class User_ProfilePage extends AppCompatActivity {
         userName = findViewById(R.id.userName);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
-        numberOfYummys = findViewById(R.id.numberOfYummys);
+        numberOfFollowing = findViewById(R.id.numberOfFollowing);
         homeIcon = findViewById(R.id.homeIcon);
+        noPostsMessage = findViewById(R.id.noPostsMessage);
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
+        personalPostRecView = findViewById(R.id.personalPostRecView);
+        layoutManager = new LinearLayoutManager(getApplicationContext());
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(postList);
+        personalPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
+        showPosts();
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,17 +124,20 @@ public class User_ProfilePage extends AppCompatActivity {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
                         String name = userProfile.getName();
-                        String nFollowers = userProfile.getNumberFollowers();
-                        String nYummys = userProfile.getNumberYummys();
+                        int nFollowers = userProfile.getNumberFollowers();
+                        int nFollowing = userProfile.getNumberFollowing();
+                        int nPosts = userProfile.getNumberPosts();
+
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
 
                         userName.setText(name);
-                        numberOfFollowers.setText(nFollowers);
-                        numberOfYummys.setText(nYummys);
+                        numberOfFollowers.setText(String.valueOf(nFollowers));
+                        numberOfFollowing.setText(String.valueOf(nFollowing));
+                        numberOfPosts.setText(String.valueOf(nPosts));
                         userBio.setText(bio);
 
-                        Glide.with(bigAvatar.getContext())
+                    Glide.with(bigAvatar.getContext())
                                 .load(userAvatar)
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
@@ -130,12 +150,46 @@ public class User_ProfilePage extends AppCompatActivity {
                                 .into(smallAvatar);
                     }
                 }
-// hi
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(User_ProfilePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
                 }
             });
         }
+    }
+
+    private void showPosts() {
+        reference.child(mAuth.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    postList.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Post post = dataSnapshot.getValue(Post.class);
+                        if (post != null) {
+                            postList.add(post);
+                        }
+                    }
+                    postAdapter.notifyDataSetChanged();
+
+                    if (postList.isEmpty()) {
+                        noPostsMessage.setVisibility(View.VISIBLE);
+                        personalPostRecView.setVisibility(View.GONE);
+                    } else {
+                        noPostsMessage.setVisibility(View.GONE);
+                        personalPostRecView.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    noPostsMessage.setVisibility(View.VISIBLE);
+                    personalPostRecView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_ProfilePage.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

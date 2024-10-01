@@ -8,19 +8,19 @@ public class User {
     private String email;
     private String id;
     private Map<String, Post> posts;
-    private String numberPosts;
-    private String numberFollowers;
-    private String numberYummys;
+    private int numberPosts;
+    private int numberFollowers;
+    private int numberFollowing;
     private String userPhotoUrl;
     private String userBio;
 
-    public User(String name, String email, String id, String numberPosts, String numberYummys, String numberFollowers, String userPhotoUrl, String userBio){
+    public User(String name, String email, String id, int numberPosts, int numberFollowing, int numberFollowers, String userPhotoUrl, String userBio){
         this.name = name;
         this.email = email;
         this.id = id;
         this.numberPosts = numberPosts;
-        this.numberFollowers = numberYummys;
-        this.numberYummys = numberFollowers;
+        this.numberFollowers = numberFollowing;
+        this.numberFollowing = numberFollowers;
         this.userPhotoUrl = userPhotoUrl;
         this.userBio = userBio;
         this.posts = new HashMap<>();
@@ -84,28 +84,28 @@ public class User {
         this.posts = posts;
     }
 
-    public String getNumberPosts() {
+    public int getNumberPosts() {
         return numberPosts;
     }
 
-    public void setNumberPosts(String numberPosts) {
+    public void setNumberPosts(int numberPosts) {
         this.numberPosts = numberPosts;
     }
 
-    public String getNumberFollowers() {
+    public int getNumberFollowers() {
         return numberFollowers;
     }
 
-    public void setNumberFollowers(String numberComments) {
+    public void setNumberFollowers(int numberComments) {
         this.numberFollowers = numberComments;
     }
 
-    public String getNumberYummys() {
-        return numberYummys;
+    public int getNumberFollowing() {
+        return numberFollowing;
     }
 
-    public void setNumberYummys(String numberYummys) {
-        this.numberYummys = numberYummys;
+    public void setNumberFollowing(int numberFollowing) {
+        this.numberFollowing = numberFollowing;
     }
 }
 
