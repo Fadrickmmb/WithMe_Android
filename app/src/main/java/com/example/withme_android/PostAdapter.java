@@ -1,6 +1,7 @@
 package com.example.withme_android;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -42,13 +41,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     @Override
-    public void onBindViewHolder(PostViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
+
+        Log.d("PostAdapter", "Binding post at position " + position + ": " + post.toString());
+
         holder.postOwnerName.setText(post.getName());
         holder.postLocation.setText(post.getLocation());
-        String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(post.getPostDate());
-        holder.postDate.setText(formattedDate);
+        holder.postDate.setText(post.getPostDate());
         holder.yummysNumber.setText(String.valueOf(post.getYummys()));
+        holder.commentsNumber.setText(String.valueOf(post.getCommentNumbers()));
 
         Glide.with(context)
                 .load(post.getUserPhotoUrl())

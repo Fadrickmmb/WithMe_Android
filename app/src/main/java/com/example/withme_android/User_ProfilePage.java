@@ -1,3 +1,4 @@
+
 package com.example.withme_android;
 
 import android.content.Intent;
@@ -26,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class User_ProfilePage extends AppCompatActivity {
 
@@ -60,7 +62,8 @@ public class User_ProfilePage extends AppCompatActivity {
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
         personalPostRecView = findViewById(R.id.personalPostRecView);
-        layoutManager = new LinearLayoutManager(getApplicationContext());
+        layoutManager = new LinearLayoutManager(this);
+        personalPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(postList);
         personalPostRecView.setAdapter(postAdapter);
@@ -123,10 +126,11 @@ public class User_ProfilePage extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
+                        Log.d("UserProfile", "User profile retrieved: " + userProfile.toString());
                         String name = userProfile.getName();
-                        int nFollowers = userProfile.getNumberFollowers();
-                        int nFollowing = userProfile.getNumberFollowing();
-                        int nPosts = userProfile.getNumberPosts();
+                        Long nFollowers = userProfile.getNumberFollowers();
+                        Long nFollowing = userProfile.getNumberFollowing();
+                        Long nPosts = userProfile.getNumberPosts();
 
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
@@ -134,10 +138,9 @@ public class User_ProfilePage extends AppCompatActivity {
                         userName.setText(name);
                         numberOfFollowers.setText(String.valueOf(nFollowers));
                         numberOfFollowing.setText(String.valueOf(nFollowing));
-                        numberOfPosts.setText(String.valueOf(nPosts));
                         userBio.setText(bio);
 
-                    Glide.with(bigAvatar.getContext())
+                        Glide.with(bigAvatar.getContext())
                                 .load(userAvatar)
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
@@ -149,6 +152,19 @@ public class User_ProfilePage extends AppCompatActivity {
                                 .fitCenter()
                                 .into(smallAvatar);
                     }
+
+                    Map<String, Post> postsMap = userProfile.getPosts();
+                    Log.d("UserProfile", "Posts Map: " + postsMap);
+
+                    if (postsMap != null) {
+                        int nPosts = postsMap.size();
+                        postList.clear();
+                        postList.addAll(postsMap.values());
+                        postAdapter.notifyDataSetChanged();
+                    } else {
+                        numberOfPosts.setText("0");
+                    }
+
                 }
 
                 @Override
@@ -166,7 +182,10 @@ public class User_ProfilePage extends AppCompatActivity {
                 if (snapshot.exists()) {
                     postList.clear();
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Post post = dataSnapshot.getValue(Post.class);
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        Post post = new Post();
+                        post.setContent((String) map.get("content"));
+
                         if (post != null) {
                             postList.add(post);
                         }
@@ -176,9 +195,11 @@ public class User_ProfilePage extends AppCompatActivity {
                     if (postList.isEmpty()) {
                         noPostsMessage.setVisibility(View.VISIBLE);
                         personalPostRecView.setVisibility(View.GONE);
+                        numberOfPosts.setText(String.valueOf(postList.size()));
                     } else {
                         noPostsMessage.setVisibility(View.GONE);
                         personalPostRecView.setVisibility(View.VISIBLE);
+                        numberOfPosts.setText(String.valueOf(postList.size()));
                     }
                 } else {
                     noPostsMessage.setVisibility(View.VISIBLE);
