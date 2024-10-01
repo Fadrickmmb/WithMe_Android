@@ -6,89 +6,111 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.Objects;
-
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class User_EditProfile extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private FirebaseUser user;
-    private FirebaseStorage firebaseStorage;
+    private FirebaseUser firebaseUser;
     private StorageReference storageReference;
 
     private EditText etName;
     private EditText etBio;
     private Button btnUpdate;
-    private CircleImageView ivProfileImage;
+    private Button btnLogout;
     private TextView profileName;
     private TextView tvChangeImage;
+    private EditText etPassword;
 
     private Uri imageUri;
+    private ImageView ivProfileImage;
+    private DatabaseReference firebaseDatabase;
 
-    private FirebaseDatabase firebaseDatabase;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_edit_profile);
 
-        etName = findViewById(R.id.et_name_display);
-        etBio = findViewById(R.id.et_bio_display);
-        btnUpdate = findViewById(R.id.btn_update);
-        ivProfileImage = findViewById(R.id.profile_image);
-        profileName = findViewById(R.id.profile_name);
-        tvChangeImage = findViewById(R.id.change_profile_picture);
+        etName = findViewById(R.id.et_name);
+        etBio = findViewById(R.id.et_bio);
+        btnUpdate = findViewById(R.id.btn_update_profile);
+        ivProfileImage = findViewById(R.id.iv_profile);
+        profileName = findViewById(R.id.tv_profile_name);
+        tvChangeImage = findViewById(R.id.tv_profile_pic_update);
+        btnLogout = findViewById(R.id.btn_logout);
+        etPassword = findViewById(R.id.et_password);
 
-        firebaseStorage = FirebaseStorage.getInstance();
-        storageReference = firebaseStorage.getReference("profile_pictures");
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        storageReference = FirebaseStorage.getInstance().getReference("user_profile_pictures");
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference("users");
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-
-        if (user != null && user.getDisplayName() != null) {
-            etName.setText(user.getDisplayName());
-            profileName.setText(user.getDisplayName());
-        } else {
-            profileName.setText(Objects.requireNonNull(user).getEmail());
-        }
-
-        if (user.getPhotoUrl() != null) {
-            Glide.with(this).load(user.getPhotoUrl()).into(ivProfileImage);
-        }
-
-        firebaseDatabase.getReference("users").child(user.getUid()).child("bio")
-                .get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        String bio = task.getResult().getValue(String.class);
-                        if (bio != null) {
-                            etBio.setText(bio);
-                        }
-                    }
-                }).addOnFailureListener((err) -> {
-                    Toast.makeText(this, "Failed to fetch bio", Toast.LENGTH_SHORT).show();
-                });
 
         tvChangeImage.setOnClickListener(v -> openFileChooser());
 
         btnUpdate.setOnClickListener(view1 -> validateAndUpdateProfile());
 
+        btnLogout.setOnClickListener(v -> {
+            Toast.makeText(this, "Logout success", Toast.LENGTH_SHORT).show();
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(User_EditProfile.this, Auth_Login.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+
+        fetchUserData();
     }
+
+    private void fetchUserData() {
+
+        String userId = firebaseUser.getUid();
+
+        firebaseDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    user = dataSnapshot.getValue(User.class);
+                    if (user != null) {
+                        profileName.setText(user.getName());
+                        etName.setText(user.getName());
+                        etBio.setText(user.getUserBio());
+
+                        Glide.with(User_EditProfile.this)
+                                .load(user.getUserPhotoUrl())
+                                .error(R.drawable.baseline_person_24)
+                                .fitCenter()
+                                .into(ivProfileImage);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(User_EditProfile.this, "Failed to retrieve user data", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     private void openFileChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -108,31 +130,37 @@ public class User_EditProfile extends AppCompatActivity {
     }
 
     private void validateAndUpdateProfile() {
-        if (!etName.getText().toString().equals(user.getDisplayName())) {
-            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                    .setDisplayName(etName.getText().toString())
-                    .build();
-            user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    profileName.setText(user.getDisplayName()); // Refresh name
-                }
-            });
+
+        if (user == null) {
+            user = new User();
+        }
+
+        if (!etName.getText().toString().equals(user.getName())) {
+            user.setName(etName.getText().toString());
         }
 
         if (!etBio.getText().toString().isEmpty()) {
-            firebaseDatabase.getReference("users").child(user.getUid()).child("bio")
-                    .setValue(etBio.getText().toString());
+            user.setUserBio(etBio.getText().toString());
         }
+
+        if (!etPassword.getText().toString().isEmpty()) {
+            firebaseUser.updatePassword(etPassword.getText().toString())
+                    .addOnFailureListener(err -> {
+                        Toast.makeText(this, "Error updating user password", Toast.LENGTH_SHORT).show();
+                        Log.e("wma", "validateAndUpdateProfile: ", err);
+                    });
+        }
+
 
         if (imageUri != null) {
             uploadImageToFirebaseStorage();
         } else {
-            Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+            updateInFirebase();
         }
     }
 
     private void uploadImageToFirebaseStorage() {
-        StorageReference fileReference = storageReference.child(user.getUid() + ".jpg");
+        StorageReference fileReference = storageReference.child(firebaseUser.getUid() + ".jpg");
 
         fileReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
             fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -144,16 +172,18 @@ public class User_EditProfile extends AppCompatActivity {
     }
 
     private void updateProfileImageUri(String uri) {
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                .setPhotoUri(Uri.parse(uri))
-                .build();
+        user.setUserPhotoUrl(Uri.parse(uri).toString());
+        updateInFirebase();
+    }
 
-        user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
+    private void updateInFirebase() {
+        firebaseDatabase.child(firebaseUser.getUid().toString()).setValue(user).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Failed to update profile image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "User profile updated", Toast.LENGTH_SHORT).show();
             }
+        }).addOnFailureListener(err -> {
+            Toast.makeText(this, "Error updating user profile", Toast.LENGTH_SHORT).show();
+            Log.e("wmlogs", "updateProfileImageUri: ", err);
         });
     }
 }
