@@ -161,7 +161,7 @@ public class User_AddPostPage extends AppCompatActivity {
                 userData.setPosts(posts);
 
                 if (userData.getNumberPosts() == null) {
-                    userData.setNumberPosts(1);
+                    //userData.setNumberPosts(1);
                 } else {
                     userData.setNumberPosts(userData.getNumberPosts() + 1);
                 }

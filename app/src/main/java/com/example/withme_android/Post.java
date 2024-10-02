@@ -1,6 +1,7 @@
 package com.example.withme_android;
 
 import java.util.List;
+import java.util.Map;
 
 public class Post {
     private String content;
@@ -13,7 +14,7 @@ public class Post {
     private int commentNumbers;
     private String userPhotoUrl;
     private String postId;
-    private List<Comment> comments;
+    private Map<String, Comment> comments;
 
     public Post() {
     }
@@ -30,6 +31,9 @@ public class Post {
         this.commentNumbers = commentNumbers;
         this.userPhotoUrl = userPhotoUrl;
         this.postId = postId;
+    }
+
+    public Post(String content, String uid, String string, String string1, String name, String location, int i, String userPhotoUrl) {
     }
 
     public String getContent() {
@@ -104,13 +108,13 @@ public class Post {
         this.userPhotoUrl = userPhotoUrl;
     }
 
-    //public List<Comment> getComments() {
-    //    return comments;
-   // }
+    public Map<String, Comment> getComments() {
+        return comments;
+    }
 
-    //public void setComments(List<Comment> comments) {
-    //    this.comments = comments;
-    //}
+    public void setComments(Map<String, Comment> comments) {
+        this.comments = comments;
+    }
 
     public String getPostId() {
         return postId;
@@ -119,4 +123,6 @@ public class Post {
     public void setPostId(String postId) {
         this.postId = postId;
     }
+
+
 }

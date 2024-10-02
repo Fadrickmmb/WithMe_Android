@@ -88,7 +88,6 @@ public class User_HomePage extends AppCompatActivity {
             }
         });
 
-
         loadPosts();
     }
 
@@ -100,7 +99,7 @@ public class User_HomePage extends AppCompatActivity {
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
                     User user = userSnapshot.getValue(User.class);
 
-                    if (user.getPosts() != null) {
+                    if (user != null && user.getPosts() != null) {
                         // iterate through all posts of the user
                         for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
                             String postId = entry.getKey();
@@ -110,7 +109,7 @@ public class User_HomePage extends AppCompatActivity {
                     }
                 }
                 List<Post> postList = new ArrayList<>(posts.values());
-                postAdapter = new PostAdapter(postList, User_HomePage.this);
+                postAdapter = new PostAdapter(User_HomePage.this,postList );
                 postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
                 postRv.setAdapter(postAdapter);
             }
@@ -126,12 +125,11 @@ public class User_HomePage extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         if (user != null) {
-            reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            reference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
-
                         String userAvatar = userProfile.getUserPhotoUrl();
 
                         Glide.with(smallAvatar.getContext())
@@ -139,10 +137,11 @@ public class User_HomePage extends AppCompatActivity {
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(smallAvatar);
+                    } else {
+                        Toast.makeText(User_HomePage.this, "User profile is null.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
-                // hi
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(User_HomePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
@@ -150,4 +149,5 @@ public class User_HomePage extends AppCompatActivity {
             });
         }
     }
+
 }
