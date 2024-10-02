@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,13 +22,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class User_HomePage extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
-    
-    
+    private PostAdapter postAdapter;
+    private RecyclerView postRv;
+    Map<String, Post> posts;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +48,7 @@ public class User_HomePage extends AppCompatActivity {
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
+        postRv = findViewById(R.id.rv_post);
 
         retrieveInfo();
 
@@ -77,8 +88,39 @@ public class User_HomePage extends AppCompatActivity {
             }
         });
 
+
+        loadPosts();
     }
 
+    private void loadPosts() {
+        posts = new HashMap<>();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    User user = userSnapshot.getValue(User.class);
+
+                    if (user.getPosts() != null) {
+                        // iterate through all posts of the user
+                        for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
+                            String postId = entry.getKey();
+                            Post post = entry.getValue();
+                            posts.put(postId, post);
+                        }
+                    }
+                }
+                List<Post> postList = new ArrayList<>(posts.values());
+                postAdapter = new PostAdapter(postList, User_HomePage.this);
+                postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
+                postRv.setAdapter(postAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_HomePage.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void retrieveInfo() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -99,6 +141,7 @@ public class User_HomePage extends AppCompatActivity {
                                 .into(smallAvatar);
                     }
                 }
+
                 // hi
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {

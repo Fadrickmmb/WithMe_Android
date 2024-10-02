@@ -186,7 +186,7 @@ public class User_AddPostPage extends AppCompatActivity {
     private void clearFields() {
         etLocation.setText("");
         etContent.setText("");
-        ivPostImg.setImageURI(null);
+        ivPostImg.setImageResource(R.drawable.baseline_person_24);
     }
 
     @Override

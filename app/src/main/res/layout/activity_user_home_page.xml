@@ -69,6 +69,14 @@
         </LinearLayout>
     </LinearLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_post"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/navigationBar"
+        app:layout_constraintTop_toBottomOf="@+id/header"
+        tools:listitem="@layout/feed_post_item" />
+
     <LinearLayout
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"

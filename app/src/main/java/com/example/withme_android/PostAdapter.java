@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,10 +45,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        holder.postOwnerName.setText(post.getName());
-        holder.postLocation.setText(post.getLocation());
-        String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(post.getPostDate());
-        holder.postDate.setText(formattedDate);
+        holder.postOwnerName.setText(post.getName() != null ? post.getName() : "Unknown");
+        holder.postLocation.setText(post.getLocation() != null ? post.getLocation() : "Unknown");
+
+        if (post.getPostDate() != null) {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(post.getPostDate()));
+            holder.postDate.setText(formattedDate);
+        } else {
+            holder.postDate.setText("Unknown");
+        }
+
         holder.yummysNumber.setText(String.valueOf(post.getYummys()));
 
         Glide.with(context)
@@ -73,7 +80,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
-            postOwnerName = itemView.findViewById(R.id.userName);
+            postOwnerName = itemView.findViewById(R.id.postOwnerName);
             postLocation = itemView.findViewById(R.id.postLocation);
             yummysNumber = itemView.findViewById(R.id.yummysNumber);
             commentsNumber = itemView.findViewById(R.id.commentsNumber);
