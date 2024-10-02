@@ -1,4 +1,3 @@
-
 package com.example.withme_android;
 
 import android.content.Intent;
@@ -62,6 +61,7 @@ public class User_ViewProfile extends AppCompatActivity {
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
         userPostRecView = findViewById(R.id.userPostRecView);
+
         layoutManager = new LinearLayoutManager(this);
         userPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
@@ -69,7 +69,6 @@ public class User_ViewProfile extends AppCompatActivity {
         userPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
-        showPosts();
 
         followProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,7 +126,6 @@ public class User_ViewProfile extends AppCompatActivity {
                         String name = userProfile.getName();
                         Long nFollowers = userProfile.getNumberFollowers();
                         Long nFollowing = userProfile.getNumberFollowing();
-                        Long nPosts = userProfile.getNumberPosts();
 
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
@@ -148,66 +146,40 @@ public class User_ViewProfile extends AppCompatActivity {
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(smallAvatar);
-                    }
 
-                    Map<String, Post> postsMap = userProfile.getPosts();
-                    Log.d("UserProfile", "Posts Map: " + postsMap);
+                        Map<String, Post> postsMap = userProfile.getPosts();
+                        Log.d("UserProfile", "Posts Map: " + postsMap);
 
-                    if (postsMap != null) {
-                        int nPosts = postsMap.size();
-                        postList.clear();
-                        postList.addAll(postsMap.values());
-                        postAdapter.notifyDataSetChanged();
+                        if (postsMap != null && !postsMap.isEmpty()) {
+                            postList.clear();
+                            postList.addAll(postsMap.values());
+                            postAdapter.notifyDataSetChanged();
+
+                            numberOfPosts.setText(String.valueOf(postList.size()));
+                            noPostsMessage.setVisibility(View.GONE);
+                            userPostRecView.setVisibility(View.VISIBLE);
+                        } else {
+                            numberOfPosts.setText("0");
+                            noPostsMessage.setVisibility(View.VISIBLE);
+                            userPostRecView.setVisibility(View.GONE);
+                        }
                     } else {
-                        numberOfPosts.setText("0");
+                        Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                        Log.e("UserProfile", "User profile is null.");
                     }
-
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+                    Log.e("User_ProfilePage", "onCancelled: ", error.toException());
                 }
             });
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            Log.e("User_ProfilePage", "User is null.");
         }
     }
 
-    private void showPosts() {
-        reference.child(mAuth.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    postList.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        Post post = new Post();
-                        post.setContent((String) map.get("content"));
 
-                        if (post != null) {
-                            postList.add(post);
-                        }
-                    }
-                    postAdapter.notifyDataSetChanged();
-
-                    if (postList.isEmpty()) {
-                        noPostsMessage.setVisibility(View.VISIBLE);
-                        userPostRecView.setVisibility(View.GONE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    } else {
-                        noPostsMessage.setVisibility(View.GONE);
-                        userPostRecView.setVisibility(View.VISIBLE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    }
-                } else {
-                    noPostsMessage.setVisibility(View.VISIBLE);
-                    userPostRecView.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(User_ViewProfile.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
 }
