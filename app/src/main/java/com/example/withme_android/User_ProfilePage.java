@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class User_ProfilePage extends AppCompatActivity {
     private PostAdapter postAdapter;
     private RecyclerView personalPostRecView;
     private LinearLayoutManager layoutManager;
+    private LinearLayout followersLayout,followingLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,8 @@ public class User_ProfilePage extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
         userName = findViewById(R.id.userName);
+        followersLayout = findViewById(R.id.followersLayout);
+        followingLayout = findViewById(R.id.followingLayout);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
         numberOfFollowing = findViewById(R.id.numberOfFollowing);
@@ -70,6 +74,15 @@ public class User_ProfilePage extends AppCompatActivity {
 
         retrieveInfo();
         showPosts();
+
+        followersLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_ProfilePage.this, User_Followers.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override

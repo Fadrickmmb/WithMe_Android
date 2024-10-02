@@ -103,6 +103,7 @@
                 android:layout_marginTop="20dp">
 
                 <LinearLayout
+                    android:id="@+id/followersLayout"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -157,6 +158,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/followingLayout"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:layout_width="100dp"

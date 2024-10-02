@@ -13,6 +13,7 @@ public class User {
     private String userPhotoUrl;
     private String userBio;
     private Map<String, Post> posts;
+    private Map<String, Boolean> followers;
 
     public User() {
     }
@@ -103,5 +104,13 @@ public class User {
 
     public void setUserBio(String userBio) {
         this.userBio = userBio;
+    }
+
+    public Map<String, Boolean> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Map<String, Boolean> followers) {
+        this.followers = followers;
     }
 }
