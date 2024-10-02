@@ -36,7 +36,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        Log.d("PostAdapter", "Binding post at position " + position + ": " + post.toString());
 
         holder.postOwnerName.setText(post.getName());
         holder.postLocation.setText(post.getLocation());

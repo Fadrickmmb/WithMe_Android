@@ -2,16 +2,18 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -20,68 +22,132 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class User_HomePage extends AppCompatActivity {
 
-    Button toProfile;
-    private DatabaseReference userDatabase;
     private FirebaseAuth mAuth;
+    private DatabaseReference reference;
+    private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
+    private PostAdapter postAdapter;
+    private RecyclerView postRv;
+    Map<String, Post> posts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_home_page);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        mAuth = FirebaseAuth.getInstance();
+        reference = FirebaseDatabase.getInstance().getReference("users");
+        homeIcon = findViewById(R.id.homeIcon);
+        searchIcon = findViewById(R.id.searchIcon);
+        addPostIcon = findViewById(R.id.addPostIcon);
+        smallAvatar = findViewById(R.id.smallAvatar);
+        postRv = findViewById(R.id.rv_post);
+
+        retrieveInfo();
+
+        homeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_HomePage.this, User_HomePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        searchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_HomePage.this, User_SearchPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        addPostIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_HomePage.this, User_AddPostPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        smallAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_HomePage.this, User_ProfilePage.class);
+                startActivity(intent);
+                finish();
+            }
         });
 
 
-        mAuth = FirebaseAuth.getInstance();
-        userDatabase = FirebaseDatabase.getInstance().getReference("users");
-        toProfile = findViewById(R.id.userHomePage_toProfileButton);
+        loadPosts();
+    }
 
+    private void loadPosts() {
+        posts = new HashMap<>();
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                    User user = userSnapshot.getValue(User.class);
 
-        fetchUserName();
+                    if (user.getPosts() != null) {
+                        // iterate through all posts of the user
+                        for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
+                            String postId = entry.getKey();
+                            Post post = entry.getValue();
+                            posts.put(postId, post);
+                        }
+                    }
+                }
+                List<Post> postList = new ArrayList<>(posts.values());
+                postAdapter = new PostAdapter(postList, User_HomePage.this);
+                postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
+                postRv.setAdapter(postAdapter);
+            }
 
-        toProfile.setOnClickListener(view -> {
-            Intent intent = new Intent(User_HomePage.this, User_ProfilePage.class);
-            startActivity(intent);
-            finish();
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_HomePage.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    private void fetchUserName() {
+    private void retrieveInfo() {
+        FirebaseUser user = mAuth.getCurrentUser();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-
-
-            userDatabase.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+        if (user != null) {
+            reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User userProfile = snapshot.getValue(User.class);
+                    if (userProfile != null) {
 
-                        String userName = dataSnapshot.child("name").getValue(String.class);
-                        if (userName != null) {
-                            Toast.makeText(User_HomePage.this, "Welcome, " + userName, Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(User_HomePage.this, "Welcome, user!", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(User_HomePage.this, "User data not found", Toast.LENGTH_LONG).show();
+                        String userAvatar = userProfile.getUserPhotoUrl();
+
+                        Glide.with(smallAvatar.getContext())
+                                .load(userAvatar)
+                                .error(R.drawable.round_report_problem_24)
+                                .fitCenter()
+                                .into(smallAvatar);
                     }
                 }
 
+                // hi
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(User_HomePage.this, "Failed to retrieve user data", Toast.LENGTH_LONG).show();
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(User_HomePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
                 }
             });
-        } else {
-            Toast.makeText(User_HomePage.this, "No user logged in", Toast.LENGTH_LONG).show();
         }
     }
 }
