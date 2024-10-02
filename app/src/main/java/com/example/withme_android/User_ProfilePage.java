@@ -70,7 +70,7 @@ public class User_ProfilePage extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         personalPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList);
+        postAdapter = new PostAdapter(this,postList);
         personalPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();

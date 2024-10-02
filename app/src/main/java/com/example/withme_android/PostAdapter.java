@@ -1,5 +1,7 @@
 package com.example.withme_android;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +19,10 @@ import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<Post> postList;
+    private Context context;
 
-    public PostAdapter(List<Post> postList) {
+    public PostAdapter(Context context,List<Post> postList) {
+        this.context = context;
         this.postList = postList;
     }
 
@@ -49,6 +53,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .load(post.getPostImageUrl())
                 .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
                 .into(holder.postPicture);
+
+        holder.postPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context,User_PostView.class);
+                intent.putExtra("postId",post.getPostId());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

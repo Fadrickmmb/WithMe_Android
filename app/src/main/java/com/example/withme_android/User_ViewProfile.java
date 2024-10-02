@@ -39,6 +39,7 @@ public class User_ViewProfile extends AppCompatActivity {
     private PostAdapter postAdapter;
     private RecyclerView userPostRecView;
     private LinearLayoutManager layoutManager;
+    private String currentUserId,visitedUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,19 +61,24 @@ public class User_ViewProfile extends AppCompatActivity {
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        visitedUserId = "visitedUserID";  //needs to be passed when we click on the person on search page
         userPostRecView = findViewById(R.id.userPostRecView);
 
         layoutManager = new LinearLayoutManager(this);
         userPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList);
+        postAdapter = new PostAdapter(this,postList);
         userPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
 
+        checkFollowStatus();
+
         followProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                changeFollowStatus();
             }
         });
 
@@ -181,5 +187,47 @@ public class User_ViewProfile extends AppCompatActivity {
         }
     }
 
+    private void checkFollowStatus() {
+        reference.child(currentUserId).child("following").child(visitedUserId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            followProfileBtn.setText("Unfollow");
+                        } else {
+                            followProfileBtn.setText("Follow");
+                        }
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    private void changeFollowStatus(){
+        DatabaseReference followingReference = reference.child(currentUserId).child("following").child(visitedUserId);
+        DatabaseReference followersReference = reference.child(visitedUserId).child("followers").child(currentUserId);
+
+        followingReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    followingReference.removeValue();
+                    followersReference.removeValue();
+                    followProfileBtn.setText("Follow");
+                } else {
+                    followingReference.setValue(true);
+                    followersReference.setValue(true);
+                    followProfileBtn.setText("Unfollow");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 }
