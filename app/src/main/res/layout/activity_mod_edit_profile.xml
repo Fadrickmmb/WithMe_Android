@@ -1,10 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Mod_EditProfile">
+    tools:context=".Auth_ForgotPassword">
+
+    <ImageView
+        android:id="@+id/bigAvatar"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_gravity="center"
+        android:background="@color/white"
+        android:src="@drawable/baseline_person_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="191dp"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Moderator Edit Profile Screen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.192"></TextView>
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="252dp"
+        android:layout_height="92dp"
+        android:src="@drawable/withme_logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.02" />
+
+    <EditText
+        android:id="@+id/userEditProfile_nameDisplay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/edittext_background"
+        android:backgroundTint="#E0E0E0"
+        android:hint="Name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.531"
+        app:layout_constraintWidth_percent="0.7"></EditText>
+
+    <EditText
+        android:id="@+id/user_edit_mail"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="256dp"
+        android:background="@drawable/edittext_background"
+        android:backgroundTint="#E0E0E0"
+        android:hint="E-mail"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.096"
+        app:layout_constraintWidth_percent="0.7"></EditText>
+
+    <EditText
+        android:id="@+id/edit_age"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="188dp"
+        android:background="@drawable/edittext_background"
+        android:backgroundTint="#E0E0E0"
+        android:hint="Age"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.05"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.096"
+        app:layout_constraintWidth_percent="0.7"></EditText>
+
+    <Button
+        android:id="@+id/loginScreen_loginButton2"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="112dp"
+        android:backgroundTint="@color/white"
+        android:text="Change"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.3"></Button>
+
+    <Button
+        android:id="@+id/logoScreen_logoutButton2"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="40dp"
+        android:backgroundTint="@color/white"
+        android:text="Log Out"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.3"></Button>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
