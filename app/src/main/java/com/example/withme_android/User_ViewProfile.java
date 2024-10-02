@@ -1,4 +1,3 @@
-
 package com.example.withme_android;
 
 import android.content.Intent;
@@ -40,6 +39,7 @@ public class User_ViewProfile extends AppCompatActivity {
     private PostAdapter postAdapter;
     private RecyclerView userPostRecView;
     private LinearLayoutManager layoutManager;
+    private String currentUserId,visitedUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +61,24 @@ public class User_ViewProfile extends AppCompatActivity {
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        visitedUserId = "visitedUserID";  //needs to be passed when we click on the person on search page
         userPostRecView = findViewById(R.id.userPostRecView);
+
         layoutManager = new LinearLayoutManager(this);
         userPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList);
+        postAdapter = new PostAdapter(this,postList);
         userPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
-        showPosts();
+
+        checkFollowStatus();
 
         followProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                changeFollowStatus();
             }
         });
 
@@ -127,7 +132,6 @@ public class User_ViewProfile extends AppCompatActivity {
                         String name = userProfile.getName();
                         Long nFollowers = userProfile.getNumberFollowers();
                         Long nFollowing = userProfile.getNumberFollowing();
-                        Long nPosts = userProfile.getNumberPosts();
 
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
@@ -148,65 +152,81 @@ public class User_ViewProfile extends AppCompatActivity {
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(smallAvatar);
-                    }
 
-                    Map<String, Post> postsMap = userProfile.getPosts();
-                    Log.d("UserProfile", "Posts Map: " + postsMap);
+                        Map<String, Post> postsMap = userProfile.getPosts();
+                        Log.d("UserProfile", "Posts Map: " + postsMap);
 
-                    if (postsMap != null) {
-                        int nPosts = postsMap.size();
-                        postList.clear();
-                        postList.addAll(postsMap.values());
-                        postAdapter.notifyDataSetChanged();
+                        if (postsMap != null && !postsMap.isEmpty()) {
+                            postList.clear();
+                            postList.addAll(postsMap.values());
+                            postAdapter.notifyDataSetChanged();
+
+                            numberOfPosts.setText(String.valueOf(postList.size()));
+                            noPostsMessage.setVisibility(View.GONE);
+                            userPostRecView.setVisibility(View.VISIBLE);
+                        } else {
+                            numberOfPosts.setText("0");
+                            noPostsMessage.setVisibility(View.VISIBLE);
+                            userPostRecView.setVisibility(View.GONE);
+                        }
                     } else {
-                        numberOfPosts.setText("0");
+                        Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                        Log.e("UserProfile", "User profile is null.");
                     }
-
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+                    Log.e("User_ProfilePage", "onCancelled: ", error.toException());
                 }
             });
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            Log.e("User_ProfilePage", "User is null.");
         }
     }
 
-    private void showPosts() {
-        reference.child(mAuth.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
+    private void checkFollowStatus() {
+        reference.child(currentUserId).child("following").child(visitedUserId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            followProfileBtn.setText("Unfollow");
+                        } else {
+                            followProfileBtn.setText("Follow");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    private void changeFollowStatus(){
+        DatabaseReference followingReference = reference.child(currentUserId).child("following").child(visitedUserId);
+        DatabaseReference followersReference = reference.child(visitedUserId).child("followers").child(currentUserId);
+
+        followingReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    postList.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        Post post = new Post();
-                        post.setContent((String) map.get("content"));
-
-                        if (post != null) {
-                            postList.add(post);
-                        }
-                    }
-                    postAdapter.notifyDataSetChanged();
-
-                    if (postList.isEmpty()) {
-                        noPostsMessage.setVisibility(View.VISIBLE);
-                        userPostRecView.setVisibility(View.GONE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    } else {
-                        noPostsMessage.setVisibility(View.GONE);
-                        userPostRecView.setVisibility(View.VISIBLE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    }
+                    followingReference.removeValue();
+                    followersReference.removeValue();
+                    followProfileBtn.setText("Follow");
                 } else {
-                    noPostsMessage.setVisibility(View.VISIBLE);
-                    userPostRecView.setVisibility(View.GONE);
+                    followingReference.setValue(true);
+                    followersReference.setValue(true);
+                    followProfileBtn.setText("Unfollow");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(User_ViewProfile.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
+
             }
         });
     }

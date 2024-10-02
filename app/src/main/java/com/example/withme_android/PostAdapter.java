@@ -1,6 +1,8 @@
 package com.example.withme_android;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,27 +12,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference reference3 = database.getReference("reminders");
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private String postId = reference3.push().getKey();
     private List<Post> postList;
     private Context context;
 
-    public PostAdapter(List<Post> postList, Context context) {
+    public PostAdapter(Context context,List<Post> postList) {
         this.context = context;
         this.postList = postList;
     }
@@ -39,38 +30,46 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.feed_post_item, parent, false);
-        return new PostViewHolder(view);
+        return new PostAdapter.PostViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(PostViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
-        holder.postOwnerName.setText(post.getName() != null ? post.getName() : "Unknown");
-        holder.postLocation.setText(post.getLocation() != null ? post.getLocation() : "Unknown");
 
-        if (post.getPostDate() != null) {
-            String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(post.getPostDate()));
-            holder.postDate.setText(formattedDate);
-        } else {
-            holder.postDate.setText("Unknown");
-        }
-
+        holder.postOwnerName.setText(post.getName());
+        holder.postLocation.setText(post.getLocation());
+        holder.postDate.setText(post.getPostDate());
         holder.yummysNumber.setText(String.valueOf(post.getYummys()));
+        holder.commentsNumber.setText(String.valueOf(post.getCommentNumbers()));
 
-        Glide.with(context)
+        Glide.with(holder.userAvatar.getContext())
                 .load(post.getUserPhotoUrl())
                 .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
                 .into(holder.userAvatar);
 
-        Glide.with(context)
+        Glide.with(holder.postPicture.getContext())
                 .load(post.getPostImageUrl())
                 .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
                 .into(holder.postPicture);
+
+        holder.postPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context,User_PostView.class);
+                intent.putExtra("postId",post.getPostId());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return postList.size();
+        if (postList != null) {
+            return postList.size();
+        } else {
+            return 0;
+        }
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {

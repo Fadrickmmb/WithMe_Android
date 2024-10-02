@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,10 +24,11 @@ import com.google.firebase.database.ValueEventListener;
 
 public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
-    private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate;
+    private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate, postContent;
     private FirebaseAuth mAuth;
     private DatabaseReference reference,postreference;
-    private String postID;
+    private String postId;
+    private Button backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +48,18 @@ public class User_PostView extends AppCompatActivity {
         postDate = findViewById(R.id.postDate);
         postPicture = findViewById(R.id.postPicture);
         userAvatar = findViewById(R.id.userAvatar);
-        postreference = FirebaseDatabase.getInstance().getReference("posts");
+        backBtn = findViewById(R.id.backBtn);
+        postContent = findViewById(R.id.postContent);
+        postreference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getUid()).child("posts");
+        postId = getIntent().getStringExtra("postId");
+        retrieveSinglePostInfo(postId);
 
-        retrieveSinglePostInfo(postID);
-
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,7 +111,9 @@ public class User_PostView extends AppCompatActivity {
                         String location = post.getLocation();
                         int yummys = post.getYummys();
                         String userPhotoUrl = post.getUserPhotoUrl();
+                        String content = post.getContent();
 
+                        postContent.setText(content);
                         postOwnerName.setText(name);
                         yummysNumber.setText(String.valueOf(yummys));
                         locationName.setText(location);

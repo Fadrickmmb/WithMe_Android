@@ -12,12 +12,14 @@ public class Post {
     private int yummys;
     private int commentNumbers;
     private String userPhotoUrl;
+    private String postId;
     private List<Comment> comments;
 
     public Post() {
     }
 
-    public Post(String content, String userId, String postImageUrl, String postDate, String name, String location, int yummys, int commentNumbers, String userPhotoUrl) {
+    public Post(String content, String userId, String postImageUrl, String postDate, String name,
+                String location, int yummys, int commentNumbers, String userPhotoUrl,String postId) {
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
@@ -27,6 +29,7 @@ public class Post {
         this.yummys = yummys;
         this.commentNumbers = commentNumbers;
         this.userPhotoUrl = userPhotoUrl;
+        this.postId = postId;
     }
 
     public String getContent() {
@@ -101,11 +104,19 @@ public class Post {
         this.userPhotoUrl = userPhotoUrl;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    //public List<Comment> getComments() {
+    //    return comments;
+   // }
+
+    //public void setComments(List<Comment> comments) {
+    //    this.comments = comments;
+    //}
+
+    public String getPostId() {
+        return postId;
     }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 }
