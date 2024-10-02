@@ -1,7 +1,9 @@
+
 package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,6 +13,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,13 +25,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class User_ViewProfile extends AppCompatActivity {
 
-    private Button editProfileBtn;
+    private Button followProfileBtn;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
-    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfYummys,userBio;
+    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
+    private List<Post> postList;
+    private PostAdapter postAdapter;
+    private RecyclerView userPostRecView;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,28 +47,33 @@ public class User_ViewProfile extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_view_profile);
 
-        editProfileBtn= findViewById(R.id.followProfileBtn);
+        followProfileBtn = findViewById(R.id.followProfileBtn);
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
         userFullName = findViewById(R.id.userFullName);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
-        numberOfYummys = findViewById(R.id.numberOfYummys);
+        numberOfFollowing = findViewById(R.id.numberOfFollowing);
         homeIcon = findViewById(R.id.homeIcon);
+        noPostsMessage = findViewById(R.id.noPostsMessage);
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
+        userPostRecView = findViewById(R.id.userPostRecView);
+        layoutManager = new LinearLayoutManager(this);
+        userPostRecView.setLayoutManager(layoutManager);
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(postList);
+        userPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
+        showPosts();
 
-        editProfileBtn.setOnClickListener(new View.OnClickListener() {
+        followProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(User_ViewProfile.this, User_EditProfile.class);
-                startActivity(intent);
-                finish();
             }
         });
 
@@ -106,15 +123,18 @@ public class User_ViewProfile extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
+                        Log.d("UserProfile", "User profile retrieved: " + userProfile.toString());
                         String name = userProfile.getName();
-                        String nFollowers = userProfile.getNumberFollowers();
-                        String nYummys = userProfile.getNumberYummys();
+                        Long nFollowers = userProfile.getNumberFollowers();
+                        Long nFollowing = userProfile.getNumberFollowing();
+                        Long nPosts = userProfile.getNumberPosts();
+
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
 
                         userFullName.setText(name);
-                        numberOfFollowers.setText(nFollowers);
-                        numberOfYummys.setText(nYummys);
+                        numberOfFollowers.setText(String.valueOf(nFollowers));
+                        numberOfFollowing.setText(String.valueOf(nFollowing));
                         userBio.setText(bio);
 
                         Glide.with(bigAvatar.getContext())
@@ -129,6 +149,19 @@ public class User_ViewProfile extends AppCompatActivity {
                                 .fitCenter()
                                 .into(smallAvatar);
                     }
+
+                    Map<String, Post> postsMap = userProfile.getPosts();
+                    Log.d("UserProfile", "Posts Map: " + postsMap);
+
+                    if (postsMap != null) {
+                        int nPosts = postsMap.size();
+                        postList.clear();
+                        postList.addAll(postsMap.values());
+                        postAdapter.notifyDataSetChanged();
+                    } else {
+                        numberOfPosts.setText("0");
+                    }
+
                 }
 
                 @Override
@@ -137,5 +170,44 @@ public class User_ViewProfile extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void showPosts() {
+        reference.child(mAuth.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    postList.clear();
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                        Post post = new Post();
+                        post.setContent((String) map.get("content"));
+
+                        if (post != null) {
+                            postList.add(post);
+                        }
+                    }
+                    postAdapter.notifyDataSetChanged();
+
+                    if (postList.isEmpty()) {
+                        noPostsMessage.setVisibility(View.VISIBLE);
+                        userPostRecView.setVisibility(View.GONE);
+                        numberOfPosts.setText(String.valueOf(postList.size()));
+                    } else {
+                        noPostsMessage.setVisibility(View.GONE);
+                        userPostRecView.setVisibility(View.VISIBLE);
+                        numberOfPosts.setText(String.valueOf(postList.size()));
+                    }
+                } else {
+                    noPostsMessage.setVisibility(View.VISIBLE);
+                    userPostRecView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_ViewProfile.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

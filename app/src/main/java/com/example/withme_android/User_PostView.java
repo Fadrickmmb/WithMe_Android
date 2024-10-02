@@ -25,7 +25,7 @@ public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
     private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference;
+    private DatabaseReference reference,postreference;
     private String postID;
 
     @Override
@@ -46,6 +46,7 @@ public class User_PostView extends AppCompatActivity {
         postDate = findViewById(R.id.postDate);
         postPicture = findViewById(R.id.postPicture);
         userAvatar = findViewById(R.id.userAvatar);
+        postreference = FirebaseDatabase.getInstance().getReference("posts");
 
         retrieveSinglePostInfo(postID);
 
@@ -87,9 +88,8 @@ public class User_PostView extends AppCompatActivity {
     }
 
     private void retrieveSinglePostInfo(String postId) {
-        DatabaseReference postRef = FirebaseDatabase.getInstance().getReference("posts").child(postId);
 
-        postRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        postreference.child(postId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
