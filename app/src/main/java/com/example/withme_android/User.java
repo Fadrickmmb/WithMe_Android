@@ -8,13 +8,13 @@ public class User {
     private String email;
     private String id;
     private Map<String, Post> posts;
-    private String numberPosts;
+    private Integer numberPosts;
     private String numberFollowers;
     private String numberYummys;
     private String userPhotoUrl;
     private String userBio;
 
-    public User(String name, String email, String id, String numberPosts, String numberYummys, String numberFollowers, String userPhotoUrl, String userBio){
+    public User(String name, String email, String id, Integer numberPosts, String numberYummys, String numberFollowers, String userPhotoUrl, String userBio){
         this.name = name;
         this.email = email;
         this.id = id;
@@ -84,11 +84,11 @@ public class User {
         this.posts = posts;
     }
 
-    public String getNumberPosts() {
+    public Integer getNumberPosts() {
         return numberPosts;
     }
 
-    public void setNumberPosts(String numberPosts) {
+    public void setNumberPosts(Integer numberPosts) {
         this.numberPosts = numberPosts;
     }
 

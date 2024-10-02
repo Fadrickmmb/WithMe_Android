@@ -1,15 +1,19 @@
 package com.example.withme_android;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -20,16 +24,27 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User_AddPostPage extends AppCompatActivity {
 
+    private static final int PICK_IMAGE_REQUEST = 1;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private TextView userName;
     private Button btnPost;
+    private EditText etLocation, etContent;
 
     private User userData;
+    private ImageView ivPostImg;
+    private Uri postImgUri;
+    private StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +61,12 @@ public class User_AddPostPage extends AppCompatActivity {
         bigAvatar = findViewById(R.id.iv_profile);
         userName = findViewById(R.id.tv_user_name);
         btnPost = findViewById(R.id.btn_post);
+
+        etLocation = findViewById(R.id.locationName);
+        etContent = findViewById(R.id.et_content);
+        ivPostImg = findViewById(R.id.iv_add_photo);
+
+        storageReference = FirebaseStorage.getInstance().getReference("posts");
 
         retrieveInfo();
 
@@ -91,10 +112,92 @@ public class User_AddPostPage extends AppCompatActivity {
                 createPost();
             }
         });
+
+        ivPostImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectPhoto();
+            }
+        });
+
+    }
+
+    private void selectPhoto() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
     private void createPost() {
+        String location = etLocation.getText().toString();
+        String content = etContent.getText().toString();
 
+        String postId = java.util.UUID.randomUUID().toString();
+
+        if (postImgUri == null || postImgUri.toString().isEmpty()) {
+            Toast.makeText(this, "Please select a photo", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (location.isEmpty() || content.isEmpty()) {
+            Toast.makeText(this, "Please enter all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StorageReference fileReference = storageReference.child(postId + ".jpg");
+
+        fileReference.putFile(postImgUri).addOnSuccessListener(taskSnapshot -> {
+            fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+
+                Post post = new Post(content, mAuth.getUid(), uri.toString(), new Date().toString(),
+                        userData.getName(), location, 0, userData.getUserPhotoUrl());
+
+                Map<String, Post> posts = userData.getPosts();
+                if (posts == null) {
+                    posts = new HashMap<>();
+                }
+                posts.put(postId, post);
+                userData.setPosts(posts);
+
+                if (userData.getNumberPosts() == null) {
+                    userData.setNumberPosts(1);
+                } else {
+                    userData.setNumberPosts(userData.getNumberPosts() + 1);
+                }
+
+                reference.child(mAuth.getUid()).setValue(userData).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(this, "Post created successfully", Toast.LENGTH_SHORT).show();
+                        clearFields();
+                    } else {
+                        Toast.makeText(this, "Failed to create post", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(err -> {
+                    Log.e("User_AddPostPage", "createPost: ", err);
+                    Toast.makeText(this, "Failed to create post", Toast.LENGTH_SHORT).show();
+                });
+            });
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void clearFields() {
+        etLocation.setText("");
+        etContent.setText("");
+        ivPostImg.setImageURI(null);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
+                data != null && data.getData() != null) {
+            postImgUri = data.getData();
+            ivPostImg.setImageURI(postImgUri);
+        }
     }
 
     private void retrieveInfo() {
@@ -126,6 +229,7 @@ public class User_AddPostPage extends AppCompatActivity {
                                 .into(smallAvatar);
                     }
                 }
+
                 // hi
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
