@@ -113,4 +113,6 @@ public class User {
     public void setFollowers(Map<String, Boolean> followers) {
         this.followers = followers;
     }
+
+
 }
