@@ -110,17 +110,6 @@
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/noCommentsMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="No posts available."
-                android:layout_marginTop="30dp"
-                android:visibility="gone"
-                android:textSize="18sp"
-                android:textColor="@android:color/black"/>
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/followersRecView"
                 android:layout_width="match_parent"

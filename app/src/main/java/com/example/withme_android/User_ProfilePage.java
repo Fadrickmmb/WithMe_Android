@@ -84,6 +84,15 @@ public class User_ProfilePage extends AppCompatActivity {
             }
         });
 
+        followingLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_ProfilePage.this, User_Following.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
