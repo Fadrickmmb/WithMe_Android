@@ -10,7 +10,6 @@
         android:id="@+id/rv_post_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        tools:listitem="@layout/rv_child_post" />
+        android:orientation="horizontal"        />
 
 </LinearLayout>

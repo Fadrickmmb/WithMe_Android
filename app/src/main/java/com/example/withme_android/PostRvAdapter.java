@@ -18,11 +18,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostRvAdapter extends RecyclerView.Adapter<PostRvAdapter.PostViewHolder> {
 
-    private List<Post> postList;
+    private List<String> postList;
     private Context context;
 
     // Constructor
-    public PostRvAdapter(List<Post> postList, Context context) {
+    public PostRvAdapter(List<String> postList, Context context) {
         this.postList = postList;
         this.context = context;
     }
@@ -30,23 +30,23 @@ public class PostRvAdapter extends RecyclerView.Adapter<PostRvAdapter.PostViewHo
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_child_post, parent, false);
-        return new PostViewHolder(view);
+//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.rv_child_post, parent, false);
+        return new PostViewHolder(null);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
-        Post post = postList.get(position);
+        String post = postList.get(position);
 
 
-        Glide.with(context)
-                .load(post.getImgUrl())
-                .into(holder.imgPost);
-
-        holder.tvDescription.setText(post.getDescription());
-        holder.tvLikes.setText(post.getLikes() + " Yummy(s)");
-        holder.tvComments.setText(post.getComments() + " Comments");
-        holder.tvLocation.setText(post.getLocation());
+//        Glide.with(context)
+//                .load(post.getImgUrl())
+//                .into(holder.imgPost);
+//
+//        holder.tvDescription.setText(post.getDescription());
+//        holder.tvLikes.setText(post.getLikes() + " Yummy(s)");
+//        holder.tvComments.setText(post.getComments() + " Comments");
+//        holder.tvLocation.setText(post.getLocation());
     }
 
     @Override
@@ -65,12 +65,12 @@ public class PostRvAdapter extends RecyclerView.Adapter<PostRvAdapter.PostViewHo
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivProfileImage = itemView.findViewById(R.id.iv_profile_image);
-            imgPost = itemView.findViewById(R.id.iv_post_image);
-            tvDescription = itemView.findViewById(R.id.tv_post_description);
-            tvLikes = itemView.findViewById(R.id.tv_yummys_count);
-            tvComments = itemView.findViewById(R.id.tv_comments_count);
-            tvLocation = itemView.findViewById(R.id.tv_location_name);
+//            ivProfileImage = itemView.findViewById(R.id.iv_profile_image);
+//            imgPost = itemView.findViewById(R.id.iv_post_image);
+//            tvDescription = itemView.findViewById(R.id.tv_post_description);
+//            tvLikes = itemView.findViewById(R.id.tv_yummys_count);
+//            tvComments = itemView.findViewById(R.id.tv_comments_count);
+//            tvLocation = itemView.findViewById(R.id.tv_location_name);
         }
     }
 }
