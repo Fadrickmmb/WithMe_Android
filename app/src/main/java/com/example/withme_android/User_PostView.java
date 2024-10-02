@@ -6,12 +6,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +25,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
     private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate, postContent;
@@ -29,6 +35,11 @@ public class User_PostView extends AppCompatActivity {
     private DatabaseReference reference,postreference;
     private String postId;
     private Button backBtn;
+    private RecyclerView commentPostRecView;
+    private LinearLayoutManager layoutManager;
+    private List<Comment> commentList;
+    private CommentAdapter commentAdapter;
+    private LinearLayout postMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +59,21 @@ public class User_PostView extends AppCompatActivity {
         postDate = findViewById(R.id.postDate);
         postPicture = findViewById(R.id.postPicture);
         userAvatar = findViewById(R.id.userAvatar);
+        commentsNumber = findViewById(R.id.commentsNumber);
+        commentPostRecView = findViewById(R.id.commentPostRecView);
+        layoutManager = new LinearLayoutManager(this);
+        commentPostRecView.setLayoutManager(layoutManager);
+        commentList = new ArrayList<>();
+        commentAdapter = new CommentAdapter(this, commentList);
+        commentPostRecView.setAdapter(commentAdapter);
+
         backBtn = findViewById(R.id.backBtn);
         postContent = findViewById(R.id.postContent);
         postreference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getUid()).child("posts");
         postId = getIntent().getStringExtra("postId");
+
         retrieveSinglePostInfo(postId);
+        retrieveComments(postId,commentPostRecView);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +119,6 @@ public class User_PostView extends AppCompatActivity {
     }
 
     private void retrieveSinglePostInfo(String postId) {
-
         postreference.child(postId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -118,6 +138,8 @@ public class User_PostView extends AppCompatActivity {
                         yummysNumber.setText(String.valueOf(yummys));
                         locationName.setText(location);
                         postDate.setText(date);
+                        commentsNumber.setText(String.valueOf(post.getCommentNumbers()));
+
 
                         Glide.with(userAvatar.getContext())
                                 .load(userPhotoUrl)
@@ -129,17 +151,40 @@ public class User_PostView extends AppCompatActivity {
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(postPicture);
+                    } else {
+                        Log.d("RetrieveSinglePostInfo", "Post not found.");
                     }
-                } else {
-                    Log.d("RetrieveSinglePostInfo", "Post not found.");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("RetrieveSinglePostInfo", "Failed to retrieve post: " + error.getMessage());
-                Toast.makeText(User_PostView.this, "Failed to load post.", Toast.LENGTH_SHORT).show();
+
             }
         });
     }
+
+    private void retrieveComments(String postId, RecyclerView recyclerView) {
+        postreference.child(postId).child("comments").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                commentList.clear();
+                if(snapshot.exists()){
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Comment comment = dataSnapshot.getValue(Comment.class);
+                        if (comment != null) {
+                            commentList.add(comment);
+                        }
+                    }
+                }
+                commentAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
 }

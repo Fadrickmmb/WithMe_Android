@@ -1,6 +1,5 @@
 package com.example.withme_android;
 
-import static com.google.firebase.appcheck.internal.util.Logger.TAG;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
