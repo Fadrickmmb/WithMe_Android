@@ -1,5 +1,8 @@
 package com.example.withme_android;
 
+import java.util.List;
+import java.util.Map;
+
 public class Post {
     private String content;
     private String userId;
@@ -8,13 +11,16 @@ public class Post {
     private String name;
     private String location;
     private int yummys;
+    private int commentNumbers;
     private String userPhotoUrl;
+    private String postId;
+    private Map<String, Comment> comments;
 
     public Post() {
-
     }
 
-    public Post(String content, String userId, String postImageUrl, String postDate, String name, String location, int yummys, String userPhotoUrl) {
+    public Post(String content, String userId, String postImageUrl, String postDate, String name,
+                String location, int yummys, int commentNumbers, String userPhotoUrl,String postId) {
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
@@ -22,40 +28,12 @@ public class Post {
         this.name = name;
         this.location = location;
         this.yummys = yummys;
+        this.commentNumbers = commentNumbers;
         this.userPhotoUrl = userPhotoUrl;
+        this.postId = postId;
     }
 
-    public String getUserPhotoUrl() {
-        return userPhotoUrl;
-    }
-
-    public void setUserPhotoUrl(String userPhotoUrl) {
-        this.userPhotoUrl = userPhotoUrl;
-    }
-
-
-    public int getYummys() {
-        return yummys;
-    }
-
-    public void setYummys(int yummys) {
-        this.yummys = yummys;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
+    public Post(String content, String uid, String string, String string1, String name, String location, int i, String userPhotoUrl) {
     }
 
     public String getContent() {
@@ -78,8 +56,8 @@ public class Post {
         return postImageUrl;
     }
 
-    public void setPostImageUrl(String imageUrl) {
-        this.postImageUrl = imageUrl;
+    public void setPostImageUrl(String postImageUrl) {
+        this.postImageUrl = postImageUrl;
     }
 
     public String getPostDate() {
@@ -89,4 +67,62 @@ public class Post {
     public void setPostDate(String postDate) {
         this.postDate = postDate;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public int getYummys() {
+        return yummys;
+    }
+
+    public void setYummys(int yummys) {
+        this.yummys = yummys;
+    }
+
+    public int getCommentNumbers() {
+        return commentNumbers;
+    }
+
+    public void setCommentNumbers(int commentNumbers) {
+        this.commentNumbers = commentNumbers;
+    }
+
+    public String getUserPhotoUrl() {
+        return userPhotoUrl;
+    }
+
+    public void setUserPhotoUrl(String userPhotoUrl) {
+        this.userPhotoUrl = userPhotoUrl;
+    }
+
+    public Map<String, Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Map<String, Comment> comments) {
+        this.comments = comments;
+    }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+
 }
