@@ -33,13 +33,13 @@ public class User_ViewProfile extends AppCompatActivity {
     private Button followProfileBtn;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
-    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
+    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing, userBio, noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private List<Post> postList;
     private PostAdapter postAdapter;
     private RecyclerView userPostRecView;
     private LinearLayoutManager layoutManager;
-    private String currentUserId,visitedUserId;
+    private String currentUserId, visitedUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,7 @@ public class User_ViewProfile extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         userPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(this,postList);
+        postAdapter = new PostAdapter(postList, this);
         userPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
@@ -206,7 +206,7 @@ public class User_ViewProfile extends AppCompatActivity {
                 });
     }
 
-    private void changeFollowStatus(){
+    private void changeFollowStatus() {
         DatabaseReference followingReference = reference.child(currentUserId).child("following").child(visitedUserId);
         DatabaseReference followersReference = reference.child(visitedUserId).child("followers").child(currentUserId);
 

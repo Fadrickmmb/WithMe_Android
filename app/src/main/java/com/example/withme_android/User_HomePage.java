@@ -109,7 +109,7 @@ public class User_HomePage extends AppCompatActivity {
                     }
                 }
                 List<Post> postList = new ArrayList<>(posts.values());
-                postAdapter = new PostAdapter(User_HomePage.this,postList );
+                postAdapter = new PostAdapter(postList, User_HomePage.this);
                 postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
                 postRv.setAdapter(postAdapter);
             }

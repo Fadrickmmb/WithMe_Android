@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,10 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User_PostView extends AppCompatActivity {
-    private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
-    private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate, postContent;
+    private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, userAvatar, postPicture;
+    private TextView postOwnerName, locationName, yummysNumber, commentsNumber, postDate, postContent;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference,postreference;
+    private DatabaseReference reference, postreference;
     private String postId;
     private Button backBtn;
     private RecyclerView commentPostRecView;
@@ -64,7 +62,7 @@ public class User_PostView extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         commentPostRecView.setLayoutManager(layoutManager);
         commentList = new ArrayList<>();
-        commentAdapter = new CommentAdapter(this, commentList);
+        commentAdapter = new CommentAdapter(commentList, this);
         commentPostRecView.setAdapter(commentAdapter);
 
         backBtn = findViewById(R.id.backBtn);
@@ -73,7 +71,7 @@ public class User_PostView extends AppCompatActivity {
         postId = getIntent().getStringExtra("postId");
 
         retrieveSinglePostInfo(postId);
-        retrieveComments(postId,commentPostRecView);
+        retrieveComments(postId, commentPostRecView);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,8 +136,7 @@ public class User_PostView extends AppCompatActivity {
                         yummysNumber.setText(String.valueOf(yummys));
                         locationName.setText(location);
                         postDate.setText(date);
-                        commentsNumber.setText(String.valueOf(post.getCommentNumbers()));
-
+                        commentsNumber.setText(post.getComments() != null ? post.getComments().size() + " Comments" : "0 Comments");
 
                         Glide.with(userAvatar.getContext())
                                 .load(userPhotoUrl)
@@ -169,7 +166,7 @@ public class User_PostView extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 commentList.clear();
-                if(snapshot.exists()){
+                if (snapshot.exists()) {
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Comment comment = dataSnapshot.getValue(Comment.class);
                         if (comment != null) {

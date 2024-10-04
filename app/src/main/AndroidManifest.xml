@@ -20,9 +20,6 @@
             android:name=".Post_CommentPage"
             android:exported="false" />
         <activity
-            android:name=".Splash_Screen"
-            android:exported="false" />
-        <activity
             android:name=".SplashScreen"
             android:exported="true">
             <intent-filter>
@@ -108,9 +105,6 @@
             android:exported="false" />
         <activity
             android:name=".Auth_Login"
-            android:exported="false" />
-        <activity
-            android:name=".Login"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
