@@ -1,6 +1,7 @@
 package com.example.withme_android;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,12 +21,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference reference3 = database.getReference("reminders");
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private String postId = reference3.push().getKey();
-    private List<Post> postList;
-    private Context context;
+    private final List<Post> postList;
+    private final Context context;
 
     public PostAdapter(List<Post> postList, Context context) {
         this.context = context;
@@ -47,6 +41,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post post = postList.get(position);
         holder.postOwnerName.setText(post.getName() != null ? post.getName() : "Unknown");
         holder.postLocation.setText(post.getLocation() != null ? post.getLocation() : "Unknown");
+        holder.commentsNumber.setText(post.getComments() != null ? post.getComments().size() + " Comments" : "0 Comments");
+        holder.yummysNumber.setText(post.getYummys() + " Yummys");
 
         if (post.getPostDate() != null) {
             String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(post.getPostDate()));
@@ -54,6 +50,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             holder.postDate.setText("Unknown");
         }
+
+        holder.comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, Post_CommentPage.class);
+                intent.putExtra("postId", post.getPostId());
+                intent.putExtra("postOwnerId", post.getUserId());
+                context.startActivity(intent);
+            }
+        });
 
         holder.yummysNumber.setText(String.valueOf(post.getYummys()));
 
@@ -77,6 +83,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         TextView postOwnerName, postLocation, yummysNumber, commentsNumber, postDate;
         ImageView userAvatar, postPicture;
         LinearLayout postMenu;
+        LinearLayout comments;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -88,6 +95,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             userAvatar = itemView.findViewById(R.id.userAvatar);
             postPicture = itemView.findViewById(R.id.postPicture);
             postMenu = itemView.findViewById(R.id.postMenu);
+            comments = itemView.findViewById(R.id.llComments);
         }
     }
 }

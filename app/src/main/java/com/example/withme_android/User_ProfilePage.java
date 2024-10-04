@@ -69,7 +69,7 @@ public class User_ProfilePage extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         personalPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList);
+        postAdapter = new PostAdapter(postList, User_ProfilePage.this);
         personalPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
@@ -150,16 +150,16 @@ public class User_ProfilePage extends AppCompatActivity {
                     if (userProfile != null) {
                         Log.d("UserProfile", "User profile retrieved: " + userProfile.toString());
                         String name = userProfile.getName();
-                        Long nFollowers = userProfile.getNumberFollowers();
-                        Long nFollowing = userProfile.getNumberFollowing();
-                        Long nPosts = userProfile.getNumberPosts();
-
+//                        Long nFollowers = userProfile.getNumberFollowers();
+//                        Long nFollowing = userProfile.getNumberFollowing();
+//                        Long nPosts = userProfile.getNumberPosts();
+//
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
-
+//
                         userName.setText(name);
-                        numberOfFollowers.setText(String.valueOf(nFollowers));
-                        numberOfFollowing.setText(String.valueOf(nFollowing));
+//                        numberOfFollowers.setText(String.valueOf(nFollowers));
+//                        numberOfFollowing.setText(String.valueOf(nFollowing));
                         userBio.setText(bio);
 
                         Glide.with(bigAvatar.getContext())
