@@ -2,21 +2,26 @@ package com.example.withme_android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,7 +47,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postOwnerName.setText(post.getName() != null ? post.getName() : "Unknown");
         holder.postLocation.setText(post.getLocation() != null ? post.getLocation() : "Unknown");
         holder.commentsNumber.setText(post.getComments() != null ? post.getComments().size() + " Comments" : "0 Comments");
-        holder.yummysNumber.setText(post.getYummys() + " Yummys");
+        holder.yummysNumber.setText(post.getYummys() != null ? post.getYummys().size() + " Yummys" : "0 Yummys");
 
         if (post.getPostDate() != null) {
             String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(post.getPostDate()));
@@ -61,7 +66,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
-        holder.yummysNumber.setText(String.valueOf(post.getYummys()));
+        holder.yummy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(post.getYummys() == null) {
+                    post.setYummys(new HashMap<>());
+                }
+                if (post.getYummys().containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                    post.getYummys().remove(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                } else {
+                    // add user id to yummy's list
+                    post.getYummys().put(FirebaseAuth.getInstance().getCurrentUser().getUid(), true);
+                }
+                holder.yummysNumber.setText(post.getYummys() != null ? post.getYummys().size() + " Yummys" : "0 Yummys");
+
+                FirebaseDatabase.getInstance().getReference("users").child(post.getUserId())
+                        .child("posts").child(post.getPostId())
+                        .child("yummys").setValue(post.getYummys())
+                        .addOnFailureListener(err -> {
+                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+                            Log.e("PostAdapter.java", "onClick: ", err);
+                        });
+            }
+        });
 
         Glide.with(context)
                 .load(post.getUserPhotoUrl())
@@ -83,7 +110,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         TextView postOwnerName, postLocation, yummysNumber, commentsNumber, postDate;
         ImageView userAvatar, postPicture;
         LinearLayout postMenu;
-        LinearLayout comments;
+        LinearLayout comments, yummy;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -96,6 +123,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             postPicture = itemView.findViewById(R.id.postPicture);
             postMenu = itemView.findViewById(R.id.postMenu);
             comments = itemView.findViewById(R.id.llComments);
+            yummy = itemView.findViewById(R.id.llYummy);
         }
     }
 }

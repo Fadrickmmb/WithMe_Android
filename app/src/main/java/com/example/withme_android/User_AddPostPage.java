@@ -152,7 +152,7 @@ public class User_AddPostPage extends AppCompatActivity {
             fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
 
                 Post post = new Post(postId, content, mAuth.getUid(), uri.toString(), new Date().toString(),
-                        userData.getName(), location, 0, userData.getUserPhotoUrl(), new HashMap<>());
+                        userData.getName(), location, new HashMap<>(), userData.getUserPhotoUrl(), new HashMap<>());
 
                 Map<String, Post> posts = userData.getPosts();
                 if (posts == null) {

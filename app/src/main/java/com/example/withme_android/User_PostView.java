@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, userAvatar, postPicture;
@@ -127,7 +128,7 @@ public class User_PostView extends AppCompatActivity {
                         String date = post.getPostDate();
                         String name = post.getName();
                         String location = post.getLocation();
-                        int yummys = post.getYummys();
+                        Map<String, Boolean> yummys = post.getYummys();
                         String userPhotoUrl = post.getUserPhotoUrl();
                         String content = post.getContent();
 
