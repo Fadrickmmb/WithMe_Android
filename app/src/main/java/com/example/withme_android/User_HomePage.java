@@ -2,6 +2,7 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -97,15 +98,19 @@ public class User_HomePage extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    User user = userSnapshot.getValue(User.class);
-
-                    if (user != null && user.getPosts() != null) {
-                        // iterate through all posts of the user
-                        for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
-                            String postId = entry.getKey();
-                            Post post = entry.getValue();
-                            posts.put(postId, post);
+                    // handle errors
+                    try {
+                        User user = userSnapshot.getValue(User.class);
+                        if (user != null && user.getPosts() != null) {
+                            // iterate through all posts of the user
+                            for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
+                                String postId = entry.getKey();
+                                Post post = entry.getValue();
+                                posts.put(postId, post);
+                            }
                         }
+                    } catch (Exception e) {
+                        Log.e("Err", "onDataChange: ", e);
                     }
                 }
                 List<Post> postList = new ArrayList<>(posts.values());
