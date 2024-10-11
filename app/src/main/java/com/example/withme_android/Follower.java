@@ -8,6 +8,10 @@ public class Follower {
     public Follower() {
     }
 
+    public Follower(String id) {
+        this.id = id;
+    }
+
     public Follower(String id, String name, String userPhotoUrl) {
         this.id = id;
         this.name = name;

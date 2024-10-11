@@ -14,6 +14,7 @@ public class User {
     private String userBio;
     private Map<String, Post> posts;
     private List<String> followingUsers;
+    private List<String> followersUsers;
 
     public User() {
     }
@@ -113,5 +114,13 @@ public class User {
 
     public void setFollowingUsers(List<String> followingUsers) {
         this.followingUsers = followingUsers;
+    }
+
+    public List<String> getFollowersUsers() {
+        return followersUsers;
+    }
+
+    public void setFollowersUsers(List<String> followersUsers) {
+        this.followersUsers = followersUsers;
     }
 }

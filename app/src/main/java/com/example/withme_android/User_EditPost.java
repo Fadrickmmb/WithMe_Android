@@ -1,6 +1,5 @@
 package com.example.withme_android;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,22 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,8 +25,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import java.util.List;
 
 public class User_EditPost extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -75,7 +62,8 @@ public class User_EditPost extends AppCompatActivity {
         postId = getIntent().getStringExtra("postId");
 
         retrieveInfo();
-        retrieveEditPostInfo(postId);
+        retrievePostInfo(postId);
+        editPost(postId);
 
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,6 +109,10 @@ public class User_EditPost extends AppCompatActivity {
         });
     }
 
+    private void editPost(String postId) {
+
+    }
+
     private void retrieveInfo() {
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -150,7 +142,7 @@ public class User_EditPost extends AppCompatActivity {
         }
     }
 
-    private void retrieveEditPostInfo(String postId) {
+    private void retrievePostInfo(String postId) {
         postreference.child(postId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -168,6 +160,36 @@ public class User_EditPost extends AppCompatActivity {
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(editedPicture);
+
+                        saveEditBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                postreference.child(postId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        Post post = snapshot.getValue(Post.class);
+                                        if(post != null){
+                                            String newloc = newLocation.getText().toString();
+                                            String newcont = newContent.getText().toString();
+                                            if(!newloc.equals(location)){
+                                                postreference.child(postId).child("location").setValue(newloc);
+                                                newLocation.setText(newloc);
+                                            }
+                                            if(!newcont.equals(content)){
+                                                postreference.child(postId).child("content").setValue(newcont);
+                                                newContent.setText(newcont);
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Toast.makeText(User_EditPost.this, "Error saving post.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                finish();
+                            }
+                        });
                     } else {
                         Log.d("RetrieveEditPostInfo", "Post not found.");
                     }
@@ -180,4 +202,6 @@ public class User_EditPost extends AppCompatActivity {
             }
         });
     }
+
+
 }

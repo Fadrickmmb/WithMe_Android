@@ -156,8 +156,16 @@ public class User_ProfilePage extends AppCompatActivity {
                         String bio = userProfile.getUserBio();
 
                         userName.setText(name);
-                        numberOfFollowers.setText(String.valueOf(nFollowers));
-                        numberOfFollowing.setText(String.valueOf(nFollowing));
+                        if(nFollowers == null){
+                            numberOfFollowers.setText(String.valueOf(0));
+                        } else {
+                            numberOfFollowers.setText(String.valueOf(nFollowers));
+                        }
+                        if(nFollowing == null) {
+                            numberOfFollowing.setText(String.valueOf(0));
+                        } else {
+                            numberOfFollowing.setText(String.valueOf(nFollowing));
+                        }
                         userBio.setText(bio);
 
                         Glide.with(bigAvatar.getContext())

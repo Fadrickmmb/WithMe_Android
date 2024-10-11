@@ -3,6 +3,7 @@ package com.example.withme_android;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,13 +29,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
     private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate, postContent;
     private FirebaseAuth mAuth;
     private DatabaseReference reference,postreference;
-    private String postId;
+    private String postId,ownerId;
     private Button backBtn;
     private RecyclerView commentPostRecView;
     private LinearLayoutManager layoutManager;
@@ -66,14 +69,18 @@ public class User_PostView extends AppCompatActivity {
         commentList = new ArrayList<>();
         commentAdapter = new CommentAdapter(this, commentList);
         commentPostRecView.setAdapter(commentAdapter);
-
+        postMenu = findViewById(R.id.postMenu);
+        ownerId = getIntent().getStringExtra("userId");
+        postId = getIntent().getStringExtra("postId");
         backBtn = findViewById(R.id.backBtn);
         postContent = findViewById(R.id.postContent);
-        postreference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getUid()).child("posts");
-        postId = getIntent().getStringExtra("postId");
+        reference = FirebaseDatabase.getInstance().getReference("users");
+        postreference = FirebaseDatabase.getInstance().getReference("users").child(ownerId).child("posts");
+
 
         retrieveSinglePostInfo(postId);
         retrieveComments(postId,commentPostRecView);
+        retrieveInfo();
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +124,76 @@ public class User_PostView extends AppCompatActivity {
                 finish();
             }
         });
+
+        postMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String ownerId = getIntent().getStringExtra("userId");
+                String currentUserId = mAuth.getUid();
+
+                if (currentUserId != null && currentUserId.equals(ownerId)) {
+                    View editView = LayoutInflater.from(User_PostView.this).inflate(R.layout.editpost_dialog, null);
+                    AlertDialog dialog = new AlertDialog.Builder(User_PostView.this).setView(editView).create();
+
+                    ImageView closeEditPostDialog = editView.findViewById(R.id.closeEditPostDialog);
+                    ImageView deletePost = editView.findViewById(R.id.deletePost);
+                    ImageView editPost = editView.findViewById(R.id.editPost);
+
+                    closeEditPostDialog.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    editPost.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(User_PostView.this, User_EditPost.class);
+                            intent.putExtra("postId", postId);
+                            startActivity(intent);
+                            dialog.dismiss();
+                        }
+                    });
+
+                    deletePost.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            postreference.child(postId).removeValue();
+                            Toast.makeText(User_PostView.this, "Post deleted", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            finish();
+                        }
+                    });
+
+                    dialog.show();
+                } else {
+                    View reportView = LayoutInflater.from(User_PostView.this).inflate(R.layout.reportpost_dialog, null);
+                    AlertDialog dialog = new AlertDialog.Builder(User_PostView.this).setView(reportView).create();
+
+                    ImageView closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
+                    ImageView reportPost = reportView.findViewById(R.id.reportPost);
+
+                    closeReportPostDialog.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    reportPost.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Toast.makeText(User_PostView.this, "This function is not working yet.", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.show();
+                }
+            }
+        });
+
     }
 
     private void retrieveSinglePostInfo(String postId) {
@@ -140,7 +217,6 @@ public class User_PostView extends AppCompatActivity {
                         locationName.setText(location);
                         postDate.setText(date);
                         commentsNumber.setText(String.valueOf(post.getCommentNumbers()));
-
 
                         Glide.with(userAvatar.getContext())
                                 .load(userPhotoUrl)
@@ -188,4 +264,39 @@ public class User_PostView extends AppCompatActivity {
         });
     }
 
+    private void retrieveInfo() {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        if (user != null) {
+            reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User userProfile = snapshot.getValue(User.class);
+                    if (userProfile != null) {
+                        String userAvatar = userProfile.getUserPhotoUrl();
+
+                        Glide.with(smallAvatar.getContext())
+                                .load(userAvatar)
+                                .error(R.drawable.round_report_problem_24)
+                                .fitCenter()
+                                .into(smallAvatar);
+
+
+                    } else {
+                        Toast.makeText(User_PostView.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                        Log.e("UserPostView", "User profile is null.");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(User_PostView.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+                    Log.e("User_PostView", "onCancelled: ", error.toException());
+                }
+            });
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            Log.e("User_PostView", "User is null.");
+        }
+    }
 }

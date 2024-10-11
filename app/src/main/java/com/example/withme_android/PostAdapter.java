@@ -27,7 +27,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private Context context;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference postreference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getUid()).child("posts");
-
+    private AlertDialog dialog;
 
     public PostAdapter(Context context,List<Post> postList) {
         this.context = context;
@@ -66,6 +66,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             public void onClick(View view) {
                 Intent intent = new Intent(context,User_PostView.class);
                 intent.putExtra("postId",post.getPostId());
+                intent.putExtra("userId",post.getUserId());
                 context.startActivity(intent);
             }
         });
@@ -82,7 +83,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     if(currentUserId.equals(ownerId)){
                         View editView = LayoutInflater.from(view.getContext()).inflate(R.layout.editpost_dialog, null);
-                        AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(editView).create();
+                        dialog = new AlertDialog.Builder(view.getContext()).setView(editView).create();
 
                         ImageView closeEditPostDialog = editView.findViewById(R.id.closeEditPostDialog);
                         ImageView deletePost = editView.findViewById(R.id.deletePost);
@@ -101,9 +102,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 Intent intent = new Intent(context,User_EditPost.class);
                                 intent.putExtra("postId", postId);
                                 context.startActivity(intent);
-                                if(context instanceof Activity){
-                                    ((Activity) context).finish();
-                                }
+                                dialog.dismiss();
                             }
                         });
 
@@ -118,7 +117,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 dialog.dismiss();
                             }
                         });
-                        dialog.show();
+                        if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
+                            dialog.show();
+                        }
                     } else {
                         View reportView = LayoutInflater.from(view.getContext()).inflate(R.layout.reportpost_dialog, null);
                         AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(reportView).create();
@@ -139,6 +140,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 Toast.makeText(context,"This funtion was not implemented yet.",Toast.LENGTH_SHORT).show();
                             }
                         });
+                        if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
+                            dialog.show();
+                        }
                     }
                 }
             }

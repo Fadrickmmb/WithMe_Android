@@ -50,7 +50,6 @@ public class User_HomePage extends AppCompatActivity {
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
-        noPostsMessage = findViewById(R.id.noPostsMessage);
         postRv = findViewById(R.id.rv_post);
 
 
