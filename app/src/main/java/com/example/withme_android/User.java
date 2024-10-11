@@ -13,6 +13,7 @@ public class User {
     private String userPhotoUrl;
     private String userBio;
     private Map<String, Post> posts;
+    private List<String> followingUsers;
 
     public User() {
     }
@@ -104,5 +105,13 @@ public class User {
 
     public void setUserBio(String userBio) {
         this.userBio = userBio;
+    }
+
+    public List<String> getFollowingUsers() {
+        return followingUsers;
+    }
+
+    public void setFollowingUsers(List<String> followingUsers) {
+        this.followingUsers = followingUsers;
     }
 }

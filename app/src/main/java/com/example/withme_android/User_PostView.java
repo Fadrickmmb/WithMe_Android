@@ -81,6 +81,7 @@ public class User_PostView extends AppCompatActivity {
                 finish();
             }
         });
+
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

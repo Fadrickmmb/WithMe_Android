@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -32,9 +33,10 @@ public class User_HomePage extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
+    private TextView noPostsMessage;
     private PostAdapter postAdapter;
     private RecyclerView postRv;
-    Map<String, Post> posts;
+    private Map<String, Post> posts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,9 @@ public class User_HomePage extends AppCompatActivity {
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
+        noPostsMessage = findViewById(R.id.noPostsMessage);
         postRv = findViewById(R.id.rv_post);
+
 
         retrieveInfo();
 
@@ -92,7 +96,31 @@ public class User_HomePage extends AppCompatActivity {
     }
 
     private void loadPosts() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
+            reference.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User currentUserProfile = snapshot.getValue(User.class);
+
+                    if (currentUserProfile != null && currentUserProfile.getFollowingUsers() != null) {
+                        List<String> followingList = currentUserProfile.getFollowingUsers();
+                        PostsFromFollowedUsers(followingList);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(User_HomePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void PostsFromFollowedUsers(List<String> followingList) {
         posts = new HashMap<>();
+
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -100,16 +128,20 @@ public class User_HomePage extends AppCompatActivity {
                     User user = userSnapshot.getValue(User.class);
 
                     if (user != null && user.getPosts() != null) {
-                        // iterate through all posts of the user
-                        for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
-                            String postId = entry.getKey();
-                            Post post = entry.getValue();
-                            posts.put(postId, post);
+                        if (followingList.contains(user.getId())) {
+                            for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
+                                String postId = entry.getKey();
+                                Post post = entry.getValue();
+                                posts.put(postId, post);
+                            }
+                        } else {
+                            noPostsMessage.setVisibility(View.VISIBLE);
+                            postRv.setVisibility(View.GONE);
                         }
                     }
                 }
                 List<Post> postList = new ArrayList<>(posts.values());
-                postAdapter = new PostAdapter(User_HomePage.this,postList );
+                postAdapter = new PostAdapter(User_HomePage.this, postList);
                 postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
                 postRv.setAdapter(postAdapter);
             }

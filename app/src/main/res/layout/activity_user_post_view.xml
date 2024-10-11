@@ -145,6 +145,51 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/postMenu"
+                        android:gravity="right|center"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="-6dp">
+
+                        <LinearLayout
+                            android:layout_marginRight="-12dp"
+                            android:gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="7dp"
+                                android:src="@drawable/baseline_circle_24" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:gravity="center"
+                            android:layout_marginRight="-12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="7dp"
+                                android:src="@drawable/baseline_circle_24" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="7dp"
+                                android:src="@drawable/baseline_circle_24" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -156,8 +201,8 @@
 
                     <ImageView
                         android:id="@+id/postPicture"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:src="@drawable/baseline_photo_camera_24"/>
                 </LinearLayout>
 
@@ -236,7 +281,6 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:maxLines="6"
-                    android:lines="6"
                     android:inputType="textMultiLine"
                     android:layout_marginTop="30dp"
                     android:textColor="@color/withme"/>

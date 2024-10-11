@@ -16,7 +16,9 @@
         android:theme="@style/Theme.WithMe_Android"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".User_EditPost"
+            android:exported="false" />
         <activity
             android:name=".SplashScreen"
             android:exported="true">
@@ -105,11 +107,8 @@
             android:name=".Auth_Login"
             android:exported="false" />
         <activity
-            android:name=".Login"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
 
         <meta-data
             android:name="preloaded_fonts"

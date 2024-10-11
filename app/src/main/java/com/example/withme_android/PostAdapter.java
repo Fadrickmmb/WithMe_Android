@@ -1,16 +1,15 @@
 package com.example.withme_android;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -79,39 +77,69 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 if (currentPosition != RecyclerView.NO_POSITION) {
                     Post editPostPosition = postList.get(currentPosition);
                     String postId = post.getPostId();
+                    String ownerId = post.getUserId();
+                    String currentUserId = mAuth.getUid();
 
-                    View editView = LayoutInflater.from(view.getContext()).inflate(R.layout.editpost_dialog, null);
-                    AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(editView).create();
+                    if(currentUserId.equals(ownerId)){
+                        View editView = LayoutInflater.from(view.getContext()).inflate(R.layout.editpost_dialog, null);
+                        AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(editView).create();
 
-                    ImageView closeEditPostDialog = editView.findViewById(R.id.closeEditPostDialog);
-                    ImageView deletePost = editView.findViewById(R.id.deletePost);
-                    ImageView editPost = editView.findViewById(R.id.editPost);
+                        ImageView closeEditPostDialog = editView.findViewById(R.id.closeEditPostDialog);
+                        ImageView deletePost = editView.findViewById(R.id.deletePost);
+                        ImageView editPost = editView.findViewById(R.id.editPost);
 
-                    closeEditPostDialog.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            dialog.dismiss();
-                        }
-                    });
-
-                    editPost.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            //needs to implement based on create post
-                        }
-                    });
-                    deletePost.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (currentPosition != RecyclerView.NO_POSITION && currentPosition < postList.size()) {
-                                postList.remove(currentPosition);
-                                notifyItemRemoved(currentPosition);
+                        closeEditPostDialog.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
                             }
-                            postreference.child(mAuth.getUid()).child(postId).removeValue();
-                            dialog.dismiss();
-                        }
-                    });
-                    dialog.show();
+                        });
+
+                        editPost.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(context,User_EditPost.class);
+                                intent.putExtra("postId", postId);
+                                context.startActivity(intent);
+                                if(context instanceof Activity){
+                                    ((Activity) context).finish();
+                                }
+                            }
+                        });
+
+                        deletePost.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (currentPosition != RecyclerView.NO_POSITION && currentPosition < postList.size()) {
+                                    postList.remove(currentPosition);
+                                    notifyItemRemoved(currentPosition);
+                                }
+                                postreference.child(mAuth.getUid()).child(postId).removeValue();
+                                dialog.dismiss();
+                            }
+                        });
+                        dialog.show();
+                    } else {
+                        View reportView = LayoutInflater.from(view.getContext()).inflate(R.layout.reportpost_dialog, null);
+                        AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(reportView).create();
+
+                        ImageView closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
+                        ImageView reportPost = reportView.findViewById(R.id.reportPost);
+
+                        closeReportPostDialog.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                        reportPost.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Toast.makeText(context,"This funtion was not implemented yet.",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
             }
         });
