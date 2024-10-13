@@ -24,14 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User_Following extends AppCompatActivity {
-    private String currentUserId;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, backArrow;
     private RecyclerView followingRecView;
-    private FollowerAdapter followingAdapter;
+    private FollowingAdapter followingAdapter;
     private List<Follower> followingList;
-    private static final String TAG = "User_Following";
+    private ArrayList<String> followingIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,24 +43,21 @@ public class User_Following extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         backArrow = findViewById(R.id.backArrow);
+
         followingRecView = findViewById(R.id.followingRecView);
         followingRecView.setLayoutManager(new LinearLayoutManager(this));
-
         followingList = new ArrayList<>();
-        followingAdapter = new FollowerAdapter(followingList);
+        followingAdapter = new FollowingAdapter(this,followingList);
         followingRecView.setAdapter(followingAdapter);
-
+        followingIds = getIntent().getStringArrayListExtra("followingList");
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
-        currentUserId = mAuth.getCurrentUser().getUid();
 
-        loadFollowers();
+        loadFollowingDetails(followingIds);
 
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(User_Following.this, User_ProfilePage.class);
-                startActivity(intent);
                 finish();
             }
         });
@@ -103,45 +99,30 @@ public class User_Following extends AppCompatActivity {
         });
     }
 
-    private void loadFollowers() {
-        reference.child(currentUserId).child("following").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                followingList.clear();
-                if (snapshot.exists()) {
-                    for (DataSnapshot followerSnapshot : snapshot.getChildren()) {
-                        String followerId = followerSnapshot.getKey();
-                        getFollowerDetails(followerId);
+    private void loadFollowingDetails(List<String> followingIds) {
+        for (String id : followingIds) {
+            reference.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    User user = snapshot.getValue(User.class);
+                    if (user != null) {
+                        Follower follower = new Follower(
+                                user.getId(),
+                                user.getName(),
+                                user.getUserPhotoUrl()
+                        );
+                        followingList.add(follower);
+                        followingAdapter.notifyDataSetChanged();
+                    } else {
+                        Log.e("User_Followers", "User data is null for ID: " + id);
                     }
-                } else {
-                    Toast.makeText(User_Following.this, "No followers found.", Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(User_Following.this, "Failed to load followers.", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "loadFollowers:onCancelled", error.toException());
-            }
-        });
-    }
-
-    private void getFollowerDetails(String followerId) {
-        reference.child(followerId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User followerUser = snapshot.getValue(User.class);
-                if (followerUser != null) {
-                    Follower follower = new Follower(followerId, followerUser.getName(), followerUser.getUserPhotoUrl());
-                    followingList.add(follower);
-                    followingAdapter.notifyDataSetChanged();
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("User_Following", "Error loading following data: " + error.getMessage());
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "getFollowerDetails:onCancelled", error.toException());
-            }
-        });
+            });
+        }
     }
 }

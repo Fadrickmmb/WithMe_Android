@@ -74,24 +74,6 @@ public class User_ProfilePage extends AppCompatActivity {
 
         retrieveInfo();
 
-        followersLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(User_ProfilePage.this, User_Followers.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        followingLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(User_ProfilePage.this, User_Following.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -147,24 +129,23 @@ public class User_ProfilePage extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
-                        Log.d("UserProfile", "User profile retrieved: " + userProfile.toString());
                         String name = userProfile.getName();
-                        Long nFollowers = userProfile.getNumberFollowers();
-                        Long nFollowing = userProfile.getNumberFollowing();
+                        Map<String, Boolean> followers = userProfile.getFollowers();
+                        Map<String, Boolean> following = userProfile.getFollowing();
 
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
 
                         userName.setText(name);
-                        if(nFollowers == null){
-                            numberOfFollowers.setText(String.valueOf(0));
+                        if(followers != null){
+                            numberOfFollowers.setText(String.valueOf(followers.size()));
                         } else {
-                            numberOfFollowers.setText(String.valueOf(nFollowers));
+                            numberOfFollowers.setText("0");
                         }
-                        if(nFollowing == null) {
-                            numberOfFollowing.setText(String.valueOf(0));
+                        if(following != null){
+                            numberOfFollowing.setText(String.valueOf(following.size()));
                         } else {
-                            numberOfFollowing.setText(String.valueOf(nFollowing));
+                            numberOfFollowing.setText("0");
                         }
                         userBio.setText(bio);
 
@@ -196,6 +177,34 @@ public class User_ProfilePage extends AppCompatActivity {
                             noPostsMessage.setVisibility(View.VISIBLE);
                             personalPostRecView.setVisibility(View.GONE);
                         }
+
+                        followersLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Map<String, Boolean> followersMap = userProfile.getFollowers();
+                                if(followersMap != null) {
+                                    Intent intent = new Intent(User_ProfilePage.this, User_Followers.class);
+                                    intent.putStringArrayListExtra("followersList", new ArrayList<>(userProfile.getFollowers().keySet()));
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(User_ProfilePage.this, "You have no followers.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                        followingLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Map<String, Boolean> followingMap = userProfile.getFollowing();
+                                if(followingMap != null) {
+                                    Intent intent = new Intent(User_ProfilePage.this, User_Following.class);
+                                    intent.putStringArrayListExtra("followingList", new ArrayList<>(userProfile.getFollowing().keySet()));
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(User_ProfilePage.this, "You don't follow anyone.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     } else {
                         Toast.makeText(User_ProfilePage.this, "User data not found.", Toast.LENGTH_SHORT).show();
                         Log.e("UserProfile", "User profile is null.");
@@ -213,4 +222,23 @@ public class User_ProfilePage extends AppCompatActivity {
             Log.e("User_ProfilePage", "User is null.");
         }
     }
+
+    /*private void loadFollowerDetails(List<String> followerIds) {
+        for (String id : followerIds) {
+            reference.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Follower follower = snapshot.getValue(Follower.class);
+                    if (follower != null) {
+                        Log.d("Follower", "Follower data: " + follower.getName());
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("Follower", "Error loading follower data: " + error.getMessage());
+                }
+            });
+        }
+    }*/
 }

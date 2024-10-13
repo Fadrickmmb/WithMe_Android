@@ -1,5 +1,8 @@
 package com.example.withme_android;
 
+import com.google.firebase.database.IgnoreExtraProperties;
+
+@IgnoreExtraProperties
 public class Follower {
     private String id;
     private String name;

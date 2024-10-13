@@ -70,6 +70,13 @@
         </LinearLayout>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/noPostsMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nos posts available."
+        app:layout_constraintTop_toBottomOf="@+id/header"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_post"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

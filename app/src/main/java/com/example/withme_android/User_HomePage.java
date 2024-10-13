@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +50,7 @@ public class User_HomePage extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         postRv = findViewById(R.id.rv_post);
-
+        noPostsMessage = findViewById(R.id.noPostsMessage); // Adicione a view para exibir mensagens quando não houver posts
 
         retrieveInfo();
 
@@ -103,9 +102,12 @@ public class User_HomePage extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User currentUserProfile = snapshot.getValue(User.class);
 
-                    if (currentUserProfile != null && currentUserProfile.getFollowingUsers() != null) {
-                        List<String> followingList = currentUserProfile.getFollowingUsers();
-                        PostsFromFollowedUsers(followingList);
+                    if (currentUserProfile != null && currentUserProfile.getFollowing() != null) {
+                        Map<String, Boolean> followingList = (Map<String, Boolean>) currentUserProfile.getFollowing();
+                        PostsFromFollowedUsers((List<String>) followingList);
+                    } else {
+                        noPostsMessage.setVisibility(View.VISIBLE);
+                        postRv.setVisibility(View.GONE);
                     }
                 }
 
@@ -128,21 +130,27 @@ public class User_HomePage extends AppCompatActivity {
 
                     if (user != null && user.getPosts() != null) {
                         if (followingList.contains(user.getId())) {
-                            for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
-                                String postId = entry.getKey();
-                                Post post = entry.getValue();
-                                posts.put(postId, post);
+                            for (DataSnapshot postSnapshot : userSnapshot.child("posts").getChildren()) {
+                                Post post = postSnapshot.getValue(Post.class);
+                                if (post != null) {
+                                    posts.put(postSnapshot.getKey(), post);
+                                }
                             }
-                        } else {
-                            noPostsMessage.setVisibility(View.VISIBLE);
-                            postRv.setVisibility(View.GONE);
                         }
                     }
                 }
-                List<Post> postList = new ArrayList<>(posts.values());
-                postAdapter = new PostAdapter(User_HomePage.this, postList);
-                postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
-                postRv.setAdapter(postAdapter);
+
+                if (posts.isEmpty()) {
+                    noPostsMessage.setVisibility(View.VISIBLE);
+                    postRv.setVisibility(View.GONE);
+                } else {
+                    List<Post> postList = new ArrayList<>(posts.values());
+                    postAdapter = new PostAdapter(User_HomePage.this, postList);
+                    postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
+                    postRv.setAdapter(postAdapter);
+                    noPostsMessage.setVisibility(View.GONE);
+                    postRv.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -180,5 +188,4 @@ public class User_HomePage extends AppCompatActivity {
             });
         }
     }
-
 }
