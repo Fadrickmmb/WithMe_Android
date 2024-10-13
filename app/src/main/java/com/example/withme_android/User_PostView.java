@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,8 +28,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class User_PostView extends AppCompatActivity {
@@ -37,7 +41,7 @@ public class User_PostView extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference reference,postreference;
     private String postId,ownerId;
-    private Button backBtn;
+    private Button backBtn, addCommentBtn;
     private RecyclerView commentPostRecView;
     private LinearLayoutManager layoutManager;
     private List<Comment> commentList;
@@ -53,6 +57,7 @@ public class User_PostView extends AppCompatActivity {
         homeIcon = findViewById(R.id.homeIcon);
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
+        addCommentBtn = findViewById(R.id.addCommentBtn);
         smallAvatar = findViewById(R.id.smallAvatar);
         mAuth = FirebaseAuth.getInstance();
         postOwnerName = findViewById(R.id.postOwnerName);
@@ -81,6 +86,31 @@ public class User_PostView extends AppCompatActivity {
         retrieveSinglePostInfo(postId);
         retrieveComments(postId,commentPostRecView);
         retrieveInfo();
+
+        addCommentBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View commentView = LayoutInflater.from(User_PostView.this).inflate(R.layout.comment, null);
+                AlertDialog dialog = new AlertDialog.Builder(User_PostView.this).setView(commentView).create();
+
+                EditText addCommentText = commentView.findViewById(R.id.addComentText);
+                Button saveCommentBtn = commentView.findViewById(R.id.saveCommentBtn);
+
+                saveCommentBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String commentText = addCommentText.getText().toString().trim();
+                        if (!commentText.isEmpty()) {
+                            saveCommentToFirebase(commentText);
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(User_PostView.this, "Please enter a comment", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                dialog.show();
+            }
+        });
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,4 +329,54 @@ public class User_PostView extends AppCompatActivity {
             Log.e("User_PostView", "User is null.");
         }
     }
+
+    private void saveCommentToFirebase(String commentText) {
+        String userId = mAuth.getCurrentUser().getUid();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User userProfile = snapshot.getValue(User.class);
+                if (userProfile != null) {
+                    String userName = userProfile.getName();
+                    String date = getCurrentDate();
+
+                    String commentId = postreference.child(postId).child("comments").push().getKey();
+                    Comment comment = new Comment(userName, commentText, date, userId, postId, commentId);
+                    postreference.child(postId).child("comments").child(commentId).setValue(comment);
+                    postreference.child(postId).child("commentNumbers").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            int commentNumbers = dataSnapshot.exists() ? dataSnapshot.getValue(Integer.class) : 0;
+                            commentNumbers = commentNumbers + 1;
+                            commentsNumber.setText(String.valueOf(commentNumbers));
+                            postreference.child(postId).child("commentNumbers").setValue(commentNumbers);
+                            commentsNumber.setText(String.valueOf(commentNumbers));
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    Toast.makeText(User_PostView.this, "Comment added", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(User_PostView.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_PostView.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return sdf.format(new Date());
+    }
+
 }

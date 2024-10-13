@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -25,6 +26,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class User_EditPost extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -58,12 +62,18 @@ public class User_EditPost extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
         postreference = reference.child(mAuth.getUid()).child("posts");
-        storageReference = FirebaseStorage.getInstance().getReference();
+        storageReference = FirebaseStorage.getInstance().getReference("post_images");
         postId = getIntent().getStringExtra("postId");
 
         retrieveInfo();
         retrievePostInfo(postId);
-        editPost(postId);
+        
+        newPostPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileChooser();
+            }
+        });
 
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,8 +119,22 @@ public class User_EditPost extends AppCompatActivity {
         });
     }
 
-    private void editPost(String postId) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK &&
+                data != null && data.getData() != null) {
+            imageUri = data.getData();
+            editedPicture.setImageURI(imageUri);
+        }
+    }
+
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
     private void retrieveInfo() {
@@ -171,6 +195,7 @@ public class User_EditPost extends AppCompatActivity {
                                         if(post != null){
                                             String newloc = newLocation.getText().toString();
                                             String newcont = newContent.getText().toString();
+
                                             if(!newloc.equals(location)){
                                                 postreference.child(postId).child("location").setValue(newloc);
                                                 newLocation.setText(newloc);
@@ -178,6 +203,31 @@ public class User_EditPost extends AppCompatActivity {
                                             if(!newcont.equals(content)){
                                                 postreference.child(postId).child("content").setValue(newcont);
                                                 newContent.setText(newcont);
+                                            }
+                                            if (imageUri != null) {
+                                                StorageReference fileReference = storageReference.child(postId + ".jpg");
+                                                fileReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+                                                    fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                                                        String imageUrl = uri.toString();
+                                                        Map<String, Object> updates = new HashMap<>();
+                                                        if (imageUrl != null) {
+                                                            updates.put("postImageUrl", imageUrl);
+                                                        }
+
+                                                        postreference.child(postId).updateChildren(updates).addOnCompleteListener(task -> {
+                                                            if (task.isSuccessful()) {
+                                                                Toast.makeText(User_EditPost.this, "Post updated successfully", Toast.LENGTH_SHORT).show();
+                                                                finish();
+                                                            } else {
+                                                                Toast.makeText(User_EditPost.this, "Failed to update post", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                                    });
+                                                }).addOnFailureListener(e -> {
+                                                    Toast.makeText(User_EditPost.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                                                });
+                                            } else {
+
                                             }
                                         }
                                     }

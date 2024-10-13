@@ -222,23 +222,4 @@ public class User_ProfilePage extends AppCompatActivity {
             Log.e("User_ProfilePage", "User is null.");
         }
     }
-
-    /*private void loadFollowerDetails(List<String> followerIds) {
-        for (String id : followerIds) {
-            reference.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Follower follower = snapshot.getValue(Follower.class);
-                    if (follower != null) {
-                        Log.d("Follower", "Follower data: " + follower.getName());
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("Follower", "Error loading follower data: " + error.getMessage());
-                }
-            });
-        }
-    }*/
 }
