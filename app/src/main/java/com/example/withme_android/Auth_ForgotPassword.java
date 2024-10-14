@@ -9,14 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class Auth_ForgotPassword extends AppCompatActivity {
 
@@ -32,45 +27,45 @@ public class Auth_ForgotPassword extends AppCompatActivity {
         setContentView(R.layout.activity_auth_forgot_password);
 
 
-//        emailInput = findViewById(R.id.forgotPassword_emailInput);
-//        resetPassword = findViewById(R.id.forgotPassword_resetButton);
-//        signIn = findViewById(R.id.forgotPassword_signInText);
-//
-//        mAuth = FirebaseAuth.getInstance();
-//
-//        signIn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(getApplicationContext(), Auth_Login.class);
-//                startActivity(intent);
-//                finish();
-//            }
-//        });
-//
-//        resetPassword.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//
-//            public void onClick(View view) {
-//                String email = emailInput.getText().toString().trim();
-//
-//                if (TextUtils.isEmpty(email)) {
-//                    Toast.makeText(Auth_ForgotPassword.this, "Please enter your email", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        Toast.makeText(Auth_ForgotPassword.this, "Password reset email sent", Toast.LENGTH_SHORT).show();
-//                        Intent intent = new Intent(getApplicationContext(), Auth_Login.class);
-//                        startActivity(intent);
-//                        finish();
-//                    } else {
-//                        Toast.makeText(Auth_ForgotPassword.this, "Failed to send reset email", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//
-//            }
-//        });
+        emailInput = findViewById(R.id.et_email);
+        resetPassword = findViewById(R.id.btn_send_link);
+        signIn = findViewById(R.id.tv_sign_in);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        signIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Auth_Login.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        resetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+
+            public void onClick(View view) {
+                String email = emailInput.getText().toString().trim();
+
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(Auth_ForgotPassword.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(Auth_ForgotPassword.this, "Password reset email sent", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), Auth_Login.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(Auth_ForgotPassword.this, "Failed to send reset email", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        });
 
     }
 }

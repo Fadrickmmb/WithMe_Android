@@ -41,7 +41,7 @@ public class User_ViewProfile extends AppCompatActivity {
     private PostAdapter postAdapter;
     private RecyclerView userPostRecView;
     private LinearLayoutManager layoutManager;
-    private String currentUserId,visitedUserId;
+    private String currentUserId, visitedUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +72,7 @@ public class User_ViewProfile extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         userPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(this,postList);
+        postAdapter = new PostAdapter(postList, this);
         userPostRecView.setAdapter(postAdapter);
 
         retrieveInfo(currentUserId);

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,6 +47,7 @@ public class User_EditProfile extends AppCompatActivity {
     private DatabaseReference firebaseDatabase;
 
     private User user;
+    private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,10 @@ public class User_EditProfile extends AppCompatActivity {
         tvChangeImage = findViewById(R.id.tv_profile_pic_update);
         btnLogout = findViewById(R.id.btn_logout);
         etPassword = findViewById(R.id.et_password);
+        homeIcon = findViewById(R.id.homeIcon);
+        searchIcon = findViewById(R.id.searchIcon);
+        addPostIcon = findViewById(R.id.addPostIcon);
+        smallAvatar = findViewById(R.id.smallAvatar);
 
         storageReference = FirebaseStorage.getInstance().getReference("user_profile_pictures");
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -69,6 +75,43 @@ public class User_EditProfile extends AppCompatActivity {
         tvChangeImage.setOnClickListener(v -> openFileChooser());
 
         btnUpdate.setOnClickListener(view1 -> validateAndUpdateProfile());
+
+
+        homeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_EditProfile.this, User_HomePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        searchIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_EditProfile.this, User_SearchPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        addPostIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_EditProfile.this, User_AddPostPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        smallAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_EditProfile.this, User_ProfilePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         btnLogout.setOnClickListener(v -> {
             Toast.makeText(this, "Logout success", Toast.LENGTH_SHORT).show();

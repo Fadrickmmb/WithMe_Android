@@ -50,7 +50,7 @@ public class User_HomePage extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         postRv = findViewById(R.id.rv_post);
-        noPostsMessage = findViewById(R.id.noPostsMessage); // Adicione a view para exibir mensagens quando não houver posts
+        noPostsMessage = findViewById(R.id.noPostsMessage);
 
         retrieveInfo();
 
