@@ -17,7 +17,6 @@
         app:layout_constraintBottom_toTopOf="@id/navigationBar">
 
         <LinearLayout
-            android:id="@+id/headerSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -202,7 +201,6 @@
                 android:layout_height="wrap_content"
                 android:text="Bio here"
                 android:maxLines="6"
-                android:lines="6"
                 android:inputType="textMultiLine"
                 android:layout_marginTop="30dp"
                 android:fontFamily="@font/dm_serif_display"

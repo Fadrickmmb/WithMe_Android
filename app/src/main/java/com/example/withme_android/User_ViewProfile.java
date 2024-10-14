@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,10 +32,10 @@ import java.util.Map;
 
 public class User_ViewProfile extends AppCompatActivity {
 
-    private Button followProfileBtn;
+    private Button followProfileBtn, backProfileBtn;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference;
-    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing, userBio, noPostsMessage;
+    private DatabaseReference reference, currUserRef, visUserRef;
+    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private List<Post> postList;
     private PostAdapter postAdapter;
@@ -47,9 +49,9 @@ public class User_ViewProfile extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_view_profile);
 
+        backProfileBtn = findViewById(R.id.backProfileBtn);
         followProfileBtn = findViewById(R.id.followProfileBtn);
         mAuth = FirebaseAuth.getInstance();
-        reference = FirebaseDatabase.getInstance().getReference("users");
         userFullName = findViewById(R.id.userFullName);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
@@ -61,8 +63,10 @@ public class User_ViewProfile extends AppCompatActivity {
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
+        reference = FirebaseDatabase.getInstance().getReference("users");
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        visitedUserId = "visitedUserID";  //needs to be passed when we click on the person on search page
+        currUserRef = reference.child(currentUserId);
+
         userPostRecView = findViewById(R.id.userPostRecView);
 
         layoutManager = new LinearLayoutManager(this);
@@ -71,9 +75,23 @@ public class User_ViewProfile extends AppCompatActivity {
         postAdapter = new PostAdapter(postList, this);
         userPostRecView.setAdapter(postAdapter);
 
-        retrieveInfo();
+        retrieveInfo(currentUserId);
 
-        checkFollowStatus();
+        visitedUserId = getIntent().getStringExtra("visitedUserId");
+        if(visitedUserId != null) {
+            visUserRef = reference.child(visitedUserId);
+            retrieveVisitedInfo(visitedUserId);
+            checkFollowStatus();
+        } else {
+            Toast.makeText(User_ViewProfile.this,"Error loading user profile.", Toast.LENGTH_SHORT).show();
+        }
+
+        backProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         followProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,76 +137,73 @@ public class User_ViewProfile extends AppCompatActivity {
         });
     }
 
-    private void retrieveInfo() {
-        FirebaseUser user = mAuth.getCurrentUser();
+    private void retrieveVisitedInfo(String visitedUserId) {
+        visUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User visitedUser = snapshot.getValue(User.class);
+                if(visitedUser !=  null) {
+                    String name = visitedUser.getName();
+                    Map<String, Boolean> followers = visitedUser.getFollowers();
+                    Map<String, Boolean> following = visitedUser.getFollowing();
 
-        if (user != null) {
-            reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    User userProfile = snapshot.getValue(User.class);
-                    if (userProfile != null) {
-                        Log.d("UserProfile", "User profile retrieved: " + userProfile.toString());
-                        String name = userProfile.getName();
-                        Long nFollowers = userProfile.getNumberFollowers();
-                        Long nFollowing = userProfile.getNumberFollowing();
+                    String userAvatar = visitedUser.getUserPhotoUrl();
+                    String bio = visitedUser.getUserBio();
 
-                        String userAvatar = userProfile.getUserPhotoUrl();
-                        String bio = userProfile.getUserBio();
+                    userFullName.setText(name);
+                    if(followers != null){
+                        numberOfFollowers.setText(String.valueOf(followers.size()));
+                    } else {
+                        numberOfFollowers.setText("0");
+                    }
+                    if(following != null){
+                        numberOfFollowing.setText(String.valueOf(following.size()));
+                    } else {
+                        numberOfFollowing.setText("0");
+                    }
+                    userBio.setText(bio);
 
-                        userFullName.setText(name);
-                        numberOfFollowers.setText(String.valueOf(nFollowers));
-                        numberOfFollowing.setText(String.valueOf(nFollowing));
-                        userBio.setText(bio);
-
+                    if (userAvatar != null && !userAvatar.isEmpty()) {
                         Glide.with(bigAvatar.getContext())
                                 .load(userAvatar)
-                                .error(R.drawable.round_report_problem_24)
+                                .error(R.drawable.baseline_person_24)
                                 .fitCenter()
                                 .into(bigAvatar);
-
-                        Glide.with(smallAvatar.getContext())
-                                .load(userAvatar)
-                                .error(R.drawable.round_report_problem_24)
-                                .fitCenter()
-                                .into(smallAvatar);
-
-                        Map<String, Post> postsMap = userProfile.getPosts();
-                        Log.d("UserProfile", "Posts Map: " + postsMap);
-
-                        if (postsMap != null && !postsMap.isEmpty()) {
-                            postList.clear();
-                            postList.addAll(postsMap.values());
-                            postAdapter.notifyDataSetChanged();
-
-                            numberOfPosts.setText(String.valueOf(postList.size()));
-                            noPostsMessage.setVisibility(View.GONE);
-                            userPostRecView.setVisibility(View.VISIBLE);
-                        } else {
-                            numberOfPosts.setText("0");
-                            noPostsMessage.setVisibility(View.VISIBLE);
-                            userPostRecView.setVisibility(View.GONE);
-                        }
                     } else {
-                        Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
-                        Log.e("UserProfile", "User profile is null.");
+                        bigAvatar.setImageResource(R.drawable.baseline_person_24);
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
-                    Log.e("User_ProfilePage", "onCancelled: ", error.toException());
+                    Map<String, Post> postsMap = visitedUser.getPosts();
+                    Log.d("UserProfile", "Posts Map: " + postsMap);
+
+                    if (postsMap != null && !postsMap.isEmpty()) {
+                        postList.clear();
+                        postList.addAll(postsMap.values());
+                        postAdapter.notifyDataSetChanged();
+
+                        numberOfPosts.setText(String.valueOf(postList.size()));
+                        noPostsMessage.setVisibility(View.GONE);
+                        userPostRecView.setVisibility(View.VISIBLE);
+                    } else {
+                        numberOfPosts.setText("0");
+                        noPostsMessage.setVisibility(View.VISIBLE);
+                        userPostRecView.setVisibility(View.GONE);
+                    }
+                } else {
+                    Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                    Log.e("UserProfile", "User profile is null.");
                 }
-            });
-        } else {
-            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
-            Log.e("User_ProfilePage", "User is null.");
-        }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void checkFollowStatus() {
-        reference.child(currentUserId).child("following").child(visitedUserId)
+        currUserRef.child("following").child(visitedUserId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -206,9 +221,9 @@ public class User_ViewProfile extends AppCompatActivity {
                 });
     }
 
-    private void changeFollowStatus() {
-        DatabaseReference followingReference = reference.child(currentUserId).child("following").child(visitedUserId);
-        DatabaseReference followersReference = reference.child(visitedUserId).child("followers").child(currentUserId);
+    private void changeFollowStatus(){
+        DatabaseReference followingReference = currUserRef.child("following").child(visitedUserId);
+        DatabaseReference followersReference = visUserRef.child("followers").child(currentUserId);
 
         followingReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -230,4 +245,31 @@ public class User_ViewProfile extends AppCompatActivity {
             }
         });
     }
+
+    private void retrieveInfo(String currentUserId) {
+        currUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User visitedUser = snapshot.getValue(User.class);
+                if(visitedUser !=  null) {
+                    String userAvatar = visitedUser.getUserPhotoUrl();
+
+                    Glide.with(smallAvatar.getContext())
+                            .load(userAvatar)
+                            .error(R.drawable.round_report_problem_24)
+                            .fitCenter()
+                            .into(smallAvatar);
+                } else {
+                    Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                    Log.e("UserProfile", "User profile is null.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

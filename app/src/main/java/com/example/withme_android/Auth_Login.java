@@ -139,7 +139,7 @@ public class Auth_Login extends AppCompatActivity {
 
                 if(dataSnapshot.exists()){
                     Toast.makeText(Auth_Login.this, "Logged in as User", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(Auth_Login.this, User_HomePage.class);
+                    Intent intent = new Intent(Auth_Login.this, User_ProfilePage.class);
                     startActivity(intent);
                     finish();
                 }else{
@@ -153,8 +153,5 @@ public class Auth_Login extends AppCompatActivity {
                 Toast.makeText(Auth_Login.this, "Error checking users table", Toast.LENGTH_LONG).show();
             }
         });
-
     }
-
-
 }

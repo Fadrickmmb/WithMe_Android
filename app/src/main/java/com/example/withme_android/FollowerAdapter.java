@@ -1,5 +1,7 @@
 package com.example.withme_android;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +15,11 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.FollowerViewHolder> {
+    private Context context;
     private List<Follower> followerList;
 
-    public FollowerAdapter(List<Follower> followerList) {
+    public FollowerAdapter(Context context, List<Follower> followerList) {
+        this.context = context;
         this.followerList = followerList;
     }
 
@@ -29,15 +33,46 @@ public class FollowerAdapter extends RecyclerView.Adapter<FollowerAdapter.Follow
     public void onBindViewHolder(FollowerViewHolder holder, int position) {
         Follower follower = followerList.get(position);
         holder.nameTextView.setText(follower.getName());
-        Glide.with(holder.profileImageView.getContext())
-                .load(follower.getUserPhotoUrl())
-                .placeholder(R.drawable.baseline_person_24)
-                .into(holder.profileImageView);
+
+        String photoUrl = follower.getUserPhotoUrl();
+
+        if(photoUrl != null && !photoUrl.isEmpty()) {
+            Glide.with(holder.profileImageView.getContext())
+                    .load(photoUrl)
+                    .placeholder(R.drawable.baseline_person_24)
+                    .into(holder.profileImageView);
+        } else {
+            holder.profileImageView.setImageResource(R.drawable.baseline_person_24);
+        }
+
+        holder.nameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String visited = follower.getId();
+                Intent intent = new Intent(context, User_ViewProfile.class);
+                intent.putExtra("visitedUserId",visited);
+                context.startActivity(intent);
+            }
+        });
+
+        holder.profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String visited = follower.getId();
+                Intent intent = new Intent(context, User_ViewProfile.class);
+                intent.putExtra("visitedUserId",visited);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return followerList != null ? followerList.size() : 0;
+        if(followerList != null) {
+            return followerList.size();
+        } else {
+            return 0;
+        }
     }
 
     public static class FollowerViewHolder extends RecyclerView.ViewHolder {

@@ -7,25 +7,21 @@
     android:background="@color/white"
     tools:context=".User_PostView">
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/navigationBar">
-
         <LinearLayout
+            android:id="@+id/mainLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="20dp"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/buttons">
 
-            <LinearLayout
+
+        <LinearLayout
                 android:id="@+id/headerSection"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -91,7 +87,6 @@
 
                 <LinearLayout
                     android:gravity="center"
-                    android:layout_marginTop="20dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -145,6 +140,51 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/postMenu"
+                        android:gravity="right|center"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="-6dp">
+
+                        <LinearLayout
+                            android:layout_marginRight="-12dp"
+                            android:gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="7dp"
+                                android:src="@drawable/baseline_circle_24" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:gravity="center"
+                            android:layout_marginRight="-12dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="7dp"
+                                android:src="@drawable/baseline_circle_24" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="7dp"
+                                android:src="@drawable/baseline_circle_24" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -156,8 +196,8 @@
 
                     <ImageView
                         android:id="@+id/postPicture"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:src="@drawable/baseline_photo_camera_24"/>
                 </LinearLayout>
 
@@ -165,7 +205,7 @@
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp">
+                    android:layout_height="40dp">
 
                     <LinearLayout
                         android:gravity="start|center"
@@ -236,9 +276,8 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:maxLines="6"
-                    android:lines="6"
                     android:inputType="textMultiLine"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="15dp"
                     android:textColor="@color/withme"/>
 
             </LinearLayout>
@@ -249,7 +288,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="No posts available."
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:visibility="gone"
                 android:textSize="18sp"
                 android:textColor="@android:color/black"/>
@@ -259,26 +298,48 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginTop="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/editProfileBtn"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/buttons"
                 android:scrollbars="vertical" />
-
-            <Button
-                android:id="@+id/backBtn"
-                android:layout_marginTop="20dp"
-                android:backgroundTint="@color/withme"
-                android:layout_width="150dp"
-                android:padding="15dp"
-                android:text="Back"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
-    </ScrollView>
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@id/navigationBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/backBtn"
+            android:backgroundTint="@color/withme"
+            android:layout_width="120dp"
+            android:textSize="12sp"
+            android:layout_marginRight="20dp"
+            android:text="Back"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/addCommentBtn"
+            android:layout_marginLeft="20dp"
+            android:backgroundTint="@color/withme"
+            android:layout_width="120dp"
+            android:textSize="12sp"
+            android:text="Comment"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/navigationBar"
