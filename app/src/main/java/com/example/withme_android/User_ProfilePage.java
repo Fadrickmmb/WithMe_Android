@@ -130,7 +130,7 @@ public class User_ProfilePage extends AppCompatActivity {
                                 .into(smallAvatar);
                     }
                 }
-
+// hi
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(User_ProfilePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
