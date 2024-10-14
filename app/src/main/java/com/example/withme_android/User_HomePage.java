@@ -2,10 +2,9 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -33,9 +32,10 @@ public class User_HomePage extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
+    private TextView noPostsMessage;
     private PostAdapter postAdapter;
     private RecyclerView postRv;
-    Map<String, Post> posts;
+    private Map<String, Post> posts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,7 @@ public class User_HomePage extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         postRv = findViewById(R.id.rv_post);
+        noPostsMessage = findViewById(R.id.noPostsMessage); // Adicione a view para exibir mensagens quando não houver posts
 
         retrieveInfo();
 
@@ -117,6 +118,18 @@ public class User_HomePage extends AppCompatActivity {
                 postAdapter = new PostAdapter(postList, User_HomePage.this);
                 postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
                 postRv.setAdapter(postAdapter);
+
+                if (posts.isEmpty()) {
+                    noPostsMessage.setVisibility(View.VISIBLE);
+                    postRv.setVisibility(View.GONE);
+                } else {
+                    List<Post> postList = new ArrayList<>(posts.values());
+                    postAdapter = new PostAdapter(User_HomePage.this, postList);
+                    postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
+                    postRv.setAdapter(postAdapter);
+                    noPostsMessage.setVisibility(View.GONE);
+                    postRv.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -154,5 +167,4 @@ public class User_HomePage extends AppCompatActivity {
             });
         }
     }
-
 }

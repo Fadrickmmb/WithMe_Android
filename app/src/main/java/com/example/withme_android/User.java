@@ -8,15 +8,14 @@ public class User {
     private String email;
     private String id;
     private Long numberPosts;
-    private Long numberFollowers;
-    private Long numberFollowing;
     private String userPhotoUrl;
     private String userBio;
     private Map<String, Post> posts;
+    private Map<String, Boolean> following;
+    private Map<String, Boolean> followers;
 
     public User() {
     }
-
 
     public User(String name, String email, String id) {
         this.name = name;
@@ -24,13 +23,19 @@ public class User {
         this.id = id;
     }
 
-    public User(String name, String email, String id, Long numberPosts, Long numberFollowers, Long numberFollowing, String userPhotoUrl, String userBio) {
+    public User(String name, String email, String id, Long numberPosts, String userPhotoUrl, String userBio) {
         this.name = name;
         this.email = email;
         this.id = id;
         this.numberPosts = numberPosts;
-        this.numberFollowers = numberFollowers;
-        this.numberFollowing = numberFollowing;
+        this.userPhotoUrl = userPhotoUrl;
+        this.userBio = userBio;
+    }
+
+    public User(String name, String id, Long numberPosts, String userPhotoUrl, String userBio) {
+        this.name = name;
+        this.id = id;
+        this.numberPosts = numberPosts;
         this.userPhotoUrl = userPhotoUrl;
         this.userBio = userBio;
     }
@@ -74,22 +79,6 @@ public class User {
         this.numberPosts = numberPosts;
     }
 
-    public Long getNumberFollowers() {
-        return numberFollowers;
-    }
-
-    public void setNumberFollowers(Long numberFollowers) {
-        this.numberFollowers = numberFollowers;
-    }
-
-    public Long getNumberFollowing() {
-        return numberFollowing;
-    }
-
-    public void setNumberFollowing(Long numberFollowing) {
-        this.numberFollowing = numberFollowing;
-    }
-
     public String getUserPhotoUrl() {
         return userPhotoUrl;
     }
@@ -104,5 +93,21 @@ public class User {
 
     public void setUserBio(String userBio) {
         this.userBio = userBio;
+    }
+
+    public Map<String, Boolean> getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(Map<String, Boolean> following) {
+        this.following = following;
+    }
+
+    public Map<String, Boolean> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Map<String, Boolean> followers) {
+        this.followers = followers;
     }
 }

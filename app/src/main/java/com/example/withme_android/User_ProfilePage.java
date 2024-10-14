@@ -1,4 +1,3 @@
-
 package com.example.withme_android;
 
 import android.content.Intent;
@@ -49,7 +48,7 @@ public class User_ProfilePage extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_profile_page);
 
-        editProfileBtn= findViewById(R.id.editProfileBtn);
+        editProfileBtn = findViewById(R.id.editProfileBtn);
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
         userName = findViewById(R.id.userName);
@@ -66,32 +65,14 @@ public class User_ProfilePage extends AppCompatActivity {
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
         personalPostRecView = findViewById(R.id.personalPostRecView);
+
         layoutManager = new LinearLayoutManager(this);
         personalPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList, User_ProfilePage.this);
+        postAdapter = new PostAdapter(this,postList);
         personalPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
-        showPosts();
-
-        followersLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(User_ProfilePage.this, User_Followers.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        followingLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(User_ProfilePage.this, User_Following.class);
-                startActivity(intent);
-                finish();
-            }
-        });
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,18 +129,24 @@ public class User_ProfilePage extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
-                        Log.d("UserProfile", "User profile retrieved: " + userProfile.toString());
                         String name = userProfile.getName();
-                        Long nFollowers = userProfile.getNumberFollowers();
-                        Long nFollowing = userProfile.getNumberFollowing();
-                        Long nPosts = userProfile.getNumberPosts();
-//
+                        Map<String, Boolean> followers = userProfile.getFollowers();
+                        Map<String, Boolean> following = userProfile.getFollowing();
+
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
-//
+
                         userName.setText(name);
-                        numberOfFollowers.setText(String.valueOf(nFollowers));
-                        numberOfFollowing.setText(String.valueOf(nFollowing));
+                        if(followers != null){
+                            numberOfFollowers.setText(String.valueOf(followers.size()));
+                        } else {
+                            numberOfFollowers.setText("0");
+                        }
+                        if(following != null){
+                            numberOfFollowing.setText(String.valueOf(following.size()));
+                        } else {
+                            numberOfFollowing.setText("0");
+                        }
                         userBio.setText(bio);
 
                         Glide.with(bigAvatar.getContext())
@@ -173,66 +160,66 @@ public class User_ProfilePage extends AppCompatActivity {
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(smallAvatar);
-                    }
 
-                    Map<String, Post> postsMap = userProfile.getPosts();
-                    Log.d("UserProfile", "Posts Map: " + postsMap);
+                        Map<String, Post> postsMap = userProfile.getPosts();
+                        Log.d("UserProfile", "Posts Map: " + postsMap);
 
-                    if (postsMap != null) {
-                        int nPosts = postsMap.size();
-                        postList.clear();
-                        postList.addAll(postsMap.values());
-                        postAdapter.notifyDataSetChanged();
+                        if (postsMap != null && !postsMap.isEmpty()) {
+                            postList.clear();
+                            postList.addAll(postsMap.values());
+                            postAdapter.notifyDataSetChanged();
+
+                            numberOfPosts.setText(String.valueOf(postList.size()));
+                            noPostsMessage.setVisibility(View.GONE);
+                            personalPostRecView.setVisibility(View.VISIBLE);
+                        } else {
+                            numberOfPosts.setText("0");
+                            noPostsMessage.setVisibility(View.VISIBLE);
+                            personalPostRecView.setVisibility(View.GONE);
+                        }
+
+                        followersLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Map<String, Boolean> followersMap = userProfile.getFollowers();
+                                if(followersMap != null) {
+                                    Intent intent = new Intent(User_ProfilePage.this, User_Followers.class);
+                                    intent.putStringArrayListExtra("followersList", new ArrayList<>(userProfile.getFollowers().keySet()));
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(User_ProfilePage.this, "You have no followers.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+
+                        followingLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Map<String, Boolean> followingMap = userProfile.getFollowing();
+                                if(followingMap != null) {
+                                    Intent intent = new Intent(User_ProfilePage.this, User_Following.class);
+                                    intent.putStringArrayListExtra("followingList", new ArrayList<>(userProfile.getFollowing().keySet()));
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(User_ProfilePage.this, "You don't follow anyone.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                     } else {
-                        numberOfPosts.setText("0");
+                        Toast.makeText(User_ProfilePage.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                        Log.e("UserProfile", "User profile is null.");
                     }
-
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(User_ProfilePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+                    Log.e("User_ProfilePage", "onCancelled: ", error.toException());
                 }
             });
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            Log.e("User_ProfilePage", "User is null.");
         }
-    }
-
-    private void showPosts() {
-        reference.child(mAuth.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    postList.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        Post post = new Post();
-                        post.setContent((String) map.get("content"));
-
-                        if (post != null) {
-                            postList.add(post);
-                        }
-                    }
-                    postAdapter.notifyDataSetChanged();
-
-                    if (postList.isEmpty()) {
-                        noPostsMessage.setVisibility(View.VISIBLE);
-                        personalPostRecView.setVisibility(View.GONE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    } else {
-                        noPostsMessage.setVisibility(View.GONE);
-                        personalPostRecView.setVisibility(View.VISIBLE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    }
-                } else {
-                    noPostsMessage.setVisibility(View.VISIBLE);
-                    personalPostRecView.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(User_ProfilePage.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }
