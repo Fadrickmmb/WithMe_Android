@@ -2,6 +2,7 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class User_HomePage extends AppCompatActivity {
 
@@ -89,11 +91,9 @@ public class User_HomePage extends AppCompatActivity {
                 finish();
             }
         });
-
-        loadPosts();
     }
 
-    private void loadPosts() {
+    private void loadPosts(Map<String, Boolean> followers) {
         posts = new HashMap<>();
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -103,11 +103,12 @@ public class User_HomePage extends AppCompatActivity {
                     try {
                         User user = userSnapshot.getValue(User.class);
                         if (user != null && user.getPosts() != null) {
-                            // iterate through all posts of the user
-                            for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
-                                String postId = entry.getKey();
-                                Post post = entry.getValue();
-                                posts.put(postId, post);
+                            if ((followers != null && followers.containsKey(userSnapshot.getKey())) || Objects.equals(userSnapshot.getKey(), user.getId())) {
+                                for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
+                                    String postId = entry.getKey();
+                                    Post post = entry.getValue();
+                                    posts.put(postId, post);
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -115,7 +116,7 @@ public class User_HomePage extends AppCompatActivity {
                     }
                 }
                 List<Post> postList = new ArrayList<>(posts.values());
-                postAdapter = new PostAdapter(postList, User_HomePage.this);
+                postAdapter = new PostAdapter(User_HomePage.this, postList);
                 postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
                 postRv.setAdapter(postAdapter);
 
@@ -123,7 +124,6 @@ public class User_HomePage extends AppCompatActivity {
                     noPostsMessage.setVisibility(View.VISIBLE);
                     postRv.setVisibility(View.GONE);
                 } else {
-                    List<Post> postList = new ArrayList<>(posts.values());
                     postAdapter = new PostAdapter(User_HomePage.this, postList);
                     postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
                     postRv.setAdapter(postAdapter);
@@ -149,6 +149,8 @@ public class User_HomePage extends AppCompatActivity {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
                         String userAvatar = userProfile.getUserPhotoUrl();
+
+                        loadPosts(userProfile.getFollowers());
 
                         Glide.with(smallAvatar.getContext())
                                 .load(userAvatar)

@@ -72,7 +72,7 @@ public class User_PostView extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         commentPostRecView.setLayoutManager(layoutManager);
         commentList = new ArrayList<>();
-        commentAdapter = new CommentAdapter(this, commentList);
+        commentAdapter = new CommentAdapter(commentList, this);
         commentPostRecView.setAdapter(commentAdapter);
         postMenu = findViewById(R.id.postMenu);
         ownerId = getIntent().getStringExtra("userId");
@@ -237,7 +237,7 @@ public class User_PostView extends AppCompatActivity {
                         String date = post.getPostDate();
                         String name = post.getName();
                         String location = post.getLocation();
-                        int yummys = post.getYummys();
+                        Map<String, Boolean> yummys = post.getYummys();
                         String userPhotoUrl = post.getUserPhotoUrl();
                         String content = post.getContent();
 
@@ -246,7 +246,7 @@ public class User_PostView extends AppCompatActivity {
                         yummysNumber.setText(String.valueOf(yummys));
                         locationName.setText(location);
                         postDate.setText(date);
-                        commentsNumber.setText(String.valueOf(post.getCommentNumbers()));
+                        commentsNumber.setText(String.valueOf(post.getComments().size()));
 
                         Glide.with(userAvatar.getContext())
                                 .load(userPhotoUrl)
@@ -343,7 +343,7 @@ public class User_PostView extends AppCompatActivity {
                     String date = getCurrentDate();
 
                     String commentId = postreference.child(postId).child("comments").push().getKey();
-                    Comment comment = new Comment(userName, commentText, date, userId, postId, commentId);
+                    Comment comment = new Comment(userName, commentText, date, commentId);
                     postreference.child(postId).child("comments").child(commentId).setValue(comment);
                     postreference.child(postId).child("commentNumbers").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override

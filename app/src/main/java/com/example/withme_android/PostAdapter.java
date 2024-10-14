@@ -29,7 +29,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final List<Post> postList;
     private final Context context;
 
-    public PostAdapter(List<Post> postList, Context context) {
+    public PostAdapter(Context context, List<Post> postList) {
         this.context = context;
         this.postList = postList;
     }
