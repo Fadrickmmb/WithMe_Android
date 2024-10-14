@@ -27,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,8 +150,8 @@ public class User_AddPostPage extends AppCompatActivity {
         fileReference.putFile(postImgUri).addOnSuccessListener(taskSnapshot -> {
             fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
 
-                Post post = new Post(postId, content, mAuth.getUid(), uri.toString(), new Date().toString(),
-                        userData.getName(), location, new HashMap<>(), userData.getUserPhotoUrl(), new HashMap<>());
+                Post post = new Post(content, mAuth.getUid(), uri.toString(), new Date().toString(),
+                        userData.getName(), location, 0, userData.getUserPhotoUrl());
 
                 Map<String, Post> posts = userData.getPosts();
                 if (posts == null) {
