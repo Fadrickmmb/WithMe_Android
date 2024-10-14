@@ -1,4 +1,3 @@
-
 package com.example.withme_android;
 
 import android.content.Intent;
@@ -49,7 +48,7 @@ public class User_ProfilePage extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_profile_page);
 
-        editProfileBtn= findViewById(R.id.editProfileBtn);
+        editProfileBtn = findViewById(R.id.editProfileBtn);
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
         userName = findViewById(R.id.userName);
@@ -66,14 +65,14 @@ public class User_ProfilePage extends AppCompatActivity {
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
         personalPostRecView = findViewById(R.id.personalPostRecView);
+
         layoutManager = new LinearLayoutManager(this);
         personalPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(postList, User_ProfilePage.this);
+        postAdapter = new PostAdapter(this,postList);
         personalPostRecView.setAdapter(postAdapter);
 
         retrieveInfo();
-        showPosts();
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,6 +132,7 @@ public class User_ProfilePage extends AppCompatActivity {
                         String name = userProfile.getName();
                         Map<String, Boolean> followers = userProfile.getFollowers();
                         Map<String, Boolean> following = userProfile.getFollowing();
+
                         String userAvatar = userProfile.getUserPhotoUrl();
                         String bio = userProfile.getUserBio();
 
@@ -160,7 +160,7 @@ public class User_ProfilePage extends AppCompatActivity {
                                 .error(R.drawable.round_report_problem_24)
                                 .fitCenter()
                                 .into(smallAvatar);
-                    }
+
                         Map<String, Post> postsMap = userProfile.getPosts();
                         Log.d("UserProfile", "Posts Map: " + postsMap);
 
@@ -206,55 +206,20 @@ public class User_ProfilePage extends AppCompatActivity {
                             }
                         });
                     } else {
-                        numberOfPosts.setText("0");
+                        Toast.makeText(User_ProfilePage.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                        Log.e("UserProfile", "User profile is null.");
                     }
-
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Toast.makeText(User_ProfilePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+                    Log.e("User_ProfilePage", "onCancelled: ", error.toException());
                 }
             });
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
+            Log.e("User_ProfilePage", "User is null.");
         }
-    }
-
-    private void showPosts() {
-        reference.child(mAuth.getUid()).child("posts").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    postList.clear();
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                        Post post = new Post();
-                        post.setContent((String) map.get("content"));
-
-                        if (post != null) {
-                            postList.add(post);
-                        }
-                    }
-                    postAdapter.notifyDataSetChanged();
-
-                    if (postList.isEmpty()) {
-                        noPostsMessage.setVisibility(View.VISIBLE);
-                        personalPostRecView.setVisibility(View.GONE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    } else {
-                        noPostsMessage.setVisibility(View.GONE);
-                        personalPostRecView.setVisibility(View.VISIBLE);
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                    }
-                } else {
-                    noPostsMessage.setVisibility(View.VISIBLE);
-                    personalPostRecView.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(User_ProfilePage.this, "Failed to load posts.", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }
