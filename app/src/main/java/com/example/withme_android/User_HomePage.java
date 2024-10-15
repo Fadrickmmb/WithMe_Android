@@ -103,7 +103,8 @@ public class User_HomePage extends AppCompatActivity {
                     try {
                         User user = userSnapshot.getValue(User.class);
                         if (user != null && user.getPosts() != null) {
-                            if ((followers != null && followers.containsKey(userSnapshot.getKey())) || Objects.equals(userSnapshot.getKey(), user.getId())) {
+                            if ((followers != null && followers.containsKey(user.getId())) ||
+                                    Objects.equals(mAuth.getUid(), user.getId())) {
                                 for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
                                     String postId = entry.getKey();
                                     Post post = entry.getValue();
