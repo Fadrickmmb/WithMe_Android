@@ -14,12 +14,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class User_SearchPage extends AppCompatActivity {
 
     EditText searchInput;
     ImageView searchButton;
     TextView result01, result02, result03;
     Button toHome;
+
+    private DatabaseReference userDatabase;
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -39,6 +46,9 @@ public class User_SearchPage extends AppCompatActivity {
         result02 = findViewById(R.id.user_searchPage_result02);
         result03 = findViewById(R.id.user_searchPage_result03);
         toHome = findViewById(R.id.user_searchPage_buttonToHome);
+
+        mAuth = FirebaseAuth.getInstance();
+        userDatabase = FirebaseDatabase.getInstance().getReference("users");
 
         toHome.setOnClickListener(new View.OnClickListener() {
             @Override
