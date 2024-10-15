@@ -1,26 +1,26 @@
 package com.example.withme_android;
 
+import java.util.List;
 import java.util.Map;
 
 public class Post {
-    private String postId;
     private String content;
     private String userId;
     private String postImageUrl;
     private String postDate;
     private String name;
     private String location;
-    private Map<String, Boolean> yummys;
+    private int yummys;
+    private int commentNumbers;
     private String userPhotoUrl;
+    private String postId;
     private Map<String, Comment> comments;
 
     public Post() {
     }
 
-    public Post(String postId, String content, String userId, String postImageUrl, String postDate,
-                String name, String location, Map<String, Boolean> yummys,
-                String userPhotoUrl, Map<String, Comment> comments) {
-        this.postId = postId;
+    public Post(String content, String userId, String postImageUrl, String postDate, String name,
+                String location, int yummys, int commentNumbers, String userPhotoUrl,String postId) {
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
@@ -28,8 +28,12 @@ public class Post {
         this.name = name;
         this.location = location;
         this.yummys = yummys;
+        this.commentNumbers = commentNumbers;
         this.userPhotoUrl = userPhotoUrl;
-        this.comments = comments;
+        this.postId = postId;
+    }
+
+    public Post(String content, String uid, String string, String string1, String name, String location, int i, String userPhotoUrl) {
     }
 
     public String getContent() {
@@ -42,10 +46,6 @@ public class Post {
 
     public String getUserId() {
         return userId;
-    }
-
-    public String getPostId() {
-        return postId;
     }
 
     public void setUserId(String userId) {
@@ -84,12 +84,20 @@ public class Post {
         this.location = location;
     }
 
-    public Map<String, Boolean> getYummys() {
+    public int getYummys() {
         return yummys;
     }
 
-    public void setYummys(Map<String, Boolean> yummys) {
+    public void setYummys(int yummys) {
         this.yummys = yummys;
+    }
+
+    public int getCommentNumbers() {
+        return commentNumbers;
+    }
+
+    public void setCommentNumbers(int commentNumbers) {
+        this.commentNumbers = commentNumbers;
     }
 
     public String getUserPhotoUrl() {
@@ -107,4 +115,14 @@ public class Post {
     public void setComments(Map<String, Comment> comments) {
         this.comments = comments;
     }
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+
 }
