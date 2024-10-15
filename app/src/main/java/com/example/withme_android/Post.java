@@ -10,7 +10,7 @@ public class Post {
     private String postDate;
     private String name;
     private String location;
-    private int yummys;
+    private Map<String, Boolean> yummys;
     private int commentNumbers;
     private String userPhotoUrl;
     private String postId;
@@ -20,7 +20,7 @@ public class Post {
     }
 
     public Post(String content, String userId, String postImageUrl, String postDate, String name,
-                String location, int yummys, int commentNumbers, String userPhotoUrl,String postId) {
+                String location, Map<String, Boolean> yummys, int commentNumbers, String userPhotoUrl,String postId) {
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
@@ -84,11 +84,11 @@ public class Post {
         this.location = location;
     }
 
-    public int getYummys() {
+    public Map<String, Boolean> getYummys() {
         return yummys;
     }
 
-    public void setYummys(int yummys) {
+    public void setYummys(Map<String, Boolean> yummys) {
         this.yummys = yummys;
     }
 

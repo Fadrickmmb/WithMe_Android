@@ -72,7 +72,7 @@ public class User_PostView extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         commentPostRecView.setLayoutManager(layoutManager);
         commentList = new ArrayList<>();
-        commentAdapter = new CommentAdapter(commentList, this);
+        commentAdapter = new CommentAdapter(this, commentList);
         commentPostRecView.setAdapter(commentAdapter);
         postMenu = findViewById(R.id.postMenu);
         ownerId = getIntent().getStringExtra("userId");
