@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +15,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,7 +29,6 @@ public class User_SearchPage extends AppCompatActivity {
     Button toHome;
 
     private DatabaseReference userDatabase;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,67 +47,67 @@ public class User_SearchPage extends AppCompatActivity {
         result02 = findViewById(R.id.user_searchPage_result02);
         toHome = findViewById(R.id.user_searchPage_buttonToHome);
 
-        mAuth = FirebaseAuth.getInstance();
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
 
-        toHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), User_HomePage.class);
-                startActivity(intent);
-                finish();
-            }
+        toHome.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), User_HomePage.class);
+            startActivity(intent);
+            finish();
         });
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String searchText = searchInput.getText().toString().trim();
+        searchButton.setOnClickListener(view -> {
+            String searchText = searchInput.getText().toString().trim();
 
-                if (searchText.length() < 5) {
-                    result01.setText("Please enter at least 5 characters.");
-                    return;
-                }
+            if (searchText.length() < 5) {
+                result01.setText("Please enter at least 5 characters.");
+                return;
+            }
 
-                String searchPrefix = searchText.substring(0, 5).toLowerCase();
+            String searchPrefix = searchText.substring(0, 5).toLowerCase();
 
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
 
-                ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-                        boolean userFound = false;
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    boolean userFound = false;
 
-                        if (snapshot.exists()) {
-                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                                String uid = userSnapshot.getKey();
-                                String name = userSnapshot.child("name").getValue(String.class);
+                    if (snapshot.exists()) {
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String uid = userSnapshot.getKey();
+                            String name = userSnapshot.child("name").getValue(String.class);
 
-                                if (name != null && name.toLowerCase().startsWith(searchPrefix)) {
-                                    result01.setText("User: " + name);
-                                    result02.setText("UID: " + uid);
-                                    userFound = true;
-                                    break;
-                                }
+                            if (name != null && name.toLowerCase().startsWith(searchPrefix)) {
+                                result01.setText("User: " + name);
+                                result02.setText("UID: " + uid);
+                                userFound = true;
+
+                                result01.setOnClickListener(v -> {
+                                    Intent intent = new Intent(User_SearchPage.this, User_ViewProfile.class);
+                                    intent.putExtra("userUid", uid);
+                                    startActivity(intent);
+                                });
+
+                                break;
                             }
+                        }
 
-                            if (!userFound) {
-                                result01.setText("We haven't found a user that matches '" + searchPrefix + "'");
-                                result02.setText("");
-                            }
-                        } else {
-                            result01.setText("No user data available.");
+                        if (!userFound) {
+                            result01.setText("We haven't found a user that matches '" + searchPrefix + "'");
                             result02.setText("");
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        result01.setText("Database error: " + databaseError.getMessage());
+                    } else {
+                        result01.setText("No user data available.");
                         result02.setText("");
                     }
-                });
-            }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    result01.setText("Database error: " + databaseError.getMessage());
+                    result02.setText("");
+                }
+            });
         });
     }
 }

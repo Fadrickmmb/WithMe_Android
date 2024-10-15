@@ -49,7 +49,9 @@ public class User_ViewProfile extends AppCompatActivity {
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
 
-        retrieveInfo();
+
+        Intent intent = getIntent();
+        String uid = intent.getStringExtra("userUid");
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,47 +97,56 @@ public class User_ViewProfile extends AppCompatActivity {
                 finish();
             }
         });
+
+        if (uid != null) {
+            reference = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            retrieveInfo(uid);
+        } else {
+            Toast.makeText(this, "User UID not found.", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
-    private void retrieveInfo() {
-        FirebaseUser user = mAuth.getCurrentUser();
+    private void retrieveInfo(String uid) {
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User userProfile = snapshot.getValue(User.class);
 
-        if (user != null) {
-            reference.child(mAuth.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    User userProfile = snapshot.getValue(User.class);
-                    if (userProfile != null) {
-                        String name = userProfile.getName();
-                        String nFollowers = userProfile.getNumberFollowers();
-                        String nYummys = userProfile.getNumberYummys();
-                        String userAvatar = userProfile.getUserPhotoUrl();
-                        String bio = userProfile.getUserBio();
+                if (userProfile != null) {
+                    String name = userProfile.getName();
+                    String nFollowers = userProfile.getNumberFollowers();
+                    String nPosts = userProfile.getNumberPosts();
+                    String nYummys = userProfile.getNumberYummys();
+                    String bio = userProfile.getUserBio();
+                    String userAvatar = userProfile.getUserPhotoUrl();
 
-                        userFullName.setText(name);
-                        numberOfFollowers.setText(nFollowers);
-                        numberOfYummys.setText(nYummys);
-                        userBio.setText(bio);
+                    userFullName.setText(name);
+                    numberOfFollowers.setText(nFollowers);
+                    numberOfPosts.setText(nPosts);
+                    numberOfYummys.setText(nYummys);
+                    userBio.setText(bio);
 
-                        Glide.with(bigAvatar.getContext())
-                                .load(userAvatar)
-                                .error(R.drawable.round_report_problem_24)
-                                .fitCenter()
-                                .into(bigAvatar);
+                    Glide.with(bigAvatar.getContext())
+                            .load(userAvatar)
+                            .error(R.drawable.round_report_problem_24)  // Error image
+                            .fitCenter()
+                            .into(bigAvatar);
 
-                        Glide.with(smallAvatar.getContext())
-                                .load(userAvatar)
-                                .error(R.drawable.round_report_problem_24)
-                                .fitCenter()
-                                .into(smallAvatar);
-                    }
+                    Glide.with(smallAvatar.getContext())
+                            .load(userAvatar)
+                            .error(R.drawable.round_report_problem_24)  // Error image
+                            .fitCenter()
+                            .into(smallAvatar);
+                } else {
+                    Toast.makeText(User_ViewProfile.this, "User profile data is unavailable.", Toast.LENGTH_SHORT).show();
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
