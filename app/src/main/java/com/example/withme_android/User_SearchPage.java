@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -62,9 +63,36 @@ public class User_SearchPage extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                userDatabase.limitToFirst(1).get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        for (DataSnapshot userSnapshot : task.getResult().getChildren()) {
+                            String userName = userSnapshot.child("name").getValue(String.class);
+                            result01.setText(userName);
+                        }
+                    } else {
+                        result01.setText("No users found.");
+                    }
+                });
             }
         });
+
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userDatabase.limitToFirst(1).get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult().exists()) {
+                        for (DataSnapshot userSnapshot : task.getResult().getChildren()) {
+                            String userName = userSnapshot.child("name").getValue(String.class);
+                            result01.setText(userName);
+                        }
+                    } else {
+                        result01.setText("No users found.");
+                    }
+                });
+            }
+        });
+
 
 
     }

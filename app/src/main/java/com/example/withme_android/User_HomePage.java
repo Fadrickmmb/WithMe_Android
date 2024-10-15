@@ -42,6 +42,7 @@ public class User_HomePage extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
         toProfile = findViewById(R.id.userHomePage_toProfileButton);
+        toSearch = findViewById(R.id.userHomePage_toSearchButton);
 
 
         fetchUserName();
