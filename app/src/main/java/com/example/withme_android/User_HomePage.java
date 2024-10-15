@@ -1,6 +1,8 @@
 package com.example.withme_android;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -21,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class User_HomePage extends AppCompatActivity {
 
-    Button toProfile;
+    Button toProfile, toSearch;
     private DatabaseReference userDatabase;
     private FirebaseAuth mAuth;
 
@@ -44,8 +46,19 @@ public class User_HomePage extends AppCompatActivity {
 
         fetchUserName();
 
-        toProfile.setOnClickListener(view -> {
+        toSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), User_SearchPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
+        toProfile.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), User_ProfilePage.class);
+            startActivity(intent);
+            finish();
         });
     }
 

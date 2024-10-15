@@ -19,6 +19,17 @@
         app:layout_constraintVertical_bias="0.356"></TextView>
 
     <Button
+        android:id="@+id/userHomePage_toSearchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView7"
+        app:layout_constraintVertical_bias="0.36"></Button>
+
+    <Button
         android:id="@+id/userHomePage_toProfileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,7 +38,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.944"></Button>
+        app:layout_constraintTop_toBottomOf="@+id/userHomePage_toSearchButton"
+        app:layout_constraintVertical_bias="0.252"></Button>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
