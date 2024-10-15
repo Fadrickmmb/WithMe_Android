@@ -16,19 +16,20 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class User_SearchPage extends AppCompatActivity {
 
     EditText searchInput;
     ImageView searchButton;
-    TextView result01, result02, result03;
+    TextView result01, result02;
     Button toHome;
 
     private DatabaseReference userDatabase;
     private FirebaseAuth mAuth;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,6 @@ public class User_SearchPage extends AppCompatActivity {
         searchButton = findViewById(R.id.user_searchPage_searchButton);
         result01 = findViewById(R.id.user_searchPage_result01);
         result02 = findViewById(R.id.user_searchPage_result02);
-        result03 = findViewById(R.id.user_searchPage_result03);
         toHome = findViewById(R.id.user_searchPage_buttonToHome);
 
         mAuth = FirebaseAuth.getInstance();
@@ -63,37 +63,52 @@ public class User_SearchPage extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userDatabase.limitToFirst(1).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult().exists()) {
-                        for (DataSnapshot userSnapshot : task.getResult().getChildren()) {
-                            String userName = userSnapshot.child("name").getValue(String.class);
-                            result01.setText(userName);
+                String searchText = searchInput.getText().toString().trim();
+
+                if (searchText.length() < 5) {
+                    result01.setText("Please enter at least 5 characters.");
+                    return;
+                }
+
+                String searchPrefix = searchText.substring(0, 5).toLowerCase();
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("users");
+
+                ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        boolean userFound = false;
+
+                        if (snapshot.exists()) {
+                            for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                                String uid = userSnapshot.getKey();
+                                String name = userSnapshot.child("name").getValue(String.class);
+
+                                if (name != null && name.toLowerCase().startsWith(searchPrefix)) {
+                                    result01.setText("User: " + name);
+                                    result02.setText("UID: " + uid);
+                                    userFound = true;
+                                    break;
+                                }
+                            }
+
+                            if (!userFound) {
+                                result01.setText("We haven't found a user that matches '" + searchPrefix + "'");
+                                result02.setText("");
+                            }
+                        } else {
+                            result01.setText("No user data available.");
+                            result02.setText("");
                         }
-                    } else {
-                        result01.setText("No users found.");
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        result01.setText("Database error: " + databaseError.getMessage());
+                        result02.setText("");
                     }
                 });
             }
         });
-
-
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userDatabase.limitToFirst(1).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult().exists()) {
-                        for (DataSnapshot userSnapshot : task.getResult().getChildren()) {
-                            String userName = userSnapshot.child("name").getValue(String.class);
-                            result01.setText(userName);
-                        }
-                    } else {
-                        result01.setText("No users found.");
-                    }
-                });
-            }
-        });
-
-
-
     }
 }
