@@ -62,7 +62,7 @@ public class User_EditPost extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference("users");
         postreference = reference.child(mAuth.getUid()).child("posts");
-        storageReference = FirebaseStorage.getInstance().getReference("post_images");
+        storageReference = FirebaseStorage.getInstance().getReference("posts");
         postId = getIntent().getStringExtra("postId");
 
         retrieveInfo();
