@@ -50,8 +50,6 @@ public class User_SearchPage extends AppCompatActivity {
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
 
         toHome.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), User_HomePage.class);
-            startActivity(intent);
             finish();
         });
 
@@ -84,7 +82,7 @@ public class User_SearchPage extends AppCompatActivity {
 
                                 result01.setOnClickListener(v -> {
                                     Intent intent = new Intent(User_SearchPage.this, User_ViewProfile.class);
-                                    intent.putExtra("userUid", uid);
+                                    intent.putExtra("visitedUserId", uid);
                                     startActivity(intent);
                                 });
 

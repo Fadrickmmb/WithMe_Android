@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
@@ -246,7 +245,7 @@ public class User_PostView extends AppCompatActivity {
                         yummysNumber.setText(String.valueOf(yummys));
                         locationName.setText(location);
                         postDate.setText(date);
-                        commentsNumber.setText(String.valueOf(post.getCommentNumbers()));
+                        commentsNumber.setText(String.valueOf(post.getCommentsNumber()));
 
                         Glide.with(userAvatar.getContext())
                                 .load(userPhotoUrl)
