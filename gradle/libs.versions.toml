@@ -1,6 +1,8 @@
 [versions]
 agp = "8.6.1"
 compiler = "4.15.1"
+compilerVersion = "4.11.0"
+githubGlide = "4.11.0"
 glideVersion = "4.12.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -19,7 +21,9 @@ glide = "4.15.1"
 [libraries]
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+compiler-v4110 = { module = "com.github.bumptech.glide:compiler", version.ref = "compilerVersion" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+glide-v4110 = { module = "com.github.bumptech.glide:glide", version.ref = "githubGlide" }
 glide-v4120 = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

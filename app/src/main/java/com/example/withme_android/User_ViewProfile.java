@@ -39,7 +39,7 @@ public class User_ViewProfile extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private List<Post> postList;
     private PostAdapter postAdapter;
-    private RecyclerView userPostRecView;
+    private RecyclerView visitedPostRecView;
     private LinearLayoutManager layoutManager;
     private String currentUserId,visitedUserId;
 
@@ -67,13 +67,13 @@ public class User_ViewProfile extends AppCompatActivity {
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         currUserRef = reference.child(currentUserId);
 
-        userPostRecView = findViewById(R.id.userPostRecView);
+        visitedPostRecView = findViewById(R.id.visitedPostRecView);
 
         layoutManager = new LinearLayoutManager(this);
-        userPostRecView.setLayoutManager(layoutManager);
+        visitedPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
         postAdapter = new PostAdapter(this,postList);
-        userPostRecView.setAdapter(postAdapter);
+        visitedPostRecView.setAdapter(postAdapter);
 
         retrieveInfo(currentUserId);
 
@@ -172,26 +172,10 @@ public class User_ViewProfile extends AppCompatActivity {
                     } else {
                         bigAvatar.setImageResource(R.drawable.baseline_person_24);
                     }
-
-                    Map<String, Post> postsMap = visitedUser.getPosts();
-                    Log.d("UserProfile", "Posts Map: " + postsMap);
-
-                    if (postsMap != null && !postsMap.isEmpty()) {
-                        postList.clear();
-                        postList.addAll(postsMap.values());
-                        postAdapter.notifyDataSetChanged();
-
-                        numberOfPosts.setText(String.valueOf(postList.size()));
-                        noPostsMessage.setVisibility(View.GONE);
-                        userPostRecView.setVisibility(View.VISIBLE);
-                    } else {
-                        numberOfPosts.setText("0");
-                        noPostsMessage.setVisibility(View.VISIBLE);
-                        userPostRecView.setVisibility(View.GONE);
-                    }
+                    // When I am not seeing my own posts, i need to call it in another method.
+                    retrieveVisitedUserPosts(visitedUserId);
                 } else {
                     Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
-                    Log.e("UserProfile", "User profile is null.");
                 }
             }
 
@@ -202,6 +186,42 @@ public class User_ViewProfile extends AppCompatActivity {
         });
     }
 
+    private void retrieveVisitedUserPosts(String visitedUserId){
+        DatabaseReference postsReference = FirebaseDatabase.getInstance().getReference("users").child(visitedUserId).child("posts");
+        postsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists() && snapshot.hasChildren()){
+                    postList.clear();
+                    for(DataSnapshot postSnapshot : snapshot.getChildren()){
+                        Post post = postSnapshot.getValue(Post.class);
+                        if(post != null){
+                            postList.add(post);
+                        }
+                    }
+                    if (!postList.isEmpty()) {
+                        postAdapter.notifyDataSetChanged();
+                        numberOfPosts.setText(String.valueOf(postList.size()));
+                        noPostsMessage.setVisibility(View.GONE);
+                        visitedPostRecView.setVisibility(View.VISIBLE);
+                    } else {
+                        numberOfPosts.setText("0");
+                        noPostsMessage.setVisibility(View.VISIBLE);
+                        visitedPostRecView.setVisibility(View.GONE);
+                    }
+                } else {
+                    numberOfPosts.setText("0");
+                    noPostsMessage.setVisibility(View.VISIBLE);
+                    visitedPostRecView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
     private void checkFollowStatus() {
         currUserRef.child("following").child(visitedUserId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -271,5 +291,4 @@ public class User_ViewProfile extends AppCompatActivity {
             }
         });
     }
-
 }
