@@ -1,57 +1,52 @@
 package com.example.withme_android;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class User {
     private String name;
     private String email;
     private String id;
-    private Map<String, Post> posts;
-    private String numberPosts;
-    private String numberFollowers;
-    private String numberYummys;
+    private Long numberPosts;
     private String userPhotoUrl;
     private String userBio;
+    private Map<String, Post> posts;
+    private Map<String, Boolean> following;
+    private Map<String, Boolean> followers;
 
-    public User(String name, String email, String id, String numberPosts, String numberYummys, String numberFollowers, String userPhotoUrl, String userBio){
+    public User() {
+    }
+
+    public User(String name, String email, String id) {
+        this.name = name;
+        this.email = email;
+        this.id = id;
+    }
+
+    public User(String name, String email, String id, Long numberPosts, String userPhotoUrl, String userBio) {
         this.name = name;
         this.email = email;
         this.id = id;
         this.numberPosts = numberPosts;
-        this.numberFollowers = numberYummys;
-        this.numberYummys = numberFollowers;
         this.userPhotoUrl = userPhotoUrl;
         this.userBio = userBio;
-        this.posts = new HashMap<>();
     }
 
-    public User(String name, String email, String id){
+    public User(String name, String id, Long numberPosts, String userPhotoUrl, String userBio) {
         this.name = name;
-        this.email = email;
         this.id = id;
-    }
-
-    public User(){
-
-    }
-
-    public String getUserBio() {
-        return userBio;
-    }
-
-    public void setUserBio(String userBio) {
+        this.numberPosts = numberPosts;
+        this.userPhotoUrl = userPhotoUrl;
         this.userBio = userBio;
     }
 
-    public String getUserPhotoUrl() {
-        return userPhotoUrl;
+    public Map<String, Post> getPosts() {
+        return posts;
     }
 
-    public void setUserPhotoUrl(String userPhotoUrl) {
-        this.userPhotoUrl = userPhotoUrl;
+    public void setPosts(Map<String, Post> posts) {
+        this.posts = posts;
     }
-
     public String getName() {
         return name;
     }
@@ -76,36 +71,43 @@ public class User {
         this.id = id;
     }
 
-    public Map<String, Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(Map<String, Post> posts) {
-        this.posts = posts;
-    }
-
-    public String getNumberPosts() {
+    public Long getNumberPosts() {
         return numberPosts;
     }
 
-    public void setNumberPosts(String numberPosts) {
+    public void setNumberPosts(Long numberPosts) {
         this.numberPosts = numberPosts;
     }
 
-    public String getNumberFollowers() {
-        return numberFollowers;
+    public String getUserPhotoUrl() {
+        return userPhotoUrl;
     }
 
-    public void setNumberFollowers(String numberComments) {
-        this.numberFollowers = numberComments;
+    public void setUserPhotoUrl(String userPhotoUrl) {
+        this.userPhotoUrl = userPhotoUrl;
     }
 
-    public String getNumberYummys() {
-        return numberYummys;
+    public String getUserBio() {
+        return userBio;
     }
 
-    public void setNumberYummys(String numberYummys) {
-        this.numberYummys = numberYummys;
+    public void setUserBio(String userBio) {
+        this.userBio = userBio;
+    }
+
+    public Map<String, Boolean> getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(Map<String, Boolean> following) {
+        this.following = following;
+    }
+
+    public Map<String, Boolean> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(Map<String, Boolean> followers) {
+        this.followers = followers;
     }
 }
-

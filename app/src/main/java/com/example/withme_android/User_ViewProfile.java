@@ -2,6 +2,7 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,8 +12,12 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.annotation.GlideModule;
+import com.bumptech.glide.module.AppGlideModule;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,13 +26,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class User_ViewProfile extends AppCompatActivity {
 
-    private Button editProfileBtn;
+    private Button followProfileBtn, backProfileBtn;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference;
-    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfYummys,userBio;
+    private DatabaseReference reference, currUserRef, visUserRef;
+    private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
+    private List<Post> postList;
+    private PostAdapter postAdapter;
+    private RecyclerView userPostRecView;
+    private LinearLayoutManager layoutManager;
+    private String currentUserId,visitedUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,30 +49,54 @@ public class User_ViewProfile extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_view_profile);
 
-        editProfileBtn= findViewById(R.id.followProfileBtn);
+        backProfileBtn = findViewById(R.id.backProfileBtn);
+        followProfileBtn = findViewById(R.id.followProfileBtn);
         mAuth = FirebaseAuth.getInstance();
-        reference = FirebaseDatabase.getInstance().getReference("users");
         userFullName = findViewById(R.id.userFullName);
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
-        numberOfYummys = findViewById(R.id.numberOfYummys);
+        numberOfFollowing = findViewById(R.id.numberOfFollowing);
         homeIcon = findViewById(R.id.homeIcon);
+        noPostsMessage = findViewById(R.id.noPostsMessage);
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
+        reference = FirebaseDatabase.getInstance().getReference("users");
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        currUserRef = reference.child(currentUserId);
 
+        userPostRecView = findViewById(R.id.userPostRecView);
 
-        Intent intent = getIntent();
-        String uid = intent.getStringExtra("userUid");
+        layoutManager = new LinearLayoutManager(this);
+        userPostRecView.setLayoutManager(layoutManager);
+        postList = new ArrayList<>();
+        postAdapter = new PostAdapter(this,postList);
+        userPostRecView.setAdapter(postAdapter);
 
-        editProfileBtn.setOnClickListener(new View.OnClickListener() {
+        retrieveInfo(currentUserId);
+
+        visitedUserId = getIntent().getStringExtra("visitedUserId");
+        if(visitedUserId != null) {
+            visUserRef = reference.child(visitedUserId);
+            retrieveVisitedInfo(visitedUserId);
+            checkFollowStatus();
+        } else {
+            Toast.makeText(User_ViewProfile.this,"Error loading user profile.", Toast.LENGTH_SHORT).show();
+        }
+
+        backProfileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        followProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(User_ViewProfile.this, User_EditProfile.class);
-                startActivity(intent);
-                finish();
+                changeFollowStatus();
             }
         });
 
@@ -97,49 +135,63 @@ public class User_ViewProfile extends AppCompatActivity {
                 finish();
             }
         });
-
-        if (uid != null) {
-            reference = FirebaseDatabase.getInstance().getReference("users").child(uid);
-            retrieveInfo(uid);
-        } else {
-            Toast.makeText(this, "User UID not found.", Toast.LENGTH_SHORT).show();
-        }
-
     }
 
-    private void retrieveInfo(String uid) {
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void retrieveVisitedInfo(String visitedUserId) {
+        visUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User userProfile = snapshot.getValue(User.class);
+                User visitedUser = snapshot.getValue(User.class);
+                if(visitedUser !=  null) {
+                    String name = visitedUser.getName();
+                    Map<String, Boolean> followers = visitedUser.getFollowers();
+                    Map<String, Boolean> following = visitedUser.getFollowing();
 
-                if (userProfile != null) {
-                    String name = userProfile.getName();
-                    String nFollowers = userProfile.getNumberFollowers();
-                    String nPosts = userProfile.getNumberPosts();
-                    String nYummys = userProfile.getNumberYummys();
-                    String bio = userProfile.getUserBio();
-                    String userAvatar = userProfile.getUserPhotoUrl();
+                    String userAvatar = visitedUser.getUserPhotoUrl();
+                    String bio = visitedUser.getUserBio();
 
                     userFullName.setText(name);
-                    numberOfFollowers.setText(nFollowers);
-                    numberOfPosts.setText(nPosts);
-                    numberOfYummys.setText(nYummys);
+                    if(followers != null){
+                        numberOfFollowers.setText(String.valueOf(followers.size()));
+                    } else {
+                        numberOfFollowers.setText("0");
+                    }
+                    if(following != null){
+                        numberOfFollowing.setText(String.valueOf(following.size()));
+                    } else {
+                        numberOfFollowing.setText("0");
+                    }
                     userBio.setText(bio);
 
-                    Glide.with(bigAvatar.getContext())
-                            .load(userAvatar)
-                            .error(R.drawable.round_report_problem_24)  // Error image
-                            .fitCenter()
-                            .into(bigAvatar);
+                    if (userAvatar != null && !userAvatar.isEmpty()) {
+                        Glide.with(bigAvatar.getContext())
+                                .load(userAvatar)
+                                .error(R.drawable.baseline_person_24)
+                                .fitCenter()
+                                .into(bigAvatar);
+                    } else {
+                        bigAvatar.setImageResource(R.drawable.baseline_person_24);
+                    }
 
-                    Glide.with(smallAvatar.getContext())
-                            .load(userAvatar)
-                            .error(R.drawable.round_report_problem_24)  // Error image
-                            .fitCenter()
-                            .into(smallAvatar);
+                    Map<String, Post> postsMap = visitedUser.getPosts();
+                    Log.d("UserProfile", "Posts Map: " + postsMap);
+
+                    if (postsMap != null && !postsMap.isEmpty()) {
+                        postList.clear();
+                        postList.addAll(postsMap.values());
+                        postAdapter.notifyDataSetChanged();
+
+                        numberOfPosts.setText(String.valueOf(postList.size()));
+                        noPostsMessage.setVisibility(View.GONE);
+                        userPostRecView.setVisibility(View.VISIBLE);
+                    } else {
+                        numberOfPosts.setText("0");
+                        noPostsMessage.setVisibility(View.VISIBLE);
+                        userPostRecView.setVisibility(View.GONE);
+                    }
                 } else {
-                    Toast.makeText(User_ViewProfile.this, "User profile data is unavailable.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                    Log.e("UserProfile", "User profile is null.");
                 }
             }
 
@@ -149,4 +201,75 @@ public class User_ViewProfile extends AppCompatActivity {
             }
         });
     }
+
+    private void checkFollowStatus() {
+        currUserRef.child("following").child(visitedUserId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            followProfileBtn.setText("Unfollow");
+                        } else {
+                            followProfileBtn.setText("Follow");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
+    private void changeFollowStatus(){
+        DatabaseReference followingReference = currUserRef.child("following").child(visitedUserId);
+        DatabaseReference followersReference = visUserRef.child("followers").child(currentUserId);
+
+        followingReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    followingReference.removeValue();
+                    followersReference.removeValue();
+                    followProfileBtn.setText("Follow");
+                } else {
+                    followingReference.setValue(true);
+                    followersReference.setValue(true);
+                    followProfileBtn.setText("Unfollow");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void retrieveInfo(String currentUserId) {
+        currUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User visitedUser = snapshot.getValue(User.class);
+                if(visitedUser !=  null) {
+                    String userAvatar = visitedUser.getUserPhotoUrl();
+
+                    Glide.with(smallAvatar.getContext())
+                            .load(userAvatar)
+                            .error(R.drawable.round_report_problem_24)
+                            .fitCenter()
+                            .into(smallAvatar);
+                } else {
+                    Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
+                    Log.e("UserProfile", "User profile is null.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

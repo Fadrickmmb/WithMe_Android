@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".User_HomePage">
+    tools:context=".Post_CommentPage">
 
     <LinearLayout
         android:id="@+id/header"
@@ -15,7 +15,6 @@
         android:layout_height="60dp"
         android:gravity="fill_horizontal"
         android:orientation="horizontal"
-        android:layout_marginTop="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -70,21 +69,44 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/noPostsMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Nos posts available."
-        app:layout_constraintTop_toBottomOf="@+id/header"/>
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_post"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:id="@+id/rv_comment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigationBar"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintTop_toBottomOf="@+id/header"
-        tools:listitem="@layout/feed_post_item" />
+        tools:listitem="@layout/comment_item" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:weightSum="1"
+        app:layout_constraintBottom_toTopOf="@+id/navigationBar">
+
+        <EditText
+            android:id="@+id/etComment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:background="@drawable/edittext_background"
+            android:backgroundTint="#E0E0E0"
+            android:padding="10dp"
+            android:hint="Comment here..."
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:text="Add"
+            android:textColor="@color/white" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/navigationBar"

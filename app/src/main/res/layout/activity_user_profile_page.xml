@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,21 +9,21 @@
     tools:context=".User_ProfilePage">
 
     <ScrollView
-        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/navigationBar">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="50dp"
             android:layout_marginRight="20dp"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:gravity="center">
 
             <LinearLayout
                 android:id="@+id/header"
@@ -37,7 +38,7 @@
                     android:layout_height="50dp"
                     android:orientation="horizontal"
                     android:gravity="left|center"
-                    android:layout_weight="0.8">
+                    android:layout_weight="0.9">
 
                     <ImageView
                         android:layout_width="121dp"
@@ -49,23 +50,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/yummyIcon"
-                    android:layout_width="74dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="0.1"
-                    android:gravity="end|center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:layout_marginLeft="50dp"
-                        android:src="@drawable/withme_yummy" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/commentIcon"
+                    android:id="@+id/notificationIcon"
                     android:layout_width="48dp"
                     android:layout_height="50dp"
                     android:layout_weight="0.1"
@@ -76,8 +61,7 @@
                         android:layout_width="66dp"
                         android:layout_height="30dp"
                         android:layout_marginRight="-15dp"
-                        android:src="@drawable/withme_comment" />
-
+                        android:src="@drawable/baseline_notifications_24" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -95,7 +79,6 @@
                     android:layout_gravity="center"
                     android:background="@color/white"
                     android:src="@drawable/baseline_person_24" />
-
             </androidx.cardview.widget.CardView>
 
             <TextView
@@ -119,6 +102,7 @@
                 android:layout_marginTop="20dp">
 
                 <LinearLayout
+                    android:id="@+id/followersLayout"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -142,7 +126,6 @@
                         android:text="Followers"
                         android:textColor="@color/withme"
                         android:textSize="14sp" />
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -169,17 +152,17 @@
                         android:text="Posts"
                         android:textColor="@color/withme"
                         android:textSize="14sp" />
-
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/followingLayout"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/numberOfYummys"
+                        android:id="@+id/numberOfFollowing"
                         android:gravity="center"
                         android:textSize="22sp"
                         android:layout_width="wrap_content"
@@ -194,13 +177,10 @@
                         android:textSize="14sp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Yummys"
+                        android:text="Following"
                         android:textColor="@color/withme"/>
-
                 </LinearLayout>
-
             </LinearLayout>
-
 
             <TextView
                 android:gravity="center"
@@ -221,7 +201,6 @@
                 android:layout_height="wrap_content"
                 android:text="Bio here"
                 android:maxLines="6"
-                android:lines="6"
                 android:inputType="textMultiLine"
                 android:layout_marginTop="30dp"
                 android:fontFamily="@font/dm_serif_display"
@@ -229,7 +208,7 @@
 
             <Button
                 android:id="@+id/editProfileBtn"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:backgroundTint="@color/withme"
                 android:layout_width="150dp"
                 android:text="Edit profile"
@@ -237,12 +216,35 @@
                 android:textColor="@color/white"
                 android:layout_height="wrap_content"/>
 
+            <TextView
+                android:id="@+id/noPostsMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="No posts available."
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                android:textSize="18sp"
+                android:textColor="@android:color/black"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/personalPostRecView"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="100dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/editProfileBtn"
+                app:layout_constraintBottom_toTopOf="@id/navigationBar"/>
         </LinearLayout>
+
     </ScrollView>
 
     <LinearLayout
         android:id="@+id/navigationBar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/lightgrey"
         android:backgroundTint="@color/lightgrey"
@@ -287,7 +289,6 @@
                 android:layout_gravity="center"
                 android:background="@color/white"
                 android:src="@drawable/baseline_person_24" />
-
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 

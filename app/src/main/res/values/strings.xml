@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WithMe_Android</string>
+    <string name="add_location">location</string>
 </resources>

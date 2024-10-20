@@ -9,14 +9,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class Auth_ForgotPassword extends AppCompatActivity {
 
@@ -29,17 +24,12 @@ public class Auth_ForgotPassword extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_auth_forgot_password);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
-        emailInput = findViewById(R.id.forgotPassword_emailInput);
-        resetPassword = findViewById(R.id.forgotPassword_resetButton);
-        signIn = findViewById(R.id.forgotPassword_signInText);
+
+        emailInput = findViewById(R.id.et_email);
+        resetPassword = findViewById(R.id.btn_send_link);
+        signIn = findViewById(R.id.tv_sign_in);
 
         mAuth = FirebaseAuth.getInstance();
 
