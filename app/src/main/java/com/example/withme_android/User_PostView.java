@@ -245,7 +245,6 @@ public class User_PostView extends AppCompatActivity {
                         yummysNumber.setText(String.valueOf(yummys));
                         locationName.setText(location);
                         postDate.setText(date);
-                        commentsNumber.setText(String.valueOf(post.getCommentsNumber()));
 
                         Glide.with(userAvatar.getContext())
                                 .load(userPhotoUrl)
@@ -283,7 +282,9 @@ public class User_PostView extends AppCompatActivity {
                         }
                     }
                 }
+                commentsNumber.setText(String.valueOf(commentList.size()));
                 commentAdapter.notifyDataSetChanged();
+                postreference.child(postId).child("commentsNumber").setValue(commentList.size());
             }
 
             @Override
@@ -344,14 +345,19 @@ public class User_PostView extends AppCompatActivity {
                     String commentId = postreference.child(postId).child("comments").push().getKey();
                     Comment comment = new Comment(userName, commentText, date, userId, postId, commentId);
                     postreference.child(postId).child("comments").child(commentId).setValue(comment);
-                    postreference.child(postId).child("commentNumbers").addListenerForSingleValueEvent(new ValueEventListener() {
+                    postreference.child(postId).child("commentsNumber").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            int commentNumbers = dataSnapshot.exists() ? dataSnapshot.getValue(Integer.class) : 0;
-                            commentNumbers = commentNumbers + 1;
-                            commentsNumber.setText(String.valueOf(commentNumbers));
-                            postreference.child(postId).child("commentNumbers").setValue(commentNumbers);
-                            commentsNumber.setText(String.valueOf(commentNumbers));
+                            if(dataSnapshot.exists()){
+                                int comNumber =  dataSnapshot.getValue(Integer.class);
+                                comNumber = comNumber + 1;
+                                commentsNumber.setText(String.valueOf(comNumber));
+                                postreference.child(postId).child("commentsNumber").setValue(comNumber);
+                                commentsNumber.setText(String.valueOf(comNumber));
+
+                            } else {
+                                commentsNumber.setText("0");
+                            }
                         }
 
                         @Override

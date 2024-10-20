@@ -199,7 +199,6 @@ public class User_ViewProfile extends AppCompatActivity {
                             postList.add(post);
                         }
                     }
-
                     if (!postList.isEmpty()) {
                         postAdapter.notifyDataSetChanged();
                         numberOfPosts.setText(String.valueOf(postList.size()));
