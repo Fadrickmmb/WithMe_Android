@@ -14,8 +14,7 @@ public class User {
     private Map<String, Boolean> following;
     private Map<String, Boolean> followers;
 
-    public User() {
-    }
+    public User() { }
 
     public User(String name, String email, String id) {
         this.name = name;
