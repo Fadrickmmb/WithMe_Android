@@ -1,6 +1,5 @@
 package com.example.withme_android;
 
-import java.util.List;
 import java.util.Map;
 
 public class Post {
