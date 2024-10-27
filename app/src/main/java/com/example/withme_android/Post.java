@@ -13,13 +13,16 @@ public class Post {
     private Map<String, Boolean> yummys;
     private String userPhotoUrl;
     private Map<String, Comment> comments;
+    private Double latitude;
+    private Double longitude;
 
     public Post() {
     }
 
     public Post(String postId, String content, String userId, String postImageUrl, String postDate,
                 String name, String location, Map<String, Boolean> yummys,
-                String userPhotoUrl, Map<String, Comment> comments) {
+                String userPhotoUrl, Map<String, Comment> comments,
+                Double latitude, Double longitude) {
         this.postId = postId;
         this.content = content;
         this.userId = userId;
@@ -30,6 +33,8 @@ public class Post {
         this.yummys = yummys;
         this.userPhotoUrl = userPhotoUrl;
         this.comments = comments;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getContent() {
@@ -106,5 +111,21 @@ public class Post {
 
     public void setComments(Map<String, Comment> comments) {
         this.comments = comments;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLatitude(Double val) {
+        this.latitude = val;
+    }
+
+    public void setLongitude(Double val) {
+        this.longitude = val;
     }
 }
