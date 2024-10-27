@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.389"></TextView>
+        app:layout_constraintVertical_bias="0.331"></TextView>
 
     <Button
         android:id="@+id/admin_homePage_toCreate"
@@ -31,6 +31,18 @@
         app:layout_constraintVertical_bias="0.25"></Button>
 
     <Button
+        android:id="@+id/admin_homePage_toSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/admin_homePage_toCreate"
+        app:layout_constraintVertical_bias="0.183"></Button>
+
+    <Button
         android:id="@+id/admin_profilePage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,7 +51,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_homePage_toCreate"
-        app:layout_constraintVertical_bias="0.25"/>
+        app:layout_constraintTop_toBottomOf="@+id/admin_homePage_toSearch"
+        app:layout_constraintVertical_bias="0.188" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
