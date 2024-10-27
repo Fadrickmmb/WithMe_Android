@@ -248,8 +248,6 @@ public class User_AddPostPage extends FragmentActivity implements OnMapReadyCall
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
 
-                        updateLocationName(latitude, longitude);
-
                         LatLng currentLocation = new LatLng(latitude, longitude);
                         gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
 
@@ -259,6 +257,8 @@ public class User_AddPostPage extends FragmentActivity implements OnMapReadyCall
                                 .draggable(true);
 
                         gMap.addMarker(markerOptions);
+
+                        updateLocationName(latitude, longitude);
                     }
                 });
 
@@ -276,8 +276,9 @@ public class User_AddPostPage extends FragmentActivity implements OnMapReadyCall
                 LatLng newPosition = marker.getPosition();
                 latitude = newPosition.latitude; // Update latitude
                 longitude = newPosition.longitude; // Update longitude
-                updateLocationName(latitude, longitude);
                 gMap.moveCamera(CameraUpdateFactory.newLatLng(newPosition));
+
+                updateLocationName(latitude, longitude);
             }
         });
     }
@@ -319,6 +320,10 @@ public class User_AddPostPage extends FragmentActivity implements OnMapReadyCall
                 }
                 String finalAddress = addressString.substring(0, addressString.length() - 2);
                 location = finalAddress;
+                locationTv.setText(location);
+
+                Toast.makeText(getApplicationContext(), finalAddress, Toast.LENGTH_SHORT).show();
+
             } else {
                 Toast.makeText(this, "Unable to get address for this location.", Toast.LENGTH_SHORT).show();
             }
