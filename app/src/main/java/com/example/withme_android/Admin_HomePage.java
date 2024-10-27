@@ -13,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class Admin_HomePage extends AppCompatActivity {
 
-    Button toCreate;
+    Button toCreate,admin_profilePage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +27,21 @@ public class Admin_HomePage extends AppCompatActivity {
         });
 
         toCreate = findViewById(R.id.admin_homePage_toCreate);
+        admin_profilePage = findViewById(R.id.admin_profilePage);
 
         toCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), Admin_CreateUser.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        admin_profilePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Admin_HomePage.this,Admin_ProfilePage.class);
                 startActivity(intent);
                 finish();
             }
