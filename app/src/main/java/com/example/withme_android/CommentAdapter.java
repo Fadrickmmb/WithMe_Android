@@ -115,7 +115,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                                 String reportId = reportRef.push().getKey();
                                 if(reportId !=null){
                                     Report reportCommentUser = new Report(reportId,postId,commentId,currentUserId,commentOwnerId,currentUserId);
-                                    reportRef.child(reportId).setValue(reportComment).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    reportRef.child(reportId).setValue(reportCommentUser).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if(task.isSuccessful()){
