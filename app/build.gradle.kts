@@ -40,11 +40,9 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
-    implementation(libs.firebase.inappmessaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation (libs.glide.v4120)
-    annotationProcessor(libs.compiler.v4110)
-    implementation(libs.firebase.messaging)
+    annotationProcessor(libs.compiler)
 }

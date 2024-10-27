@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
@@ -283,9 +284,7 @@ public class User_PostView extends AppCompatActivity {
                         }
                     }
                 }
-                commentsNumber.setText(String.valueOf(commentList.size()));
                 commentAdapter.notifyDataSetChanged();
-                postreference.child(postId).child("commentsNumber").setValue(commentList.size());
             }
 
             @Override
@@ -346,19 +345,14 @@ public class User_PostView extends AppCompatActivity {
                     String commentId = postreference.child(postId).child("comments").push().getKey();
                     Comment comment = new Comment(userName, commentText, date, commentId);
                     postreference.child(postId).child("comments").child(commentId).setValue(comment);
-                    postreference.child(postId).child("commentsNumber").addListenerForSingleValueEvent(new ValueEventListener() {
+                    postreference.child(postId).child("commentNumbers").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
-                                int comNumber =  dataSnapshot.getValue(Integer.class);
-                                comNumber = comNumber + 1;
-                                commentsNumber.setText(String.valueOf(comNumber));
-                                postreference.child(postId).child("commentsNumber").setValue(comNumber);
-                                commentsNumber.setText(String.valueOf(comNumber));
-
-                            } else {
-                                commentsNumber.setText("0");
-                            }
+                            int commentNumbers = dataSnapshot.exists() ? dataSnapshot.getValue(Integer.class) : 0;
+                            commentNumbers = commentNumbers + 1;
+                            commentsNumber.setText(String.valueOf(commentNumbers));
+                            postreference.child(postId).child("commentNumbers").setValue(commentNumbers);
+                            commentsNumber.setText(String.valueOf(commentNumbers));
                         }
 
                         @Override
@@ -384,4 +378,5 @@ public class User_PostView extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         return sdf.format(new Date());
     }
+
 }
