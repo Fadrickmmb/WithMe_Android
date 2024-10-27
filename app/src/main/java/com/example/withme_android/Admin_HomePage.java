@@ -2,6 +2,7 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,7 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Admin_HomePage extends AppCompatActivity {
-
+    Button toCreate,admin_profilePage;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
@@ -52,7 +53,7 @@ public class Admin_HomePage extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         postRv = findViewById(R.id.rv_post);
-        noPostsMessage = findViewById(R.id.noPostsMessage); // Adicione a view para exibir mensagens quando não houver posts
+        noPostsMessage = findViewById(R.id.noPostsMessage);
 
         retrieveInfo();
 
@@ -87,6 +88,27 @@ public class Admin_HomePage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Admin_HomePage.this, Admin_ProfilePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        toCreate = findViewById(R.id.admin_homePage_toCreate);
+        admin_profilePage = findViewById(R.id.admin_profilePage);
+
+        toCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Admin_CreateUser.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        admin_profilePage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Admin_HomePage.this,Admin_ProfilePage.class);
                 startActivity(intent);
                 finish();
             }

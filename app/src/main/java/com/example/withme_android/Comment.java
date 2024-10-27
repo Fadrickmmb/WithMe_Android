@@ -6,7 +6,7 @@ class Comment {
     private String name;
     private String text;
     private String date;
-    private String userId;
+    private String userId; //id from user who commented
     private String postId;
     private String commentId;
 

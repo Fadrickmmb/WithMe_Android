@@ -1,6 +1,9 @@
 [versions]
 agp = "8.6.1"
 compiler = "4.15.1"
+compilerVersion = "4.11.0"
+firebaseMessaging = "24.0.3"
+githubGlide = "4.11.0"
 glideVersion = "4.12.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -15,11 +18,15 @@ firebaseDatabase = "21.0.0"
 firebaseStorage = "20.2.0"
 circleimageview = "3.1.0"
 glide = "4.15.1"
+firebaseInappmessaging = "21.0.0"
 
 [libraries]
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
 compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compiler" }
+compiler-v4110 = { module = "com.github.bumptech.glide:compiler", version.ref = "compilerVersion" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging", version.ref = "firebaseMessaging" }
+glide-v4110 = { module = "com.github.bumptech.glide:glide", version.ref = "githubGlide" }
 glide-v4120 = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -32,6 +39,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+firebase-inappmessaging = { group = "com.google.firebase", name = "firebase-inappmessaging", version.ref = "firebaseInappmessaging" }
 
 
 [plugins]

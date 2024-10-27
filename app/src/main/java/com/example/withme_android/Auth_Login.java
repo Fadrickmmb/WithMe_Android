@@ -31,7 +31,7 @@ public class Auth_Login extends AppCompatActivity {
     TextView register, forgotPassword;
 
     private FirebaseAuth mAuth;
-    DatabaseReference userDatabase, adminDatabase;
+    DatabaseReference userDatabase, adminDatabase, modDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +56,7 @@ public class Auth_Login extends AppCompatActivity {
 
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
         adminDatabase = FirebaseDatabase.getInstance().getReference("admin");
+        modDatabase = FirebaseDatabase.getInstance().getReference("mod");
 
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,8 +114,9 @@ public class Auth_Login extends AppCompatActivity {
                                         Intent intent = new Intent(Auth_Login.this, Admin_HomePage.class);
                                         startActivity(intent);
                                         finish();
-                                    }else{
-                                        checkUser(userEmail);
+                                    }
+                                    else{
+                                        checkMod(userEmail);
                                     }
                                 }
 
@@ -130,6 +132,28 @@ public class Auth_Login extends AppCompatActivity {
                     }
                 });
     }
+
+    private void checkMod(String emailInput){
+        modDatabase.orderByChild("email").equalTo(emailInput).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    Toast.makeText(Auth_Login.this, "Logged in as Mod", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), Mod_HomePage.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    checkUser(emailInput);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(Auth_Login.this, "No account found with this email", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     private void checkUser(String emailInput){
 
@@ -154,4 +178,5 @@ public class Auth_Login extends AppCompatActivity {
             }
         });
     }
+
 }

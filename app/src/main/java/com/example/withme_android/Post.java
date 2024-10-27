@@ -9,6 +9,8 @@ public class Post {
     private String postDate;
     private String name;
     private String location;
+    private int yummys;
+    private int commentsNumber;
     private Map<String, Boolean> yummys;
     private int commentNumbers;
     private String userPhotoUrl;
@@ -19,6 +21,7 @@ public class Post {
     }
 
     public Post(String content, String userId, String postImageUrl, String postDate, String name,
+                String location, int yummys, int commentsNumber, String userPhotoUrl,String postId) {
                 String location, Map<String, Boolean> yummys, int commentNumbers, String userPhotoUrl,String postId) {
         this.content = content;
         this.userId = userId;
@@ -27,7 +30,7 @@ public class Post {
         this.name = name;
         this.location = location;
         this.yummys = yummys;
-        this.commentNumbers = commentNumbers;
+        this.commentsNumber = commentsNumber;
         this.userPhotoUrl = userPhotoUrl;
         this.postId = postId;
     }
@@ -91,12 +94,12 @@ public class Post {
         this.yummys = yummys;
     }
 
-    public int getCommentNumbers() {
-        return commentNumbers;
+    public int getCommentsNumber() {
+        return commentsNumber;
     }
 
-    public void setCommentNumbers(int commentNumbers) {
-        this.commentNumbers = commentNumbers;
+    public void setCommentsNumber(int commentsNumber) {
+        this.commentsNumber = commentsNumber;
     }
 
     public String getUserPhotoUrl() {

@@ -2,6 +2,8 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +33,8 @@ import java.util.Objects;
 
 public class Mod_HomePage extends AppCompatActivity {
 
+    Button homePageMod;
+
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
@@ -52,7 +56,7 @@ public class Mod_HomePage extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         postRv = findViewById(R.id.rv_post);
-        noPostsMessage = findViewById(R.id.noPostsMessage); // Adicione a view para exibir mensagens quando não houver posts
+        noPostsMessage = findViewById(R.id.noPostsMessage);
 
         retrieveInfo();
 
@@ -86,6 +90,17 @@ public class Mod_HomePage extends AppCompatActivity {
         smallAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(Mod_HomePage.this, Mod_ProfilePage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        homePageMod = findViewById(R.id.homePageMod);
+
+        homePageMod.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 Intent intent = new Intent(Mod_HomePage.this, Mod_ProfilePage.class);
                 startActivity(intent);
                 finish();
