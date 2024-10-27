@@ -32,18 +32,49 @@
 
             <ImageView
                 android:id="@+id/reportPost"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:src="@drawable/round_report_problem_24"/>
 
             <TextView
                 android:id="@+id/textReportPost"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="REPORT"
-                android:textSize="12sp"
+                android:textAlignment="center"
+                android:layout_margin="20dp"
+                android:text="Are you sure you want to report this post?"
+                android:inputType="textMultiLine"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/yesReportPostBtn"
+                    android:layout_margin="20dp"
+                    android:backgroundTint="@color/white"
+                    android:layout_width="70dp"
+                    android:padding="10dp"
+                    android:text="Yes"
+                    android:textColor="@color/withme"
+                    android:layout_height="wrap_content"/>
+
+                <Button
+                    android:id="@+id/noReportPostBtn"
+                    android:layout_margin="20dp"
+                    android:backgroundTint="@color/white"
+                    android:layout_width="70dp"
+                    android:padding="10dp"
+                    android:text="No"
+                    android:textColor="@color/withme"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>
