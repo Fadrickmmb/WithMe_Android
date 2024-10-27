@@ -9,7 +9,7 @@ public class Post {
     private String postDate;
     private String name;
     private String location;
-    private int yummys;
+    private int yummysNumber;
     private int commentsNumber;
     private Map<String, Boolean> yummys;
     private int commentNumbers;
@@ -21,8 +21,7 @@ public class Post {
     }
 
     public Post(String content, String userId, String postImageUrl, String postDate, String name,
-                String location, int yummys, int commentsNumber, String userPhotoUrl,String postId) {
-                String location, Map<String, Boolean> yummys, int commentNumbers, String userPhotoUrl,String postId) {
+                String location, int yummysNumber, int commentsNumber, String userPhotoUrl,String postId) {
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
@@ -35,7 +34,21 @@ public class Post {
         this.postId = postId;
     }
 
-    public Post(String content, String uid, String string, String string1, String name, String location, int i, String userPhotoUrl) {
+public Post(String content, String userId, String postImageUrl, String postDate, String name,
+                String location, Map<String, Boolean> yummys, int commentNumbers, String userPhotoUrl,String postId) {
+                this.content = content;
+                this.userId = userId;
+                this.postImageUrl = postImageUrl;
+                this.postDate = postDate;
+                this.name = name;
+                this.location = location;
+                this.yummys = yummys;
+                this.commentsNumber = commentsNumber;
+                this.userPhotoUrl = userPhotoUrl;
+                this.postId = postId;
+            }
+
+    public Post(String content, String userId, String string, String string1, String name, String location, int i, String userPhotoUrl) {
     }
 
     public String getContent() {
@@ -126,5 +139,19 @@ public class Post {
         this.postId = postId;
     }
 
+    public int getYummysNumber() {
+        return yummysNumber;
+    }
 
+    public void setYummysNumber(int yummysNumber) {
+        this.yummysNumber = yummysNumber;
+    }
+
+    public int getCommentNumbers() {
+        return commentNumbers;
+    }
+
+    public void setCommentNumbers(int commentNumbers) {
+        this.commentNumbers = commentNumbers;
+    }
 }

@@ -19,6 +19,8 @@ firebaseStorage = "20.2.0"
 circleimageview = "3.1.0"
 glide = "4.15.1"
 firebaseInappmessaging = "21.0.0"
+playServicesLocation = "21.3.0"
+playServicesMaps = "19.0.0"
 
 [libraries]
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
@@ -40,6 +42,8 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database",
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebaseStorage" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 firebase-inappmessaging = { group = "com.google.firebase", name = "firebase-inappmessaging", version.ref = "firebaseInappmessaging" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 
 
 [plugins]

@@ -16,9 +16,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -239,13 +236,13 @@ public class Mod_PostView extends AppCompatActivity {
                         String date = post.getPostDate();
                         String name = post.getName();
                         String location = post.getLocation();
-                        int yummys = post.getYummys();
+                        int yummysNumb = post.getYummysNumber();
                         String userPhotoUrl = post.getUserPhotoUrl();
                         String content = post.getContent();
 
                         postContent.setText(content);
                         postOwnerName.setText(name);
-                        yummysNumber.setText(String.valueOf(yummys));
+                        yummysNumber.setText(String.valueOf(yummysNumb));
                         locationName.setText(location);
                         postDate.setText(date);
 

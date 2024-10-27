@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Admin_HomePage extends AppCompatActivity {
-    Button toCreate,admin_profilePage;
+    Button toCreate;
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
@@ -94,21 +94,11 @@ public class Admin_HomePage extends AppCompatActivity {
         });
 
         toCreate = findViewById(R.id.admin_homePage_toCreate);
-        admin_profilePage = findViewById(R.id.admin_profilePage);
 
         toCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), Admin_CreateUser.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        admin_profilePage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Admin_HomePage.this,Admin_ProfilePage.class);
                 startActivity(intent);
                 finish();
             }

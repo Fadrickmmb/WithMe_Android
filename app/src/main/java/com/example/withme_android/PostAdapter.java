@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +21,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
@@ -31,6 +33,9 @@ import java.util.Locale;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private final List<Post> postList;
     private final Context context;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private DatabaseReference postreference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getUid()).child("posts");
+    private AlertDialog dialog;
 
     public PostAdapter(Context context, List<Post> postList) {
         this.context = context;
@@ -49,28 +54,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post post = postList.get(position);
         DatabaseReference reportRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
 
-        holder.postOwnerName.setText(post.getName());
-        holder.postLocation.setText(post.getLocation());
-        holder.postDate.setText(post.getPostDate());
-        holder.yummysNumber.setText(String.valueOf(post.getYummys()));
-        holder.commentsNumber.setText(String.valueOf(post.getCommentsNumber()));
-
-        Glide.with(holder.userAvatar.getContext())
-                .load(post.getUserPhotoUrl())
-                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
-                .into(holder.userAvatar);
-
-        Glide.with(holder.postPicture.getContext())
-                .load(post.getPostImageUrl())
-                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
-                .into(holder.postPicture);
-
-        holder.postPicture.setOnClickListener(new View.OnClickListener() {
         holder.postOwnerName.setText(post.getName() != null ? post.getName() : "Unknown");
         holder.postLocation.setText(post.getLocation() != null ? post.getLocation() : "Unknown");
         holder.commentsNumber.setText(post.getComments() != null ? post.getComments().size() + " Comments" : "0 Comments");
-        holder.yummysNumber.setText(post.getYummys() != null ? post.getYummys().size() + " Yummys" : "0 Yummys");
+        holder.yummysNumber.setText(String.valueOf(post.getYummysNumber()));
 
+        //Muthu's
         if (post.getPostDate() != null) {
             String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(post.getPostDate()));
             holder.postDate.setText(formattedDate);
@@ -89,6 +78,61 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
 
         holder.yummy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(post.getYummys() == null) {
+                    post.setYummys(new HashMap<>());
+                }
+                if (post.getYummys().containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                    post.getYummys().remove(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                } else {
+                    // add user id to yummy's list
+                    post.getYummys().put(FirebaseAuth.getInstance().getCurrentUser().getUid(), true);
+                }
+                holder.yummysNumber.setText(post.getYummys() != null ? post.getYummys().size() + " Yummys" : "0 Yummys");
+
+                FirebaseDatabase.getInstance().getReference("users").child(post.getUserId())
+                        .child("posts").child(post.getPostId())
+                        .child("yummys").setValue(post.getYummys())
+                        .addOnFailureListener(err -> {
+                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+                            Log.e("PostAdapter.java", "onClick: ", err);
+                        });
+            }
+        });
+
+        Glide.with(context)
+                .load(post.getUserPhotoUrl())
+                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
+                .into(holder.userAvatar);
+
+        Glide.with(context)
+                .load(post.getPostImageUrl())
+                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
+                .into(holder.postPicture);
+
+        //Erica's
+        Glide.with(holder.userAvatar.getContext())
+                .load(post.getUserPhotoUrl())
+                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
+                .into(holder.userAvatar);
+
+        Glide.with(holder.postPicture.getContext())
+                .load(post.getPostImageUrl())
+                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
+                .into(holder.postPicture);
+
+        holder.postPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context,User_PostView.class);
+                intent.putExtra("postId",post.getPostId());
+                intent.putExtra("userId",post.getUserId());
+                context.startActivity(intent);
+            }
+        });
+
+        holder.postMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int currentPosition = holder.getAdapterPosition();
@@ -134,9 +178,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 dialog.dismiss();
                             }
                         });
-                        if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
-                            dialog.show();
-                        }
+                        //if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
+                          //  dialog.show();
+                        //}
                     } else {
                         View reportView = LayoutInflater.from(view.getContext()).inflate(R.layout.reportpost_dialog, null);
                         AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(reportView).create();
@@ -183,46 +227,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 dialog.dismiss();
                             }
                         });
-                        if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
-                            dialog.show();
-                        }
+                        //if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
+                          //  dialog.show();
+                        //}
                     }
-                if(post.getYummys() == null) {
-                    post.setYummys(new HashMap<>());
                 }
-                if (post.getYummys().containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                    post.getYummys().remove(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                } else {
-                    // add user id to yummy's list
-                    post.getYummys().put(FirebaseAuth.getInstance().getCurrentUser().getUid(), true);
-                }
-                holder.yummysNumber.setText(post.getYummys() != null ? post.getYummys().size() + " Yummys" : "0 Yummys");
-
-                FirebaseDatabase.getInstance().getReference("users").child(post.getUserId())
-                        .child("posts").child(post.getPostId())
-                        .child("yummys").setValue(post.getYummys())
-                        .addOnFailureListener(err -> {
-                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-                            Log.e("PostAdapter.java", "onClick: ", err);
-                        });
             }
         });
-
-        Glide.with(context)
-                .load(post.getUserPhotoUrl())
-                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
-                .into(holder.userAvatar);
-
-        Glide.with(context)
-                .load(post.getPostImageUrl())
-                .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
-                .into(holder.postPicture);
     }
 
     @Override
     public int getItemCount() {
-        return postList.size();
+        if (postList != null) {
+            return postList.size();
+        } else {
+            return 0;
+        }
     }
+
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView postOwnerName, postLocation, yummysNumber, commentsNumber, postDate;

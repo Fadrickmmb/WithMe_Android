@@ -33,8 +33,6 @@ import java.util.Objects;
 
 public class Mod_HomePage extends AppCompatActivity {
 
-    Button homePageMod;
-
     private FirebaseAuth mAuth;
     private DatabaseReference reference;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar;
@@ -90,17 +88,6 @@ public class Mod_HomePage extends AppCompatActivity {
         smallAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Mod_HomePage.this, Mod_ProfilePage.class);
-                startActivity(intent);
-                finish();
-            }
-        });
-
-        homePageMod = findViewById(R.id.homePageMod);
-
-        homePageMod.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
                 Intent intent = new Intent(Mod_HomePage.this, Mod_ProfilePage.class);
                 startActivity(intent);
                 finish();
