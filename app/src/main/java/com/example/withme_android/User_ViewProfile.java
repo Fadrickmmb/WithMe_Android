@@ -237,6 +237,9 @@ public class User_ViewProfile extends AppCompatActivity {
                     }
                     // When I am not seeing my own posts, i need to call it in another method.
                     retrieveVisitedUserPosts(visitedUserId);
+                    // i always need to check if i already reported this user or not when i visit profile
+
+
                 } else {
                     Toast.makeText(User_ViewProfile.this, "User data not found.", Toast.LENGTH_SHORT).show();
                 }
@@ -245,6 +248,23 @@ public class User_ViewProfile extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        reportRef.orderByChild("userId").equalTo(visitedUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot reportSnapshot : snapshot.getChildren()){
+                    String reportingId= reportSnapshot.child("userReportingId").getValue(String.class);
+                    if(reportingId != null && reportingId.equals(currentUserId)){
+                        reportUserBtn.setEnabled(false);
+                        reportUserBtn.setText("User reported");
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

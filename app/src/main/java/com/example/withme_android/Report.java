@@ -1,13 +1,13 @@
 package com.example.withme_android;
 
 public class Report {
-    String reportId;
-    String userId;
-    String postId;
-    String commentId;
-    String postOwnerId;
-    String commentOwnerId;
-    String userReportingId;
+    private String reportId;
+    private String userId;
+    private String postId;
+    private String commentId;
+    private String postOwnerId;
+    private String commentOwnerId;
+    private String userReportingId;
 
     public Report(){
 
