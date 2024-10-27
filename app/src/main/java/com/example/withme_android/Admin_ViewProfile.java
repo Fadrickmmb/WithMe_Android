@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +37,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
 
     private Button followProfileBtn, backProfileBtn, suspendUserBtn;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference, currUserRef, visUserRef,reportRef;
+    private DatabaseReference reference, currUserRef, visUserRef,suspendRef;
     private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private List<Post> postList;
@@ -73,7 +75,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
         reference = FirebaseDatabase.getInstance().getReference("users");
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         currUserRef = reference.child(currentUserId);
-        reportRef = FirebaseDatabase.getInstance().getReference("reportedUsers");
+        suspendRef = FirebaseDatabase.getInstance().getReference("suspendedUsers");
 
         visitedPostRecView = findViewById(R.id.visitedPostRecView);
 
@@ -173,6 +175,36 @@ public class Admin_ViewProfile extends AppCompatActivity {
             }
         });
 
+        yesSuspendUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String suspendId = suspendRef.push().getKey();
+                if(suspendId !=null){
+                    Suspend suspendUser = new Suspend(suspendId,visitedUserId,currentUserId);
+                    suspendRef.child(suspendId).setValue(suspendUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+                                Toast.makeText(Admin_ViewProfile.this,"User suspend.",Toast.LENGTH_SHORT).show();
+                                suspendUserBtn.setEnabled(false);
+                                suspendUserBtn.setText("User suspended");
+                            } else {
+                                Toast.makeText(Admin_ViewProfile.this,"Error suspending user.",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+                dialog.dismiss();
+            }
+        });
+
+        noSuspendUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
 
     }
 
@@ -226,7 +258,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
                 Toast.makeText(Admin_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
             }
         });
-        reportRef.orderByChild("userId").equalTo(visitedUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+        suspendRef.orderByChild("userId").equalTo(visitedUserId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot reportSnapshot : snapshot.getChildren()){
