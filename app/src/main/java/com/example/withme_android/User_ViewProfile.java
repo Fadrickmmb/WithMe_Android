@@ -3,6 +3,7 @@ package com.example.withme_android;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -11,15 +12,15 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.annotation.GlideModule;
-import com.bumptech.glide.module.AppGlideModule;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,9 +33,9 @@ import java.util.Map;
 
 public class User_ViewProfile extends AppCompatActivity {
 
-    private Button followProfileBtn, backProfileBtn;
+    private Button followProfileBtn, backProfileBtn, reportUserBtn;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference, currUserRef, visUserRef;
+    private DatabaseReference reference, currUserRef, visUserRef,reportRef;
     private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private List<Post> postList;
@@ -63,9 +64,11 @@ public class User_ViewProfile extends AppCompatActivity {
         smallAvatar = findViewById(R.id.smallAvatar);
         bigAvatar = findViewById(R.id.bigAvatar);
         userBio = findViewById(R.id.userBio);
+        reportUserBtn = findViewById(R.id.reportUserBtn);
         reference = FirebaseDatabase.getInstance().getReference("users");
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         currUserRef = reference.child(currentUserId);
+        reportRef = FirebaseDatabase.getInstance().getReference("reportedUsers");
 
         visitedPostRecView = findViewById(R.id.visitedPostRecView);
 
@@ -86,6 +89,12 @@ public class User_ViewProfile extends AppCompatActivity {
             Toast.makeText(User_ViewProfile.this,"Error loading user profile.", Toast.LENGTH_SHORT).show();
         }
 
+        reportUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reportUser();
+            }
+        });
         backProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +144,60 @@ public class User_ViewProfile extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void reportUser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(User_ViewProfile.this);
+        View reportUser = getLayoutInflater().inflate(R.layout.report_user_dialog, null);
+        Button noReportUserBtn, yesReportUserBtn;
+        ImageView closeReportUserDialog;
+
+        noReportUserBtn = reportUser.findViewById(R.id.noReportUserBtn);
+        yesReportUserBtn = reportUser.findViewById(R.id.yesReportUserBtn);
+        closeReportUserDialog = reportUser.findViewById(R.id.closeReportUserDialog);
+
+        builder.setView(reportUser);
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.show();
+
+        closeReportUserDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        yesReportUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String reportId = reportRef.push().getKey();
+                if(reportId !=null){
+                    Report reportUser = new Report(reportId,visitedUserId,currentUserId);
+                    reportRef.child(reportId).setValue(reportUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if(task.isSuccessful()){
+                                Toast.makeText(User_ViewProfile.this,"User reported.",Toast.LENGTH_SHORT).show();
+                                reportUserBtn.setEnabled(false);
+                                reportUserBtn.setText("User reported");
+                            } else {
+                                Toast.makeText(User_ViewProfile.this,"Error reporting user.",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+                dialog.dismiss();
+            }
+        });
+
+        noReportUserBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
     }
 
     private void retrieveVisitedInfo(String visitedUserId) {
@@ -222,6 +285,7 @@ public class User_ViewProfile extends AppCompatActivity {
             }
         });
     }
+
     private void checkFollowStatus() {
         currUserRef.child("following").child(visitedUserId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
