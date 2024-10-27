@@ -197,7 +197,6 @@ public class User_ViewProfile extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
-
     }
 
     private void retrieveVisitedInfo(String visitedUserId) {
