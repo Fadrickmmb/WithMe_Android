@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -44,6 +47,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
+        DatabaseReference reportRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
 
         holder.postOwnerName.setText(post.getName());
         holder.postLocation.setText(post.getLocation());
@@ -123,9 +127,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     } else {
                         View reportView = LayoutInflater.from(view.getContext()).inflate(R.layout.reportpost_dialog, null);
                         AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(reportView).create();
+                        ImageView closeReportPostDialog;
+                        Button yesReportPostBtn, noReportPostBtn;
 
-                        ImageView closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
-                        ImageView reportPost = reportView.findViewById(R.id.reportPost);
+                        closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
+                        yesReportPostBtn = reportView.findViewById(R.id.yesReportPostBtn);
+                        noReportPostBtn = reportView.findViewById(R.id.noReportPostBtn);
 
                         closeReportPostDialog.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -134,10 +141,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             }
                         });
 
-                        reportPost.setOnClickListener(new View.OnClickListener() {
+                        yesReportPostBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                Toast.makeText(context,"This funtion was not implemented yet.",Toast.LENGTH_SHORT).show();
+                                String reportId = reportRef.push().getKey();
+                                if(reportId !=null){
+                                    Report reportCommentUser = new Report(reportId,postId,ownerId,currentUserId);
+                                    reportRef.child(reportId).setValue(reportCommentUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful()){
+                                                holder.postMenu.setEnabled(false);
+                                                Toast.makeText(view.getContext(),"Post reported.",Toast.LENGTH_SHORT).show();
+                                                dialog.dismiss();
+                                            } else {
+                                                Toast.makeText(view.getContext(), "Error reporting post.",Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+
+                        noReportPostBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
                             }
                         });
                         if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
