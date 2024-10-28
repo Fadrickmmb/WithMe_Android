@@ -92,9 +92,29 @@ public class Admin_ViewProfile extends AppCompatActivity {
             visUserRef = reference.child(visitedUserId);
             retrieveVisitedInfo(visitedUserId);
             checkFollowStatus();
+
+            suspendRef.child(visitedUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        suspendUserBtn.setText("Unsuspend User");
+                    } else {
+                        suspendUserBtn.setText("Suspend User");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(Admin_ViewProfile.this, "Error loading suspension status.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
         } else {
             Toast.makeText(Admin_ViewProfile.this,"Error loading user profile.", Toast.LENGTH_SHORT).show();
         }
+
+
 
         suspendUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,7 +173,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
         });
     }
 
-    private void suspendUser(){
+    private void suspendUser() {
         AlertDialog.Builder builder = new AlertDialog.Builder(Admin_ViewProfile.this);
         View reportUser = getLayoutInflater().inflate(R.layout.suspend_user_dialog, null);
         Button noSuspendUserBtn, yesSuspendUserBtn;
@@ -178,22 +198,44 @@ public class Admin_ViewProfile extends AppCompatActivity {
         yesSuspendUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String suspendId = suspendRef.push().getKey();
-                if(suspendId !=null){
-                    Suspend suspendUser = new Suspend(suspendId,visitedUserId,currentUserId);
-                    suspendRef.child(suspendId).setValue(suspendUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                Toast.makeText(Admin_ViewProfile.this,"User suspend.",Toast.LENGTH_SHORT).show();
-                                suspendUserBtn.setEnabled(false);
-                                suspendUserBtn.setText("User suspended");
-                            } else {
-                                Toast.makeText(Admin_ViewProfile.this,"Error suspending user.",Toast.LENGTH_SHORT).show();
-                            }
+                suspendRef.child(visitedUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            suspendRef.child(visitedUserId).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(Admin_ViewProfile.this, "User unsuspended.", Toast.LENGTH_SHORT).show();
+                                        suspendUserBtn.setEnabled(true);
+                                        suspendUserBtn.setText("Suspend User");
+                                    } else {
+                                        Toast.makeText(Admin_ViewProfile.this, "Error unsuspending user.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        } else {
+                            Suspend suspendUser = new Suspend(visitedUserId, visitedUserId, currentUserId);
+                            suspendRef.child(visitedUserId).setValue(suspendUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(Admin_ViewProfile.this, "User suspended.", Toast.LENGTH_SHORT).show();
+                                        suspendUserBtn.setEnabled(false);
+                                        suspendUserBtn.setText("Unsuspend User");
+                                    } else {
+                                        Toast.makeText(Admin_ViewProfile.this, "Error suspending user.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
                         }
-                    });
-                }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Toast.makeText(Admin_ViewProfile.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
                 dialog.dismiss();
             }
         });
@@ -204,9 +246,8 @@ public class Admin_ViewProfile extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
-
-
     }
+
 
     private void retrieveVisitedInfo(String visitedUserId) {
         visUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
