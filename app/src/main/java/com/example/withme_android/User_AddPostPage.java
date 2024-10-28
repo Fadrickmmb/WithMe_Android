@@ -160,11 +160,11 @@ public class User_AddPostPage extends AppCompatActivity {
                 posts.put(postId, post);
                 userData.setPosts(posts);
 
-                if (userData.getNumberPosts() == null) {
+                //if (userData.getNumberPosts() == null) {
                     //userData.setNumberPosts(1);
-                } else {
-                    userData.setNumberPosts(userData.getNumberPosts() + 1);
-                }
+                //} else {
+                  //  userData.setNumberPosts(userData.getNumberPosts() + 1);
+                //}
 
                 reference.child(mAuth.getUid()).setValue(userData).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

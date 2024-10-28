@@ -52,7 +52,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postOwnerName.setText(post.getName());
         holder.postLocation.setText(post.getLocation());
         holder.postDate.setText(post.getPostDate());
-        holder.yummysNumber.setText(String.valueOf(post.getYummys()));
+        holder.yummysNumber.setText(String.valueOf(post.getYummysNumber()));
         holder.commentsNumber.setText(String.valueOf(post.getCommentsNumber()));
 
         Glide.with(holder.userAvatar.getContext())

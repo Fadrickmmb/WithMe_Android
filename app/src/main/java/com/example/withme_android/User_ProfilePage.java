@@ -1,7 +1,13 @@
 package com.example.withme_android;
 
+import static android.content.ContentValues.TAG;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,12 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +52,20 @@ public class User_ProfilePage extends AppCompatActivity {
     private PostAdapter postAdapter;
     private RecyclerView personalPostRecView;
     private LinearLayoutManager layoutManager;
-    private LinearLayout followersLayout,followingLayout;
+    private LinearLayout followersLayout,followingLayout,notificationIcon;
+
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Toast.makeText(User_ProfilePage.this, "Notification permission granted.",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(User_ProfilePage.this, "Notification permission granted.",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +82,7 @@ public class User_ProfilePage extends AppCompatActivity {
         numberOfFollowers = findViewById(R.id.numberOfFollowers);
         numberOfPosts = findViewById(R.id.numberOfPosts);
         numberOfFollowing = findViewById(R.id.numberOfFollowing);
+        notificationIcon = findViewById(R.id.notificationIcon);
         homeIcon = findViewById(R.id.homeIcon);
         noPostsMessage = findViewById(R.id.noPostsMessage);
         searchIcon = findViewById(R.id.searchIcon);
@@ -72,7 +98,36 @@ public class User_ProfilePage extends AppCompatActivity {
         postAdapter = new PostAdapter(this,postList);
         personalPostRecView.setAdapter(postAdapter);
 
+        askNotificationPermission();
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                FirebaseUser user = mAuth.getCurrentUser();
+                String userId = user.getUid();
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                    Toast.makeText(User_ProfilePage.this,"Token is missing.",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String token = task.getResult();
+                FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("token").setValue(token);
+                //String msg = getString(R.string.msg_token_fmt, token);
+                //Log.d(TAG, msg);
+                //Toast.makeText(User_ProfilePage.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         retrieveInfo();
+
+        notificationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_ProfilePage.this, User_NotificationsPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +174,7 @@ public class User_ProfilePage extends AppCompatActivity {
             }
         });
     }
+
 
     private void retrieveInfo() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -220,6 +276,25 @@ public class User_ProfilePage extends AppCompatActivity {
         } else {
             Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
             Log.e("User_ProfilePage", "User is null.");
+        }
+    }
+
+    private void askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // FCM SDK (and your app) can post notifications.
+                Toast.makeText(this, "Notifications are enabled.", Toast.LENGTH_SHORT).show();
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
         }
     }
 }
