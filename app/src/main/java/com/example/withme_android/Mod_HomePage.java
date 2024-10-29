@@ -29,7 +29,7 @@ public class Mod_HomePage extends AppCompatActivity {
         homePageMod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Mod_HomePage.this, Mod_ProfilePage.class);
+                Intent intent = new Intent(Mod_HomePage.this, Admin_ProfilePage.class);
                 startActivity(intent);
                 finish();
             }
