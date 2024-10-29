@@ -239,13 +239,13 @@ public class Mod_PostView extends AppCompatActivity {
                         String date = post.getPostDate();
                         String name = post.getName();
                         String location = post.getLocation();
-                        int yummys = post.getYummys();
+                        int yummysN = post.getYummysNumber();
                         String userPhotoUrl = post.getUserPhotoUrl();
                         String content = post.getContent();
 
                         postContent.setText(content);
                         postOwnerName.setText(name);
-                        yummysNumber.setText(String.valueOf(yummys));
+                        yummysNumber.setText(String.valueOf(yummysN));
                         locationName.setText(location);
                         postDate.setText(date);
 

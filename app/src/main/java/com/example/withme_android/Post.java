@@ -9,7 +9,7 @@ public class Post {
     private String postDate;
     private String name;
     private String location;
-    private int yummys;
+    private int yummysNumber;
     private int commentsNumber;
     private String userPhotoUrl;
     private String postId;
@@ -19,14 +19,14 @@ public class Post {
     }
 
     public Post(String content, String userId, String postImageUrl, String postDate, String name,
-                String location, int yummys, int commentsNumber, String userPhotoUrl,String postId) {
+                String location, int yummysNumber, int commentsNumber, String userPhotoUrl,String postId) {
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
         this.postDate = postDate;
         this.name = name;
         this.location = location;
-        this.yummys = yummys;
+        this.yummysNumber = yummysNumber;
         this.commentsNumber = commentsNumber;
         this.userPhotoUrl = userPhotoUrl;
         this.postId = postId;
@@ -83,12 +83,12 @@ public class Post {
         this.location = location;
     }
 
-    public int getYummys() {
-        return yummys;
+    public int getYummysNumber() {
+        return yummysNumber;
     }
 
-    public void setYummys(int yummys) {
-        this.yummys = yummys;
+    public void setYummysNumber(int yummysNumber) {
+        this.yummysNumber = yummysNumber;
     }
 
     public int getCommentsNumber() {

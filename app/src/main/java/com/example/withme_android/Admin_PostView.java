@@ -16,9 +16,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,7 +45,7 @@ public class Admin_PostView extends AppCompatActivity {
     private RecyclerView commentPostRecView;
     private LinearLayoutManager layoutManager;
     private List<Comment> commentList;
-    private CommentAdapter commentAdapter;
+    private Admin_CommentAdapter adminCommentAdapter;
     private LinearLayout postMenu;
 
     @Override
@@ -75,8 +72,8 @@ public class Admin_PostView extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         commentPostRecView.setLayoutManager(layoutManager);
         commentList = new ArrayList<>();
-        commentAdapter = new CommentAdapter(this, commentList);
-        commentPostRecView.setAdapter(commentAdapter);
+        adminCommentAdapter = new Admin_CommentAdapter(this, commentList);
+        commentPostRecView.setAdapter(adminCommentAdapter);
         postMenu = findViewById(R.id.postMenu);
         ownerId = getIntent().getStringExtra("userId");
         postId = getIntent().getStringExtra("postId");
@@ -125,7 +122,7 @@ public class Admin_PostView extends AppCompatActivity {
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_PostView.this, User_HomePage.class);
+                Intent intent = new Intent(Admin_PostView.this, Admin_HomePage.class);
                 startActivity(intent);
                 finish();
             }
@@ -134,7 +131,7 @@ public class Admin_PostView extends AppCompatActivity {
         searchIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_PostView.this, User_SearchPage.class);
+                Intent intent = new Intent(Admin_PostView.this, Admin_SearchPage.class);
                 startActivity(intent);
                 finish();
             }
@@ -143,7 +140,7 @@ public class Admin_PostView extends AppCompatActivity {
         addPostIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_PostView.this, User_AddPostPage.class);
+                Intent intent = new Intent(Admin_PostView.this, Admin_AddPostPage.class);
                 startActivity(intent);
                 finish();
             }
@@ -152,7 +149,7 @@ public class Admin_PostView extends AppCompatActivity {
         smallAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_PostView.this, User_ProfilePage.class);
+                Intent intent = new Intent(Admin_PostView.this, Admin_ProfilePage.class);
                 startActivity(intent);
                 finish();
             }
@@ -165,26 +162,15 @@ public class Admin_PostView extends AppCompatActivity {
                 String currentUserId = mAuth.getUid();
 
                 if (currentUserId != null && currentUserId.equals(ownerId)) {
-                    View editView = LayoutInflater.from(Admin_PostView.this).inflate(R.layout.editpost_dialog, null);
+                    View editView = LayoutInflater.from(Admin_PostView.this).inflate(R.layout.admineditpost_dialog, null);
                     AlertDialog dialog = new AlertDialog.Builder(Admin_PostView.this).setView(editView).create();
 
-                    ImageView closeEditPostDialog = editView.findViewById(R.id.closeEditPostDialog);
+                    ImageView closeEditPostDialog = editView.findViewById(R.id.closeDeletePostDialog);
                     ImageView deletePost = editView.findViewById(R.id.deletePost);
-                    ImageView editPost = editView.findViewById(R.id.editPost);
 
                     closeEditPostDialog.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            dialog.dismiss();
-                        }
-                    });
-
-                    editPost.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(Admin_PostView.this, User_EditPost.class);
-                            intent.putExtra("postId", postId);
-                            startActivity(intent);
                             dialog.dismiss();
                         }
                     });
@@ -201,20 +187,20 @@ public class Admin_PostView extends AppCompatActivity {
 
                     dialog.show();
                 } else {
-                    View reportView = LayoutInflater.from(Admin_PostView.this).inflate(R.layout.reportpost_dialog, null);
+                    View reportView = LayoutInflater.from(Admin_PostView.this).inflate(R.layout.admineditpost_dialog, null);
                     AlertDialog dialog = new AlertDialog.Builder(Admin_PostView.this).setView(reportView).create();
 
-                    ImageView closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
-                    ImageView reportPost = reportView.findViewById(R.id.reportPost);
+                    ImageView closeDeletePostDialog = reportView.findViewById(R.id.closeDeletePostDialog);
+                    ImageView deletePost = reportView.findViewById(R.id.deletePost);
 
-                    closeReportPostDialog.setOnClickListener(new View.OnClickListener() {
+                    closeDeletePostDialog.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             dialog.dismiss();
                         }
                     });
 
-                    reportPost.setOnClickListener(new View.OnClickListener() {
+                    deletePost.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             Toast.makeText(Admin_PostView.this, "This function is not working yet.", Toast.LENGTH_SHORT).show();
@@ -240,13 +226,13 @@ public class Admin_PostView extends AppCompatActivity {
                         String date = post.getPostDate();
                         String name = post.getName();
                         String location = post.getLocation();
-                        int yummys = post.getYummys();
+                        int yummysN = post.getYummysNumber();
                         String userPhotoUrl = post.getUserPhotoUrl();
                         String content = post.getContent();
 
                         postContent.setText(content);
                         postOwnerName.setText(name);
-                        yummysNumber.setText(String.valueOf(yummys));
+                        yummysNumber.setText(String.valueOf(yummysN));
                         locationName.setText(location);
                         postDate.setText(date);
 
@@ -287,7 +273,7 @@ public class Admin_PostView extends AppCompatActivity {
                     }
                 }
                 commentsNumber.setText(String.valueOf(commentList.size()));
-                commentAdapter.notifyDataSetChanged();
+                adminCommentAdapter.notifyDataSetChanged();
                 postreference.child(postId).child("commentsNumber").setValue(commentList.size());
             }
 

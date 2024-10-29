@@ -50,7 +50,8 @@ public class User_SearchPage extends AppCompatActivity {
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
 
         toHome.setOnClickListener(view -> {
-            finish();
+            Intent intent = new Intent(User_SearchPage.this, User_ProfilePage.class);
+            startActivity(intent);
         });
 
         searchButton.setOnClickListener(view -> {

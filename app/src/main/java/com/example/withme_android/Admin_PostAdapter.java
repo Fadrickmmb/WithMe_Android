@@ -3,10 +3,10 @@ package com.example.withme_android;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,35 +17,33 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
+public class Admin_PostAdapter extends RecyclerView.Adapter<Admin_PostAdapter.Admin_PostViewHolder> {
     private List<Post> postList;
     private Context context;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference postreference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getUid()).child("posts");
     private AlertDialog dialog;
 
-    public PostAdapter(Context context,List<Post> postList) {
+    public Admin_PostAdapter(Context context,List<Post> postList) {
         this.context = context;
         this.postList = postList;
     }
 
     @NonNull
     @Override
-    public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public Admin_PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.feed_post_item, parent, false);
-        return new PostAdapter.PostViewHolder(view);
+        return new Admin_PostAdapter.Admin_PostViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull Admin_PostViewHolder holder, int position) {
         Post post = postList.get(position);
         DatabaseReference reportRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
 
@@ -68,7 +66,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context,User_PostView.class);
+                Intent intent = new Intent(context,Admin_PostView.class);
                 intent.putExtra("postId",post.getPostId());
                 intent.putExtra("userId",post.getUserId());
                 context.startActivity(intent);
@@ -85,27 +83,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     String ownerId = post.getUserId();
                     String currentUserId = mAuth.getUid();
 
-                    if(currentUserId.equals(ownerId)){
-                        View editView = LayoutInflater.from(view.getContext()).inflate(R.layout.editpost_dialog, null);
+                    if(!currentUserId.equals(ownerId)){
+                        View editView = LayoutInflater.from(view.getContext()).inflate(R.layout.admineditpost_dialog, null);
                         dialog = new AlertDialog.Builder(view.getContext()).setView(editView).create();
 
-                        ImageView closeEditPostDialog = editView.findViewById(R.id.closeEditPostDialog);
+                        ImageView closeDeletePostDialog = editView.findViewById(R.id.closeDeletePostDialog);
                         ImageView deletePost = editView.findViewById(R.id.deletePost);
-                        ImageView editPost = editView.findViewById(R.id.editPost);
 
-                        closeEditPostDialog.setOnClickListener(new View.OnClickListener() {
+                        closeDeletePostDialog.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                dialog.dismiss();
-                            }
-                        });
-
-                        editPost.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Intent intent = new Intent(context,User_EditPost.class);
-                                intent.putExtra("postId", postId);
-                                context.startActivity(intent);
                                 dialog.dismiss();
                             }
                         });
@@ -114,60 +101,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             @Override
                             public void onClick(View view) {
                                 if (currentPosition != RecyclerView.NO_POSITION && currentPosition < postList.size()) {
+                                    Post postToDelete = postList.get(currentPosition);
+                                    String postId = postToDelete.getPostId();
+                                    String ownerId = postToDelete.getUserId();
+
                                     postList.remove(currentPosition);
                                     notifyItemRemoved(currentPosition);
-                                }
-                                postreference.child(mAuth.getUid()).child(postId).removeValue();
-                                dialog.dismiss();
-                            }
-                        });
-                        if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
-                            dialog.show();
-                        }
-                    } else {
-                        View reportView = LayoutInflater.from(view.getContext()).inflate(R.layout.reportpost_dialog, null);
-                        AlertDialog dialog = new AlertDialog.Builder(view.getContext()).setView(reportView).create();
-                        ImageView closeReportPostDialog;
-                        Button yesReportPostBtn, noReportPostBtn;
 
-                        closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
-                        yesReportPostBtn = reportView.findViewById(R.id.yesReportPostBtn);
-                        noReportPostBtn = reportView.findViewById(R.id.noReportPostBtn);
+                                    DatabaseReference postToRemoveRef = FirebaseDatabase.getInstance().getReference("users")
+                                            .child(ownerId).child("posts").child(postId);
 
-                        closeReportPostDialog.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.dismiss();
-                            }
-                        });
-
-                        yesReportPostBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                String reportId = reportRef.push().getKey();
-                                if(reportId !=null){
-                                    Report reportCommentUser = new Report(reportId,postId,ownerId,currentUserId);
-                                    reportRef.child(reportId).setValue(reportCommentUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful()){
-                                                holder.postMenu.setEnabled(false);
-                                                Toast.makeText(view.getContext(),"Post reported.",Toast.LENGTH_SHORT).show();
-                                                dialog.dismiss();
-                                            } else {
-                                                Toast.makeText(view.getContext(), "Error reporting post.",Toast.LENGTH_SHORT).show();
+                                    postToRemoveRef.removeValue().addOnCompleteListener(task -> {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(context, "Post deleted successfully.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(context, "Failed to delete post.", Toast.LENGTH_SHORT).show();
+                                            if (task.getException() != null) {
+                                                Log.e("Admin_PostAdapter", "Firebase deletion failed: " + task.getException().getMessage());
                                             }
                                         }
                                     });
-                                }
-                                dialog.dismiss();
-                            }
-                        });
 
-                        noReportPostBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialog.dismiss();
+                                    dialog.dismiss();
+                                }
                             }
                         });
                         if (context instanceof Activity && !((Activity) context).isFinishing() && !((Activity) context).isDestroyed()) {
@@ -188,12 +144,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
-    public static class PostViewHolder extends RecyclerView.ViewHolder {
+    public static class Admin_PostViewHolder extends RecyclerView.ViewHolder {
         TextView postOwnerName, postLocation, yummysNumber, commentsNumber, postDate;
         ImageView userAvatar, postPicture;
         LinearLayout postMenu;
 
-        public PostViewHolder(@NonNull View itemView) {
+        public Admin_PostViewHolder(@NonNull View itemView) {
             super(itemView);
             postOwnerName = itemView.findViewById(R.id.postOwnerName);
             postLocation = itemView.findViewById(R.id.postLocation);

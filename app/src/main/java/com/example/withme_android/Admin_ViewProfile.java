@@ -41,7 +41,8 @@ public class Admin_ViewProfile extends AppCompatActivity {
     private TextView userFullName, numberOfFollowers, numberOfPosts, numberOfFollowing,userBio,noPostsMessage;
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar, bigAvatar;
     private List<Post> postList;
-    private PostAdapter postAdapter;
+    private Admin_PostAdapter adminPostAdapter;
+
     private RecyclerView visitedPostRecView;
     private LinearLayoutManager layoutManager;
     private String currentUserId,visitedUserId;
@@ -82,8 +83,9 @@ public class Admin_ViewProfile extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         visitedPostRecView.setLayoutManager(layoutManager);
         postList = new ArrayList<>();
-        postAdapter = new PostAdapter(this,postList);
-        visitedPostRecView.setAdapter(postAdapter);
+
+        adminPostAdapter = new Admin_PostAdapter(this,postList);
+        visitedPostRecView.setAdapter(adminPostAdapter);
 
         retrieveInfo(currentUserId);
 
@@ -109,12 +111,9 @@ public class Admin_ViewProfile extends AppCompatActivity {
                 }
             });
 
-
         } else {
             Toast.makeText(Admin_ViewProfile.this,"Error loading user profile.", Toast.LENGTH_SHORT).show();
         }
-
-
 
         suspendUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +147,8 @@ public class Admin_ViewProfile extends AppCompatActivity {
         searchIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_ViewProfile.this, User_SearchPage.class);
+                Intent intent = new Intent(Admin_ViewProfile.this, Admin_SearchPage.class);
+
                 startActivity(intent);
                 finish();
             }
@@ -166,14 +166,14 @@ public class Admin_ViewProfile extends AppCompatActivity {
         smallAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_ViewProfile.this, User_ProfilePage.class);
+                Intent intent = new Intent(Admin_ViewProfile.this, Admin_ProfilePage.class);
                 startActivity(intent);
                 finish();
             }
         });
     }
 
-    private void suspendUser() {
+    private void suspendUser(){
         AlertDialog.Builder builder = new AlertDialog.Builder(Admin_ViewProfile.this);
         View reportUser = getLayoutInflater().inflate(R.layout.suspend_user_dialog, null);
         Button noSuspendUserBtn, yesSuspendUserBtn;
@@ -198,6 +198,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
         yesSuspendUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 suspendRef.child(visitedUserId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -236,6 +237,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
                         Toast.makeText(Admin_ViewProfile.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
                 dialog.dismiss();
             }
         });
@@ -247,7 +249,6 @@ public class Admin_ViewProfile extends AppCompatActivity {
             }
         });
     }
-
 
     private void retrieveVisitedInfo(String visitedUserId) {
         visUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -323,8 +324,9 @@ public class Admin_ViewProfile extends AppCompatActivity {
         postsReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postList.clear();
                 if(snapshot.exists() && snapshot.hasChildren()){
-                    postList.clear();
+
                     for(DataSnapshot postSnapshot : snapshot.getChildren()){
                         Post post = postSnapshot.getValue(Post.class);
                         if(post != null){
@@ -332,7 +334,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
                         }
                     }
                     if (!postList.isEmpty()) {
-                        postAdapter.notifyDataSetChanged();
+                        adminPostAdapter.notifyDataSetChanged();
                         numberOfPosts.setText(String.valueOf(postList.size()));
                         noPostsMessage.setVisibility(View.GONE);
                         visitedPostRecView.setVisibility(View.VISIBLE);
@@ -346,6 +348,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
                     noPostsMessage.setVisibility(View.VISIBLE);
                     visitedPostRecView.setVisibility(View.GONE);
                 }
+                adminPostAdapter.notifyDataSetChanged();
             }
 
             @Override
