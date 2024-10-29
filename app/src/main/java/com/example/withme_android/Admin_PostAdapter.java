@@ -115,7 +115,6 @@ public class Admin_PostAdapter extends RecyclerView.Adapter<Admin_PostAdapter.Ad
                                         if (task.isSuccessful()) {
                                             Toast.makeText(context, "Post deleted successfully.", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            // Notify the user of the error and log it
                                             Toast.makeText(context, "Failed to delete post.", Toast.LENGTH_SHORT).show();
                                             if (task.getException() != null) {
                                                 Log.e("Admin_PostAdapter", "Firebase deletion failed: " + task.getException().getMessage());
