@@ -1,7 +1,10 @@
 package com.example.withme_android;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +44,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view);
     }
 
+    public void openGoogleMap(double latitude, double longitude) {
+        String geoUri = "geo:" + latitude + "," + longitude;
+        Uri gmmIntentUri = Uri.parse(geoUri);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+
+        if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(mapIntent);
+        } else {
+            Toast.makeText(context, "Google Maps is not installed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onBindViewHolder(PostViewHolder holder, int position) {
         Post post = postList.get(position);
@@ -56,6 +72,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.postDate.setText("Unknown");
         }
 
+        holder.postLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGoogleMap(post.getLatitude(), post.getLongitude());
+            }
+        });
+
         holder.comments.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +92,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.yummy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(post.getYummys() == null) {
+                if (post.getYummys() == null) {
                     post.setYummys(new HashMap<>());
                 }
                 if (post.getYummys().containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
