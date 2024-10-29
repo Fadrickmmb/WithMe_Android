@@ -7,7 +7,7 @@ public class User {
     private String name;
     private String email;
     private String id;
-    private Long numberPosts;
+    //private Long numberPosts;
     private String userPhotoUrl;
     private String userBio;
     private Map<String, Post> posts;
@@ -23,19 +23,19 @@ public class User {
         this.id = id;
     }
 
-    public User(String name, String email, String id, Long numberPosts, String userPhotoUrl, String userBio) {
+    public User(String name, String email, String id, String userPhotoUrl, String userBio) {
         this.name = name;
         this.email = email;
         this.id = id;
-        this.numberPosts = numberPosts;
+        //this.numberPosts = numberPosts;
         this.userPhotoUrl = userPhotoUrl;
         this.userBio = userBio;
     }
 
-    public User(String name, String id, Long numberPosts, String userPhotoUrl, String userBio) {
+    public User(String name, String id, String userPhotoUrl, String userBio) {
         this.name = name;
         this.id = id;
-        this.numberPosts = numberPosts;
+        //this.numberPosts = numberPosts;
         this.userPhotoUrl = userPhotoUrl;
         this.userBio = userBio;
     }
@@ -71,13 +71,13 @@ public class User {
         this.id = id;
     }
 
-    public Long getNumberPosts() {
-        return numberPosts;
-    }
+    //public Long getNumberPosts() {
+      //  return numberPosts;
+    //}
 
-    public void setNumberPosts(Long numberPosts) {
-        this.numberPosts = numberPosts;
-    }
+    //public void setNumberPosts(Long numberPosts) {
+      //  this.numberPosts = numberPosts;
+    //}
 
     public String getUserPhotoUrl() {
         return userPhotoUrl;

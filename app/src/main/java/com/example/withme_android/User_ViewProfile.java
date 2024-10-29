@@ -1,12 +1,20 @@
 package com.example.withme_android;
 
+import static android.content.ContentValues.TAG;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +25,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,7 +40,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +59,24 @@ public class User_ViewProfile extends AppCompatActivity {
     private PostAdapter postAdapter;
     private RecyclerView visitedPostRecView;
     private LinearLayoutManager layoutManager;
-    private String currentUserId,visitedUserId;
+    private String currentUserId,visitedUserId,currentUserName, userToken;
+    private LinearLayout notificationIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_user_view_profile);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    "YOUR_CHANNEL_ID",
+                    "Channel Name",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(channel);
+        }
 
         backProfileBtn = findViewById(R.id.backProfileBtn);
         followProfileBtn = findViewById(R.id.followProfileBtn);
@@ -58,6 +86,7 @@ public class User_ViewProfile extends AppCompatActivity {
         numberOfPosts = findViewById(R.id.numberOfPosts);
         numberOfFollowing = findViewById(R.id.numberOfFollowing);
         homeIcon = findViewById(R.id.homeIcon);
+        notificationIcon = findViewById(R.id.notificationIcon);
         noPostsMessage = findViewById(R.id.noPostsMessage);
         searchIcon = findViewById(R.id.searchIcon);
         addPostIcon = findViewById(R.id.addPostIcon);
@@ -89,12 +118,22 @@ public class User_ViewProfile extends AppCompatActivity {
             Toast.makeText(User_ViewProfile.this,"Error loading user profile.", Toast.LENGTH_SHORT).show();
         }
 
+        notificationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(User_ViewProfile.this, User_NotificationsPage.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         reportUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 reportUser();
             }
         });
+
         backProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -339,6 +378,7 @@ public class User_ViewProfile extends AppCompatActivity {
                     followingReference.setValue(true);
                     followersReference.setValue(true);
                     followProfileBtn.setText("Unfollow");
+                    sendFollowNotification();
                 }
             }
 
@@ -353,9 +393,10 @@ public class User_ViewProfile extends AppCompatActivity {
         currUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                User visitedUser = snapshot.getValue(User.class);
-                if(visitedUser !=  null) {
-                    String userAvatar = visitedUser.getUserPhotoUrl();
+                User currentUser = snapshot.getValue(User.class);
+                if(currentUser !=  null) {
+                    String userAvatar = currentUser.getUserPhotoUrl();
+                    currentUserName = currentUser.getName();
 
                     Glide.with(smallAvatar.getContext())
                             .load(userAvatar)
@@ -371,6 +412,32 @@ public class User_ViewProfile extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(User_ViewProfile.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void sendFollowNotification() {
+        visUserRef.child("token").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String visitedUserToken = snapshot.getValue(String.class);
+                if (visitedUserToken != null && !visitedUserToken.isEmpty()) {
+                    FCMNotificationSender notificationSender = new FCMNotificationSender(
+                            visitedUserToken,
+                            "With Me",
+                            currentUserName + " started following you!",
+                            getApplicationContext(),
+                            User_ViewProfile.this
+                    );
+                    notificationSender.SendNotifications();
+                } else {
+                    Log.e(TAG, "Failed to retrieve token for visited user.");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Token retrieval cancelled: " + error.getMessage());
             }
         });
     }
