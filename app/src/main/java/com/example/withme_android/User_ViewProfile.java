@@ -374,11 +374,11 @@ public class User_ViewProfile extends AppCompatActivity {
                     followingReference.removeValue();
                     followersReference.removeValue();
                     followProfileBtn.setText("Follow");
-                    sendFollowNotification();
                 } else {
                     followingReference.setValue(true);
                     followersReference.setValue(true);
                     followProfileBtn.setText("Unfollow");
+                    sendFollowNotification();
                 }
             }
 

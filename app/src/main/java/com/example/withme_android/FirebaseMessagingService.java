@@ -14,10 +14,6 @@ import android.os.Vibrator;
 
 import androidx.core.app.NotificationCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
@@ -99,15 +95,5 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         }
 
         notificationManager.notify(100, builder.build());
-    }
-
-    @Override
-    public void onNewToken(String token) {
-        super.onNewToken(token);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-            reference.child("token").setValue(token);
-        }
     }
 }
