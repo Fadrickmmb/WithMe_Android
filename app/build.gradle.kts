@@ -45,4 +45,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation (libs.glide.v4120)
     annotationProcessor(libs.compiler)
+
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+
 }
