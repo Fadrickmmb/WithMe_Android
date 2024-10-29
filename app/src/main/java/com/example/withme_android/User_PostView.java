@@ -1,5 +1,6 @@
 package com.example.withme_android;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,7 +41,7 @@ public class User_PostView extends AppCompatActivity {
     private ImageView homeIcon, searchIcon, addPostIcon, smallAvatar,userAvatar,postPicture;
     private TextView postOwnerName,locationName,yummysNumber,commentsNumber,postDate, postContent;
     private FirebaseAuth mAuth;
-    private DatabaseReference reference,postreference;
+    private DatabaseReference reference,postreference, reportPostRef;
     private String postId,ownerId;
     private Button backBtn, addCommentBtn;
     private RecyclerView commentPostRecView;
@@ -80,7 +83,7 @@ public class User_PostView extends AppCompatActivity {
         postContent = findViewById(R.id.postContent);
         reference = FirebaseDatabase.getInstance().getReference("users");
         postreference = FirebaseDatabase.getInstance().getReference("users").child(ownerId).child("posts");
-
+        DatabaseReference reportPostRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
 
         retrieveSinglePostInfo(postId);
         retrieveComments(postId,commentPostRecView);
@@ -200,8 +203,12 @@ public class User_PostView extends AppCompatActivity {
                     View reportView = LayoutInflater.from(User_PostView.this).inflate(R.layout.reportpost_dialog, null);
                     AlertDialog dialog = new AlertDialog.Builder(User_PostView.this).setView(reportView).create();
 
-                    ImageView closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
-                    ImageView reportPost = reportView.findViewById(R.id.reportPost);
+                    ImageView closeReportPostDialog;
+                    Button yesReportPostBtn, noReportPostBtn;
+
+                    closeReportPostDialog = reportView.findViewById(R.id.closeReportPostDialog);
+                    yesReportPostBtn = reportView.findViewById(R.id.yesReportPostBtn);
+                    noReportPostBtn = reportView.findViewById(R.id.noReportPostBtn);
 
                     closeReportPostDialog.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -210,10 +217,32 @@ public class User_PostView extends AppCompatActivity {
                         }
                     });
 
-                    reportPost.setOnClickListener(new View.OnClickListener() {
+                    yesReportPostBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(User_PostView.this, "This function is not working yet.", Toast.LENGTH_SHORT).show();
+                            String reportId = reportPostRef.push().getKey();
+                            if(reportId !=null){
+                                Report reportPostUser = new Report(reportId,postId,ownerId,currentUserId);
+                                reportPostRef.child(reportId).setValue(reportPostUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful()){
+                                            postMenu.setEnabled(false);
+                                            Toast.makeText(view.getContext(),"Post reported.",Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        } else {
+                                            Toast.makeText(view.getContext(), "Error reporting post.",Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+                            dialog.dismiss();
+                        }
+                    });
+
+                    noReportPostBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
                             dialog.dismiss();
                         }
                     });
