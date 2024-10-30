@@ -80,7 +80,7 @@ public class Admin_EditProfile extends AppCompatActivity {
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_EditProfile.this, User_HomePage.class);
+                Intent intent = new Intent(Admin_EditProfile.this, Admin_HomePage.class);
                 startActivity(intent);
                 finish();
             }
@@ -89,7 +89,7 @@ public class Admin_EditProfile extends AppCompatActivity {
         searchIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_EditProfile.this, User_SearchPage.class);
+                Intent intent = new Intent(Admin_EditProfile.this, Admin_SearchPage.class);
                 startActivity(intent);
                 finish();
             }
@@ -98,7 +98,7 @@ public class Admin_EditProfile extends AppCompatActivity {
         addPostIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_EditProfile.this, User_AddPostPage.class);
+                Intent intent = new Intent(Admin_EditProfile.this, Admin_AddPostPage.class);
                 startActivity(intent);
                 finish();
             }
@@ -107,7 +107,7 @@ public class Admin_EditProfile extends AppCompatActivity {
         smallAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_EditProfile.this, User_ProfilePage.class);
+                Intent intent = new Intent(Admin_EditProfile.this, Admin_ProfilePage.class);
                 startActivity(intent);
                 finish();
             }
@@ -149,7 +149,7 @@ public class Admin_EditProfile extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Admin_EditProfile.this, "Failed to retrieve user data", Toast.LENGTH_LONG).show();
+                Toast.makeText(Admin_EditProfile.this, "Failed to retrieve data", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -189,7 +189,7 @@ public class Admin_EditProfile extends AppCompatActivity {
         if (!etPassword.getText().toString().isEmpty()) {
             firebaseUser.updatePassword(etPassword.getText().toString())
                     .addOnFailureListener(err -> {
-                        Toast.makeText(this, "Error updating admin password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Error updating password", Toast.LENGTH_SHORT).show();
                         Log.e("wma", "validateAndUpdateProfile: ", err);
                     });
         }
@@ -225,7 +225,7 @@ public class Admin_EditProfile extends AppCompatActivity {
                 Toast.makeText(this, "Profile updated", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(err -> {
-            Toast.makeText(this, "Error updating admin profile", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error updating profile", Toast.LENGTH_SHORT).show();
             Log.e("wmlogs", "updateProfileImageUri: ", err);
         });
     }
