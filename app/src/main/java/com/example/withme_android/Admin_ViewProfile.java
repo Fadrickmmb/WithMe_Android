@@ -138,7 +138,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
         homeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_ViewProfile.this, User_HomePage.class);
+                Intent intent = new Intent(Admin_ViewProfile.this, Admin_HomePage.class);
                 startActivity(intent);
                 finish();
             }
@@ -157,7 +157,7 @@ public class Admin_ViewProfile extends AppCompatActivity {
         addPostIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Admin_ViewProfile.this, User_AddPostPage.class);
+                Intent intent = new Intent(Admin_ViewProfile.this, Admin_AddPostPage.class);
                 startActivity(intent);
                 finish();
             }

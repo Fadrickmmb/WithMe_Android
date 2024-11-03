@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class Mod_HomePage extends AppCompatActivity {
-    Button homePageMod;
+    Button toSearch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,12 +24,12 @@ public class Mod_HomePage extends AppCompatActivity {
             return insets;
         });
 
-        homePageMod = findViewById(R.id.homePageMod);
+        toSearch = findViewById(R.id.mod_homePage_toSearch);
 
-        homePageMod.setOnClickListener(new View.OnClickListener() {
+        toSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Mod_HomePage.this, Admin_ProfilePage.class);
+                Intent intent = new Intent(Mod_HomePage.this, Mod_SearchPage.class);
                 startActivity(intent);
                 finish();
             }
