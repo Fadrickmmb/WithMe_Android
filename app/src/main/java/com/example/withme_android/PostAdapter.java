@@ -3,6 +3,8 @@ package com.example.withme_android;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +25,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
-    private List<Post> postList;
-    private Context context;
+    private  final List<Post> postList;
+    private  final Context context;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference postreference = FirebaseDatabase.getInstance().getReference("users").child(mAuth.getUid()).child("posts");
     private AlertDialog dialog;
@@ -44,16 +50,83 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostAdapter.PostViewHolder(view);
     }
 
+
+
+    public void openGoogleMap(double latitude, double longitude) {
+        String geoUri = "geo:" + latitude + "," + longitude;
+        Uri gmmIntentUri = Uri.parse(geoUri);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+
+        if (mapIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(mapIntent);
+        } else {
+            Toast.makeText(context, "Google Maps is not installed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
         DatabaseReference reportRef = FirebaseDatabase.getInstance().getReference("reportedPosts");
 
-        holder.postOwnerName.setText(post.getName());
-        holder.postLocation.setText(post.getLocation());
+
         holder.postDate.setText(post.getPostDate());
-        holder.yummysNumber.setText(String.valueOf(post.getYummysNumber()));
-        holder.commentsNumber.setText(String.valueOf(post.getCommentsNumber()));
+        holder.postOwnerName.setText(post.getName() != null ? post.getName() : "Unknown");
+        holder.postLocation.setText(post.getLocation() != null ? post.getLocation() : "Unknown");
+        holder.commentsNumber.setText(post.getComments() != null ? post.getComments().size() + " Comments" : "0 Comments");
+        holder.yummysNumber.setText(post.getYummys() != null ? post.getYummys().size() + " Yummys" : "0 Yummys");
+
+
+
+
+        if (post.getPostDate() != null) {
+            String formattedDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date(post.getPostDate()));
+            holder.postDate.setText(formattedDate);
+        } else {
+            holder.postDate.setText("Unknown");
+        }
+
+        holder.postLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openGoogleMap(post.getLatitude(), post.getLongitude());
+            }
+        });
+
+        holder.comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, User_PostView.class);
+                intent.putExtra("postId", post.getPostId());
+                intent.putExtra("userId", post.getUserId());
+                context.startActivity(intent);
+            }
+        });
+
+        holder.yummy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (post.getYummys() == null) {
+                    post.setYummys(new HashMap<>());
+                }
+                if (post.getYummys().containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                    post.getYummys().remove(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                } else {
+
+                    post.getYummys().put(FirebaseAuth.getInstance().getCurrentUser().getUid(), true);
+                }
+                holder.yummysNumber.setText(post.getYummys() != null ? post.getYummys().size() + " Yummys" : "0 Yummys");
+
+                FirebaseDatabase.getInstance().getReference("users").child(post.getUserId())
+                        .child("posts").child(post.getPostId())
+                        .child("yummys").setValue(post.getYummys())
+                        .addOnFailureListener(err -> {
+                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+                            Log.e("PostAdapter.java", "onClick: ", err);
+                        });
+            }
+        });
 
         Glide.with(holder.userAvatar.getContext())
                 .load(post.getUserPhotoUrl())
@@ -64,6 +137,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .load(post.getPostImageUrl())
                 .apply(new RequestOptions().placeholder(R.drawable.small_logo).error(R.drawable.baseline_error_outline_24))
                 .into(holder.postPicture);
+
+
 
         holder.postPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,9 +264,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
+
         TextView postOwnerName, postLocation, yummysNumber, commentsNumber, postDate;
         ImageView userAvatar, postPicture;
         LinearLayout postMenu;
+
+        LinearLayout comments,yummy;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -203,6 +281,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             userAvatar = itemView.findViewById(R.id.userAvatar);
             postPicture = itemView.findViewById(R.id.postPicture);
             postMenu = itemView.findViewById(R.id.postMenu);
+            comments = itemView.findViewById(R.id.llComments);
+            yummy = itemView.findViewById(R.id.llYummy);
         }
     }
 }

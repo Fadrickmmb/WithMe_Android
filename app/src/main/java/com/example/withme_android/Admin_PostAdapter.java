@@ -50,8 +50,8 @@ public class Admin_PostAdapter extends RecyclerView.Adapter<Admin_PostAdapter.Ad
         holder.postOwnerName.setText(post.getName());
         holder.postLocation.setText(post.getLocation());
         holder.postDate.setText(post.getPostDate());
-        holder.yummysNumber.setText(String.valueOf(post.getYummysNumber()));
-        holder.commentsNumber.setText(String.valueOf(post.getCommentsNumber()));
+//        holder.yummysNumber.setText(String.valueOf(post.getYummysNumber()));
+//        holder.commentsNumber.setText(String.valueOf(post.getCommentsNumber()));
 
         Glide.with(holder.userAvatar.getContext())
                 .load(post.getUserPhotoUrl())

@@ -2,6 +2,7 @@ package com.example.withme_android;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class User_HomePage extends AppCompatActivity {
 
@@ -50,7 +52,7 @@ public class User_HomePage extends AppCompatActivity {
         addPostIcon = findViewById(R.id.addPostIcon);
         smallAvatar = findViewById(R.id.smallAvatar);
         postRv = findViewById(R.id.rv_post);
-        noPostsMessage = findViewById(R.id.noPostsMessage);
+        noPostsMessage = findViewById(R.id.noPostsMessage); // Adicione a view para exibir mensagens quando não houver posts
 
         retrieveInfo();
 
@@ -89,64 +91,41 @@ public class User_HomePage extends AppCompatActivity {
                 finish();
             }
         });
-
-        loadPosts();
     }
 
-    private void loadPosts() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            reference.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    User currentUserProfile = snapshot.getValue(User.class);
-
-                    if (currentUserProfile != null && currentUserProfile.getFollowing() != null) {
-                        Map<String, Boolean> followingList = (Map<String, Boolean>) currentUserProfile.getFollowing();
-                        PostsFromFollowedUsers((List<String>) followingList);
-                    } else {
-                        noPostsMessage.setVisibility(View.VISIBLE);
-                        postRv.setVisibility(View.GONE);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(User_HomePage.this, "Failed to load user data.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-    private void PostsFromFollowedUsers(List<String> followingList) {
+    private void loadPosts(Map<String, Boolean> followers) {
         posts = new HashMap<>();
-
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    User user = userSnapshot.getValue(User.class);
-
-                    if (user != null && user.getPosts() != null) {
-                        if (followingList.contains(user.getId())) {
-                            for (DataSnapshot postSnapshot : userSnapshot.child("posts").getChildren()) {
-                                Post post = postSnapshot.getValue(Post.class);
-                                if (post != null) {
-                                    posts.put(postSnapshot.getKey(), post);
+                    // handle errors
+                    try {
+                        User user = userSnapshot.getValue(User.class);
+                        if (user != null && user.getPosts() != null) {
+                            if ((followers != null && followers.containsKey(user.getId())) ||
+                                    Objects.equals(mAuth.getUid(), user.getId())) {
+                                for (Map.Entry<String, Post> entry : user.getPosts().entrySet()) {
+                                    String postId = entry.getKey();
+                                    Post post = entry.getValue();
+                                    posts.put(postId, post);
                                 }
                             }
                         }
+                    } catch (Exception e) {
+                        Log.e("Err", "onDataChange: ", e);
                     }
                 }
+                List<Post> postList = new ArrayList<>(posts.values());
+                postAdapter = new PostAdapter(User_HomePage.this, postList);
+                postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
+                postRv.setAdapter(postAdapter);
 
                 if (posts.isEmpty()) {
                     noPostsMessage.setVisibility(View.VISIBLE);
                     postRv.setVisibility(View.GONE);
                 } else {
-                    List<Post> postList = new ArrayList<>(posts.values());
-                    postAdapter = new PostAdapter(User_HomePage.this, postList);
-                    postRv.setLayoutManager(new LinearLayoutManager(User_HomePage.this));
+
                     postRv.setAdapter(postAdapter);
                     noPostsMessage.setVisibility(View.GONE);
                     postRv.setVisibility(View.VISIBLE);
@@ -170,6 +149,8 @@ public class User_HomePage extends AppCompatActivity {
                     User userProfile = snapshot.getValue(User.class);
                     if (userProfile != null) {
                         String userAvatar = userProfile.getUserPhotoUrl();
+
+                        loadPosts(userProfile.getFollowers());
 
                         Glide.with(smallAvatar.getContext())
                                 .load(userAvatar)

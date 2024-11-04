@@ -42,6 +42,8 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.firebase.inappmessaging)
     implementation(libs.media3.common)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -49,4 +51,9 @@ dependencies {
     annotationProcessor(libs.compiler.v4110)
     implementation(libs.firebase.messaging)
     implementation(libs.volley)
+
+    implementation(libs.play.services.maps)
+    implementation ("com.google.android.gms:play-services-auth:20.4.1")
+    implementation ("com.google.firebase:firebase-auth:22.1.1")
+
 }

@@ -3,36 +3,38 @@ package com.example.withme_android;
 import java.util.Map;
 
 public class Post {
+    private String postId;
     private String content;
     private String userId;
     private String postImageUrl;
     private String postDate;
     private String name;
     private String location;
-    private int yummysNumber;
-    private int commentsNumber;
+    private Map<String, Boolean> yummys;
     private String userPhotoUrl;
-    private String postId;
     private Map<String, Comment> comments;
+    private Double latitude;
+    private Double longitude;
 
     public Post() {
     }
 
-    public Post(String content, String userId, String postImageUrl, String postDate, String name,
-                String location, int yummysNumber, int commentsNumber, String userPhotoUrl,String postId) {
+    public Post(String postId, String content, String userId, String postImageUrl, String postDate,
+                String name, String location, Map<String, Boolean> yummys,
+                String userPhotoUrl, Map<String, Comment> comments,
+                Double latitude, Double longitude) {
+        this.postId = postId;
         this.content = content;
         this.userId = userId;
         this.postImageUrl = postImageUrl;
         this.postDate = postDate;
         this.name = name;
         this.location = location;
-        this.yummysNumber = yummysNumber;
-        this.commentsNumber = commentsNumber;
+        this.yummys = yummys;
         this.userPhotoUrl = userPhotoUrl;
-        this.postId = postId;
-    }
-
-    public Post(String content, String uid, String string, String string1, String name, String location, int i, String userPhotoUrl) {
+        this.comments = comments;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getContent() {
@@ -45,6 +47,10 @@ public class Post {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getPostId() {
+        return postId;
     }
 
     public void setUserId(String userId) {
@@ -83,20 +89,12 @@ public class Post {
         this.location = location;
     }
 
-    public int getYummysNumber() {
-        return yummysNumber;
+    public Map<String, Boolean> getYummys() {
+        return yummys;
     }
 
-    public void setYummysNumber(int yummysNumber) {
-        this.yummysNumber = yummysNumber;
-    }
-
-    public int getCommentsNumber() {
-        return commentsNumber;
-    }
-
-    public void setCommentsNumber(int commentsNumber) {
-        this.commentsNumber = commentsNumber;
+    public void setYummys(Map<String, Boolean> yummys) {
+        this.yummys = yummys;
     }
 
     public String getUserPhotoUrl() {
@@ -115,13 +113,19 @@ public class Post {
         this.comments = comments;
     }
 
-    public String getPostId() {
-        return postId;
+    public Double getLatitude() {
+        return latitude;
     }
 
-    public void setPostId(String postId) {
-        this.postId = postId;
+    public Double getLongitude() {
+        return longitude;
     }
 
+    public void setLatitude(Double val) {
+        this.latitude = val;
+    }
 
+    public void setLongitude(Double val) {
+        this.longitude = val;
+    }
 }
