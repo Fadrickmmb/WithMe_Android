@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".User_Suspended"
+            android:exported="false" />
+        <activity
             android:name=".Admin_Dashboard"
             android:exported="false" />
         <activity

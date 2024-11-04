@@ -31,7 +31,7 @@ public class Auth_Login extends AppCompatActivity {
     TextView register, forgotPassword;
 
     private FirebaseAuth mAuth;
-    DatabaseReference userDatabase, adminDatabase, modDatabase;
+    DatabaseReference userDatabase, adminDatabase, modDatabase, suspDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,7 @@ public class Auth_Login extends AppCompatActivity {
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
         adminDatabase = FirebaseDatabase.getInstance().getReference("admin");
         modDatabase = FirebaseDatabase.getInstance().getReference("mod");
+        suspDatabase = FirebaseDatabase.getInstance().getReference("supendedUsers");
 
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
