@@ -31,7 +31,7 @@ public class Auth_Login extends AppCompatActivity {
     TextView register, forgotPassword;
 
     private FirebaseAuth mAuth;
-    DatabaseReference userDatabase, adminDatabase, modDatabase;
+    DatabaseReference userDatabase, adminDatabase, modDatabase, suspDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,7 @@ public class Auth_Login extends AppCompatActivity {
         userDatabase = FirebaseDatabase.getInstance().getReference("users");
         adminDatabase = FirebaseDatabase.getInstance().getReference("admin");
         modDatabase = FirebaseDatabase.getInstance().getReference("mod");
+        suspDatabase = FirebaseDatabase.getInstance().getReference("supendedUsers");
 
         forgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,21 +156,23 @@ public class Auth_Login extends AppCompatActivity {
     }
 
 
-    private void checkUser(String emailInput){
-
+    private void checkUser(String emailInput) {
         userDatabase.orderByChild("email").equalTo(emailInput).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        String userId = userSnapshot.getKey();
+                       //Toast.makeText(Auth_Login.this, "Logged in as User with ID: " + userId, Toast.LENGTH_SHORT).show();
 
-                if(dataSnapshot.exists()){
-                    Toast.makeText(Auth_Login.this, "Logged in as User", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(Auth_Login.this, User_ProfilePage.class);
-                    startActivity(intent);
-                    finish();
-                }else{
+                        Intent intent = new Intent(Auth_Login.this, User_ProfilePage.class);
+                        intent.putExtra("USER_ID", userId);
+                        startActivity(intent);
+                        finish();
+                    }
+                } else {
                     Toast.makeText(Auth_Login.this, "No account found with this email", Toast.LENGTH_LONG).show();
                 }
-
             }
 
             @Override
@@ -178,5 +181,6 @@ public class Auth_Login extends AppCompatActivity {
             }
         });
     }
+
 
 }
